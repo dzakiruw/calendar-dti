@@ -31,7 +31,7 @@
           <a href="/ruang-kelas" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-chalkboard-teacher mr-2"></i> Ruang Kelas
           </a>
-          <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
+          <a href="/jadwal-hindari" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-calendar-times mr-2"></i> Jadwal Hindari
           </a>
         </div>
