@@ -22,18 +22,21 @@
           <i :class="dropdowns.kalender ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
         </button>
         <div v-if="dropdowns.kalender" class="ml-6 mt-2 space-y-1">
-          <a href="/mata-kuliah" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
+          <NuxtLink to="/mata-kuliah" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-book mr-2"></i> Mata Kuliah
-          </a>
-          <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
-            <i class="fas fa-user-tie mr-2"></i> Dosen
-          </a>
-          <a href="/ruang-kelas" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
+          </NuxtLink>
+          <NuxtLink to="/dosen" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg mt-4">
+            <i class="fas fa-user-tie mr-3"></i> Dosen
+          </NuxtLink>
+          <NuxtLink to="/ruang-kelas" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-chalkboard-teacher mr-2"></i> Ruang Kelas
-          </a>
-          <a href="/jadwal-hindari" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
+          </NuxtLink>
+          <NuxtLink to="/jadwal-hindari" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-calendar-times mr-2"></i> Jadwal Hindari
-          </a>
+          </NuxtLink>
+          <NuxtLink to="/dosen-matching" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg mt-4">
+            <i class="fas fa-link mr-3"></i> Dosen Matching
+          </NuxtLink>
         </div>
       </div>
 
