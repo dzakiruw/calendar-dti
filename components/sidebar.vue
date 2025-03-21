@@ -49,7 +49,7 @@
           <i :class="dropdowns.jadwal ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
         </button>
         <div v-if="dropdowns.jadwal" class="ml-6 mt-2 space-y-1">
-          <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
+          <a href="/buat-jadwal" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-edit mr-2"></i> Buat Jadwal
           </a>
           <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
