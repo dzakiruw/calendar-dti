@@ -29,19 +29,6 @@
         />
       </div>
 
-      <!-- Input Jenis Ruangan -->
-      <div class="mb-4">
-        <label class="block text-gray-700 font-semibold">Jenis Ruangan</label>
-        <select
-          v-model="form.jenisRuangan"
-          class="w-full mt-2 p-2 border rounded-lg"
-          required
-        >
-          <option value="milik DTI">Milik DTI</option>
-          <option value="bukan milik DTI">Bukan Milik DTI</option>
-        </select>
-      </div>
-
       <!-- Submit Button -->
       <button
         type="submit"
@@ -67,7 +54,6 @@
             <div>
               <p class="font-medium">Kode Ruangan: {{ ruangKelas.kodeRuangan }}</p>
               <p class="text-sm text-gray-600">Kapasitas: {{ ruangKelas.kapasitasRuangan }}</p>
-              <p class="text-sm text-gray-600">Jenis: {{ ruangKelas.jenisRuangan }}</p>
             </div>
             <div class="flex space-x-2">
               <!-- Edit Button -->
@@ -102,7 +88,6 @@
 const form = ref({
   kodeRuangan: "",
   kapasitasRuangan: "",
-  jenisRuangan: "milik DTI",
 });
 
 // Data Ruang Kelas
@@ -110,7 +95,6 @@ const ruangKelasList = ref<
   Array<{
     kodeRuangan: string;
     kapasitasRuangan: string;
-    jenisRuangan: string;
   }>
 >([]);
 
@@ -132,7 +116,6 @@ const submitForm = () => {
   form.value = {
     kodeRuangan: "",
     kapasitasRuangan: "",
-    jenisRuangan: "milik DTI",
   };
 };
 
@@ -147,7 +130,3 @@ const deleteRuangKelas = (index: number) => {
   ruangKelasList.value.splice(index, 1);
 };
 </script>
-
-<style scoped>
-/* Optional: Styling */
-</style>
