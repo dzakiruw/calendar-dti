@@ -1,6 +1,9 @@
 <template>
   <div class="h-screen flex flex-col items-center justify-center">
-    <h1 class="text-3xl font-bold mb-6">📚 Input Mata Kuliah</h1>
+    <h1 class="text-3xl font-bold mb-2">
+      <img src="/input-matkul.png" alt="Book Icon" class="inline-block w-14 h-14 mr-2" />
+        Input Mata Kuliah
+    </h1>
 
     <!-- Mata Kuliah Form -->
     <form @submit.prevent="submitMataKuliah" class="bg-white p-6 shadow-md rounded-lg w-96">

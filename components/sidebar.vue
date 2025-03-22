@@ -2,14 +2,14 @@
   <div class="w-64 bg-gray-100 text-gray-900 h-screen shadow-md flex flex-col">
     <!-- Sidebar Header -->
     <div class="flex items-center px-6 py-4 bg-white shadow">
-      <img src="/logo-dti.png" alt="DTI Logo" class="w-8 h-8 mr-2 rounded-full" />
+      <img src="/logo-dti.png" alt="DTI Logo" class="w-8 h-8 mr-2" />
       <h1 class="text-lg font-bold">Calendar-DTI</h1>
     </div>
 
     <!-- Sidebar Menu -->
     <nav class="flex-1 px-2 mt-4">
       <!-- Home -->
-      <NuxtLink to="/" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg">
+      <NuxtLink to="/" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
         <i class="fas fa-home mr-3"></i> Home
       </NuxtLink>
 
@@ -25,7 +25,7 @@
           <NuxtLink to="/mata-kuliah" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-book mr-2"></i> Mata Kuliah
           </NuxtLink>
-          <NuxtLink to="/dosen" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg mt-4">
+          <NuxtLink to="/dosen" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg mt-4">
             <i class="fas fa-user-tie mr-3"></i> Dosen
           </NuxtLink>
           <NuxtLink to="/ruang-kelas" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
@@ -33,9 +33,6 @@
           </NuxtLink>
           <NuxtLink to="/jadwal-hindari" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-calendar-times mr-2"></i> Jadwal Hindari
-          </NuxtLink>
-          <NuxtLink to="/dosen-matching" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg mt-4">
-            <i class="fas fa-link mr-3"></i> Dosen Matching
           </NuxtLink>
         </div>
       </div>
@@ -49,9 +46,9 @@
           <i :class="dropdowns.jadwal ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
         </button>
         <div v-if="dropdowns.jadwal" class="ml-6 mt-2 space-y-1">
-          <a href="/buat-jadwal" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
+          <NuxtLink to="/buat-jadwal" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-edit mr-2"></i> Buat Jadwal
-          </a>
+          </NUxtLink>
           <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-list mr-2"></i> Pilih Jadwal
           </a>

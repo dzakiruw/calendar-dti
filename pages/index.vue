@@ -3,7 +3,7 @@
     <!-- Tech Stack Section -->
     <section class="w-full max-w-4xl text-center mb-12">
       <h1 class="text-3xl font-bold flex items-center justify-center gap-2">
-        <WrenchScrewdriverIcon class="w-8 h-8 text-purple-600" /> Tech Stack
+        <WrenchScrewdriverIcon class="w-8 h-8 text-gray-600" /> Tech Stack
       </h1>
       <div class="flex flex-wrap justify-center gap-6 mt-4">
         <div v-for="tech in techStack" :key="tech.name" class="flex flex-col items-center">
@@ -16,7 +16,7 @@
     <!-- Team Members Section -->
     <section class="w-full max-w-4xl text-center">
       <h1 class="text-3xl font-bold flex items-center justify-center gap-2">
-        <i class="fas fa-users text-purple-600"></i> Team Members
+        <i class="fas fa-users text-gray-600"></i> Team Members
       </h1>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-4">
         <div v-for="member in teamMembers" :key="member.name" class="bg-white p-4 shadow-md rounded-lg flex flex-col items-center">
