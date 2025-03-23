@@ -57,28 +57,24 @@ const teamMembers = ref([
   {
     name: "Sulthan Akmal Rafliansyah",
     nrp: "5027211039",
-    role: "UI/UX Designer & Frontend Developer",
     avatar: "/rafly.png",
     linkedin: "https://www.linkedin.com/in/sulthanrafliansyah/",
   },
   {
     name: "Adiba Zalfa Camilla",
     nrp: "5027211060",
-    role: "Backend Developer & DevOps",
     avatar: "/diba.png",
     linkedin: "https://www.linkedin.com/in/adiba-zalfa-camilla/",
   },
   {
     name: "Tarisha Syira Mazaya Putri",
     nrp: "5027211061",
-    role: "Algorithm & Frontend Dev",
     avatar: "/icha.png",
     linkedin: "https://www.linkedin.com/in/tarishasyira/",
   },
   {
     name: "Dzakirozaaan Uzlahwasata",
     nrp: "5027211066",
-    role: "Algorithm & Backend Dev",
     avatar: "/dzaki.png",
     linkedin: "https://www.linkedin.com/in/dzakirozaanuzlahwasata/",
   },
