@@ -58,7 +58,7 @@
 
     <!-- Sidebar Footer -->
     <div class="px-4 py-3 bg-white shadow flex items-center justify-between">
-      <span class="flex items-center">
+      <span v-if="user.name">
         <i class="fas fa-user mr-3"></i>
         <NuxtLink v-if="user.name" to="/profile" class="text-gray-600 hover:text-gray-900">{{ user.name }}</NuxtLink>
         <NuxtLink v-else to="/login" class="text-gray-600 hover:text-gray-900">Guest</NuxtLink>
@@ -67,6 +67,9 @@
       <!-- Show logout button if user is logged in -->
       <button v-if="user.name" @click="logout" class="text-gray-600 hover:text-gray-900">
         <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+      <button v-else @click="redirectToLogin" class="text-gray-600 hover:text-gray-900">
+        <i class="fas fa-sign-in-alt"></i> Login
       </button>
     </div>
   </div>
@@ -90,6 +93,12 @@ onMounted(() => {
   if (storedUser) {
     user.value = storedUser;
   }
+
+  // Load dropdown states from localStorage
+  const storedDropdowns = JSON.parse(localStorage.getItem('dropdowns'));
+  if (storedDropdowns) {
+    dropdowns.value = storedDropdowns;
+  }
 });
 
 // Logout function
@@ -100,8 +109,19 @@ const logout = () => {
   router.push('/login'); // Redirect to login page
 };
 
+// Redirect to login page if the user clicks the guest button
+const redirectToLogin = () => {
+  router.push('/login');
+};
+
 // Toggle dropdowns
 const toggleDropdown = (menu) => {
   dropdowns.value[menu] = !dropdowns.value[menu];
+  // Save dropdown state to localStorage
+  localStorage.setItem('dropdowns', JSON.stringify(dropdowns.value));
 };
 </script>
+
+<style scoped>
+/* Optional: Additional styling can be added here */
+</style>
