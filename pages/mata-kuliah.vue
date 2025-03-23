@@ -27,8 +27,7 @@
           <label class="block text-gray-700 font-semibold">Jenis Mata Kuliah</label>
           <select v-model="jenisMataKuliah" class="w-full mt-2 p-2 border rounded-lg" required>
             <option disabled value="">Pilih Jenis Mata Kuliah</option>
-            <option value="Wajib">Wajib</option>
-            <option value="Pilihan">Pilihan</option>
+            <option value="Departemen">Departemen</option>
             <option value="Pengayaan">Pengayaan</option>
           </select>
         </div>

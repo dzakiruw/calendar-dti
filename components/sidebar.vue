@@ -25,7 +25,7 @@
           <NuxtLink to="/mata-kuliah" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-book mr-2"></i> Mata Kuliah
           </NuxtLink>
-          <NuxtLink to="/dosen" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg mt-4">
+          <NuxtLink to="/dosen" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-user-tie mr-3"></i> Dosen
           </NuxtLink>
           <NuxtLink to="/ruang-kelas" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
@@ -48,18 +48,18 @@
         <div v-if="dropdowns.jadwal" class="ml-6 mt-2 space-y-1">
           <NuxtLink to="/buat-jadwal" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-edit mr-2"></i> Buat Jadwal
-          </NUxtLink>
-          <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
+          </NuxtLink>
+          <NuxtLink to="/pilih-jadwal" class="block px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
             <i class="fas fa-list mr-2"></i> Pilih Jadwal
-          </a>
+          </NuxtLink>
         </div>
       </div>
     </nav>
 
-    <!-- Sidebar Footer (User Info) -->
+    <!-- Sidebar Footer -->
     <div class="px-4 py-3 bg-white shadow flex items-center justify-between">
       <span class="flex items-center">
-        <i class="fas fa-user mr-3"></i> Sulthan Akmal
+        <i class="fas fa-user mr-3"></i> USER
       </span>
       <i class="fas fa-chevron-down cursor-pointer"></i>
     </div>
@@ -67,12 +67,29 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
+
+const STORAGE_KEY = "sidebar-dropdown-state";
 
 const dropdowns = ref({
   kalender: false,
   jadwal: false,
 });
+
+onMounted(() => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    dropdowns.value = JSON.parse(saved);
+  }
+});
+
+watch(
+  dropdowns,
+  (newVal) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal));
+  },
+  { deep: true }
+);
 
 const toggleDropdown = (menu) => {
   dropdowns.value[menu] = !dropdowns.value[menu];
@@ -80,5 +97,5 @@ const toggleDropdown = (menu) => {
 </script>
 
 <style scoped>
-/* Optional: Additional styling can be added here */
+/* Optional: Add custom styling if needed */
 </style>
