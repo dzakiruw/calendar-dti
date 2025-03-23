@@ -1,9 +1,9 @@
 <template>
   <div class="h-screen flex flex-col items-center justify-start bg-gray-50 p-6">
     <!-- Title -->
-    <div class="mb-6 w-full sm:w-auto">
+    <div class="mb-6 w-full sm:w-auto flex justify-center sm:justify-start">
       <h1 class="text-3xl font-bold flex items-center">
-        <img src="/input-matkul.png" alt="Book Icon" class="inline-block w-14 h-14 mr-2" />
+        <img :src="logoSrc" alt="Book Icon" class="inline-block w-14 h-14 mr-2" />
         Input Mata Kuliah
       </h1>
     </div>
@@ -61,8 +61,9 @@
           </div>
         </div>
 
+        <!-- Submit Button -->
         <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
-          Submit
+          {{ editIndex !== null ? 'Update' : 'Submit' }}
         </button>
       </form>
 
@@ -71,7 +72,6 @@
         <h2 class="text-xl font-bold mb-4">
           <i class="fas fa-list-ul mr-2"></i> Daftar Mata Kuliah
         </h2>
-
 
         <!-- Empty State -->
         <div v-if="mataKuliahList.length === 0" class="text-gray-500">
@@ -88,7 +88,6 @@
                 <span class="font-bold">Semester:</span> {{ mk.semester }}<br>
                 <span class="font-bold">Kelas:</span> {{ mk.kelas.join(", ") }}
               </p>
-
             </div>
             <div class="flex space-x-4">
               <button @click="editMataKuliah(index)" class="text-gray-600 hover:text-gray-900">
@@ -97,7 +96,6 @@
               <button @click="deleteMataKuliah(index)" class="text-red-600 hover:text-red-900">
                 <i class="fas fa-trash-alt"></i>
               </button>
-
             </div>
           </li>
         </ul>
@@ -108,6 +106,9 @@
 
 <script setup>
 import { ref } from "vue";
+
+// The logo path as a reactive variable to make sure it updates dynamically
+const logoSrc = ref("/input-matkul.png");
 
 const kode = ref("");
 const nama = ref("");

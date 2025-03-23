@@ -54,59 +54,62 @@
         </div>
 
         <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
-          {{ editIndex !== null ? 'Update Dosen' : 'Simpan Dosen' }}
+          {{ editIndex !== null ? 'Update' : 'Submit' }}
         </button>
       </form>
 
       <!-- Dosen List -->
-      <div class="w-full sm:w-96 bg-white p-6 shadow-md rounded-lg">
-        <h2 class="text-xl font-bold mb-4">
-          <i class="fas fa-list-ul mr-2"></i> Daftar Dosen
-        </h2>
+<div class="flex-1 w-full sm:w-96 bg-white p-6 shadow-md rounded-lg mt-6 sm:mt-0">
+  <h2 class="text-xl font-bold mb-4">
+    <i class="fas fa-list-ul mr-2"></i> Daftar Dosen
+  </h2>
 
-        <div v-if="!dosenList.length" class="text-gray-500">
-          Belum ada dosen yang diinputkan.
-        </div>
+  <!-- Empty State -->
+  <div v-if="dosenList.length === 0" class="text-gray-500">
+    Belum ada dosen yang diinputkan.
+  </div>
 
-        <div v-else class="space-y-4">
-          <div
-            v-for="(dosen, index) in dosenList"
-            :key="index"
-            class="bg-gray-100 p-4 rounded-lg shadow-sm"
+  <!-- Dosen List -->
+  <ul v-else class="space-y-4">
+    <li
+      v-for="(dosen, index) in dosenList"
+      :key="index"
+      class="bg-gray-100 p-4 rounded-lg flex justify-between items-center"
+    >
+      <div>
+        <p class="font-bold text-base">{{ dosen.nama }}<br /><span class="text-sm font-normal">{{ dosen.kode }}</span></p>
+        <p class="text-sm text-gray-600 mt-1">
+          <span class="font-bold">Level:</span> {{ dosen.level }}<br />
+          <span class="font-bold">Ketersediaan:</span>
+        </p>
+        <ul class="text-sm text-gray-600 list-disc ml-5 mt-1 space-y-0.5">
+          <li
+            v-for="(result, sesiIndex) in getFilteredSessions(dosen.ketersediaan)"
+            :key="sesiIndex"
           >
-            <div class="mb-2">
-              <p class="text-lg font-bold text-gray-800 mb-1">{{ dosen.nama }}</p>
-              <p class="text-sm text-gray-600"><span class="font-semibold">Kode:</span> {{ dosen.kode }}</p>
-              <p class="text-sm text-gray-600"><span class="font-semibold">Level:</span> {{ dosen.level }}</p>
-            </div>
+            Sesi {{ result.sesi + 1 }}: {{ result.hari.join(', ') }}
+          </li>
+          <li
+            v-if="getFilteredSessions(dosen.ketersediaan).length === 0"
+            class="italic text-gray-400 list-none"
+          >
+            Tidak tersedia
+          </li>
+        </ul>
+      </div>
 
-            <!-- Ketersediaan -->
-            <p class="text-sm font-semibold text-gray-700 mt-3 mb-1">Ketersediaan:</p>
-            <ul class="text-sm text-gray-600 list-disc ml-4 space-y-1">
-              <li
-                v-for="(result, sesiIndex) in getFilteredSessions(dosen.ketersediaan)"
-                :key="sesiIndex"
-              >
-                Sesi {{ result.sesi + 1 }}: {{ result.hari.join(', ') }}
-              </li>
-              <li
-                v-if="getFilteredSessions(dosen.ketersediaan).length === 0"
-                class="italic text-gray-400"
-              >
-                Tidak tersedia
-              </li>
-            </ul>
+      <div class="flex flex-col space-y-2 ml-4">
+        <button @click="editDosen(index)" class="text-gray-600 hover:text-gray-900" title="Edit">
+          <i class="fas fa-pencil-alt"></i>
+        </button>
+        <button @click="deleteDosen(index)" class="text-red-600 hover:text-red-900" title="Hapus">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+    </li>
+  </ul>
 
-            <div class="flex justify-end space-x-2 mt-4">
-              <button @click="editDosen(index)" class="text-blue-600 hover:text-blue-900" title="Edit">
-                <i class="fas fa-pencil-alt"></i>
-              </button>
-              <button @click="deleteDosen(index)" class="text-red-600 hover:text-red-900" title="Hapus">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </div>
-          </div>
-        </div>
+        
       </div>
     </div>
   </div>
