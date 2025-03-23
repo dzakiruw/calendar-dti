@@ -59,43 +59,49 @@
     <!-- Sidebar Footer -->
     <div class="px-4 py-3 bg-white shadow flex items-center justify-between">
       <span class="flex items-center">
-        <i class="fas fa-user mr-3"></i> USER
+        <i class="fas fa-user mr-3"></i>
+        <NuxtLink v-if="user.name" to="/profile" class="text-gray-600 hover:text-gray-900">{{ user.name }}</NuxtLink>
+        <NuxtLink v-else to="/login" class="text-gray-600 hover:text-gray-900">Guest</NuxtLink>
       </span>
-      <i class="fas fa-chevron-down cursor-pointer"></i>
+
+      <!-- Show logout button if user is logged in -->
+      <button v-if="user.name" @click="logout" class="text-gray-600 hover:text-gray-900">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
-
-const STORAGE_KEY = "sidebar-dropdown-state";
+import { ref, onMounted } from "vue";
+import { useRouter } from 'vue-router'
 
 const dropdowns = ref({
   kalender: false,
   jadwal: false,
 });
 
+const user = ref({});
+const router = useRouter();
+
+// On component mount, check for logged-in user
 onMounted(() => {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    dropdowns.value = JSON.parse(saved);
+  const storedUser = JSON.parse(localStorage.getItem('user'));
+  if (storedUser) {
+    user.value = storedUser;
   }
 });
 
-watch(
-  dropdowns,
-  (newVal) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal));
-  },
-  { deep: true }
-);
+// Logout function
+const logout = () => {
+  // Clear user data from localStorage
+  localStorage.removeItem('user');
+  user.value = {}; // Clear user state
+  router.push('/login'); // Redirect to login page
+};
 
+// Toggle dropdowns
 const toggleDropdown = (menu) => {
   dropdowns.value[menu] = !dropdowns.value[menu];
 };
 </script>
-
-<style scoped>
-/* Optional: Add custom styling if needed */
-</style>
