@@ -13,7 +13,7 @@
           target="_blank"
           class="flex flex-col items-center transition transform hover:scale-105 hover:cursor-pointer"
         >
-          <img :src="tech.logo" class="w-12 h-12" :alt="tech.name + ' Logo'" />
+          <img :src="tech.logo" class="w-12 h-12 object-contain" :alt="tech.name + ' Logo'" />
           <p class="mt-2 text-gray-700">{{ tech.name }}</p>
         </a>
       </div>
@@ -32,7 +32,8 @@
           target="_blank"
           class="bg-white p-4 shadow-md rounded-lg flex flex-col items-center transition transform hover:scale-105 hover:cursor-pointer"
         >
-          <img :src="member.avatar" class="w-20 h-20 rounded-full border-2 border-gray-300" />
+          <!-- Avatar Image with proportional size -->
+          <img :src="member.avatar" class="w-20 h-20 rounded-full border-2 border-gray-300 object-cover" />
           <h2 class="mt-3 text-xl font-semibold">{{ member.name }}</h2>
           <p class="text-gray-600 mt-2">{{ member.nrp }}</p>
           <p class="text-gray-600">{{ member.role }}</p>
@@ -46,6 +47,7 @@
 import { ref } from "vue";
 import { WrenchScrewdriverIcon } from "@heroicons/vue/24/solid";
 
+// Tech Stack List
 const techStack = ref([
   { name: "Nuxt.js", logo: "/logo-nuxtjs.svg", link: "https://nuxt.com" },
   { name: "Vue.js", logo: "/logo-vuejs.svg", link: "https://vuejs.org" },
@@ -53,6 +55,7 @@ const techStack = ref([
   { name: "Express.js", logo: "/logo-expressjs.svg", link: "https://expressjs.com" },
 ]);
 
+// Team Members List
 const teamMembers = ref([
   {
     name: "Sulthan Akmal Rafliansyah",
