@@ -47,29 +47,36 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-
-// Define username and password for login
-const correctUsername = "dzaki";
-const correctPassword = "dzaki";
+import axios from "axios";
 
 const username = ref("");
 const password = ref("");
 const errorMessage = ref("");
-
 const router = useRouter();
 
 // Handle login
-const login = () => {
-  if (username.value === correctUsername && password.value === correctPassword) {
-    // Store user data in localStorage
-    const user = { username: username.value };
-    localStorage.setItem("user", JSON.stringify(user));
+const login = async () => {
+  try {
+    const response = await axios.post("http://10.15.41.68:3000/auth/login", {
+      username: username.value,
+      password: password.value,
+    });
 
-    // Redirect to home or profile page after successful login
-    router.push("/");
-  } else {
-    // Show error message if credentials are wrong
-    errorMessage.value = "Invalid username or password.";
+    if (response.data.accessToken) {
+      const user = {
+        username: username.value, // Pastikan nama pengguna disimpan
+        accessToken: response.data.accessToken,
+        id: response.data.id,
+      };
+
+      localStorage.setItem("user", JSON.stringify(user)); // Menyimpan data pengguna
+      router.push("/"); // Arahkan ke halaman utama setelah login berhasil
+      window.dispatchEvent(new Event("storage")); // Memicu event untuk update di sidebar
+    } else {
+      errorMessage.value = "Invalid username or password.";
+    }
+  } catch (error) {
+    errorMessage.value = error.response ? error.response.data : "An error occurred. Please try again.";
   }
 };
 </script>

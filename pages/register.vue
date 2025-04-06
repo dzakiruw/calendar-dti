@@ -57,6 +57,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import axios from "axios";
 
 const username = ref("");
 const password = ref("");
@@ -64,17 +65,27 @@ const confirmPassword = ref("");
 const errorMessage = ref("");
 const router = useRouter();
 
-const register = () => {
+const register = async () => {
   if (password.value !== confirmPassword.value) {
     errorMessage.value = "Passwords do not match!";
     return;
   }
 
-  // Store user data in localStorage
-  const user = { username: username.value, password: password.value };
-  localStorage.setItem("user", JSON.stringify(user));
+  try {
+    // Send register request to the backend
+    const response = await axios.post("http://10.15.41.68:3000/auth/register", {
+      username: username.value,
+      password: password.value,
+    });
 
-  // Redirect to login page after registration
-  router.push("/login");
+    // Handle successful registration
+    if (response.data.message === "Registration successful") {
+      // Redirect to login page after successful registration
+      router.push("/login");
+    }
+  } catch (error) {
+    // Handle any errors from the API request
+    errorMessage.value = error.response ? error.response.data : "An error occurred. Please try again.";
+  }
 };
 </script>

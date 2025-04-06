@@ -58,14 +58,14 @@
 
     <!-- Sidebar Footer -->
     <div class="px-4 py-3 bg-white shadow flex items-center justify-between">
-      <span v-if="user.name">
+      <span v-if="user.username">
         <i class="fas fa-user mr-3"></i>
-        <NuxtLink v-if="user.name" to="/profile" class="text-gray-600 hover:text-gray-900">{{ user.name }}</NuxtLink>
+        <NuxtLink v-if="user.username" to="/profile" class="text-gray-600 hover:text-gray-900">{{ user.username }}</NuxtLink>
         <NuxtLink v-else to="/login" class="text-gray-600 hover:text-gray-900">Guest</NuxtLink>
       </span>
 
       <!-- Show logout button if user is logged in -->
-      <button v-if="user.name" @click="logout" class="text-gray-600 hover:text-gray-900">
+      <button v-if="user.username" @click="logout" class="text-gray-600 hover:text-gray-900">
         <i class="fas fa-sign-out-alt"></i> Logout
       </button>
       <button v-else @click="redirectToLogin" class="text-gray-600 hover:text-gray-900">
@@ -91,8 +91,16 @@ const router = useRouter();
 onMounted(() => {
   const storedUser = JSON.parse(localStorage.getItem('user'));
   if (storedUser) {
-    user.value = storedUser;
+    user.value = storedUser;  // Simpan data pengguna di state
   }
+
+  // Listen for storage event to update the navbar when login occurs
+  window.addEventListener('storage', () => {
+    const updatedUser = JSON.parse(localStorage.getItem('user'));
+    if (updatedUser) {
+      user.value = updatedUser;
+    }
+  });
 
   // Load dropdown states from localStorage
   const storedDropdowns = JSON.parse(localStorage.getItem('dropdowns'));
@@ -121,7 +129,3 @@ const toggleDropdown = (menu) => {
   localStorage.setItem('dropdowns', JSON.stringify(dropdowns.value));
 };
 </script>
-
-<style scoped>
-/* Optional: Additional styling can be added here */
-</style>
