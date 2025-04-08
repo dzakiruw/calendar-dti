@@ -47,9 +47,14 @@
           </div>
         </div>
 
-        <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
-          {{ editIndex !== null ? 'Update' : 'Submit' }}
-        </button>
+        <div class="flex justify-between">
+          <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
+            {{ editIndex !== null ? 'Update' : 'Add Dosen' }}
+          </button>
+          <button v-if="editIndex !== null" @click="cancelEdit" type="button" class="bg-gray-400 text-white py-2 px-4 rounded-lg w-full hover:bg-gray-500">
+            Cancel Edit
+          </button>
+        </div>
       </form>
 
       <!-- Dosen List -->
@@ -78,13 +83,13 @@
               </p>
               <ul class="text-sm text-gray-600 list-disc ml-5 mt-1 space-y-0.5">
                 <li
-                  v-for="(result, sesiIndex) in getFilteredSessions(dosen.kesediaan)"
+                  v-for="(result, sesiIndex) in getGroupedSessions(dosen.jadwal_dosen)"
                   :key="sesiIndex"
                 >
                   Sesi {{ result.sesi }}: {{ result.hari.join(', ') }}
                 </li>
                 <li
-                  v-if="getFilteredSessions(dosen.kesediaan).length === 0"
+                  v-if="getGroupedSessions(dosen.jadwal_dosen).length === 0"
                   class="italic text-gray-400 list-none"
                 >
                   Tidak tersedia
@@ -122,93 +127,113 @@ const ketersediaan = ref([...Array(3)].map(() => Array(5).fill(false))); // Meny
 const dosenList = ref([]);
 const editIndex = ref(null);
 
-// Fungsi untuk mendapatkan sesi yang difilter
-const getFilteredSessions = (kesediaan) => {
-  // Pastikan data kesediaan tidak kosong dan memiliki format yang sesuai
-  if (!kesediaan || !Array.isArray(kesediaan)) {
-    return []; // Jika kesediaan kosong atau tidak sesuai format, kembalikan array kosong
+// Fungsi untuk mendapatkan sesi yang difilter dan mengelompokkan hari berdasarkan sesi
+const getGroupedSessions = (jadwalDosen) => {
+  // Check if jadwal_dosen exists and is an array
+  if (!Array.isArray(jadwalDosen)) {
+    console.warn('Invalid jadwal_dosen format:', jadwalDosen);
+    return [];
   }
 
-  return kesediaan.map((sesi, index) => {
+  // Grouping hari per sesi
+  const grouped = sesiList.map((sesi) => {
+    const hariListForSesi = jadwalDosen
+      .filter((item) => item.dosen_sedia_sesi === sesi)
+      .map((item) => item.dosen_sedia_hari);
+
     return {
-      sesi: sesiList[index],
-      hari: sesi
-        .map((available, hariIndex) => available ? hariList[hariIndex] : null)
-        .filter(Boolean),
+      sesi,
+      hari: hariListForSesi,
     };
-  }).filter((session) => session.hari.length > 0);
+  });
+
+  // Remove sessions that have no available days
+  return grouped.filter((group) => group.hari.length > 0);
 };
 
 onMounted(async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-    
     if (!token) {
       throw new Error('User is not authenticated');
     }
 
     const response = await axios.get('http://10.15.41.68:3000/dosen', {
       headers: {
-        'Authorization': `Bearer ${token}`, // Menambahkan token ke header
+        'Authorization': `Bearer ${token}`,
       },
     });
-    dosenList.value = response.data;
+    dosenList.value = response.data; // Make sure dosenList is properly initialized
   } catch (error) {
     console.error('Gagal mengambil data dosen', error);
   }
 });
 
-const submitDosen = async () => {
-  const newDosen = {
-    dosen_kode: kodeDosen.value,
-    dosen_nama: namaDosen.value,
-    dosen_level: levelDosen.value,
-    kesediaan: formatKetersediaan(ketersediaan.value), // Format kesediaan sesuai API
-  };
-
-  try {
-    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-
-    if (!token) {
-      throw new Error('User is not authenticated');
-    }
-
-    if (editIndex.value !== null) {
-      await axios.patch(`http://10.15.41.68:3000/dosen/${dosenList.value[editIndex.value].dosen_kode}`, newDosen, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      dosenList.value[editIndex.value] = newDosen;
-    } else {
-      const response = await axios.post('http://10.15.41.68:3000/dosen', newDosen, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      dosenList.value.push(response.data.data);
-    }
-
-    resetForm();
-  } catch (error) {
-    console.error('Gagal menambahkan data dosen', error);
-  }
-};
-
+// Function to format ketersediaan data before sending it to API
 const formatKetersediaan = (ketersediaan) => {
   return ketersediaan.flatMap((sesi, sesiIndex) => {
     return sesi
       .map((available, hariIndex) => {
         if (available) {
           return {
-            hari: hariList[hariIndex], 
-            sesi: sesiList[sesiIndex], 
+            hari: hariList[hariIndex],
+            sesi: sesiList[sesiIndex],
           };
         }
         return null;
       })
-      .filter(Boolean); 
+      .filter(Boolean);
   });
+};
+
+// Handle form submission for both adding and editing
+const submitDosen = async () => {
+  const newDosen = {
+    dosen_kode: kodeDosen.value,
+    dosen_nama: namaDosen.value,
+    dosen_level: levelDosen.value,
+    kesediaan: formatKetersediaan(ketersediaan.value),
+  };
+
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    if (editIndex.value !== null) {
+      // Update existing dosen
+      const dosenKode = dosenList.value[editIndex.value].dosen_kode;
+      await axios.patch(`http://10.15.41.68:3000/dosen/${dosenKode}`, newDosen, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      // Explicitly set the new dosen list reference to trigger reactivity
+      dosenList.value[editIndex.value] = newDosen;
+      resetForm(); // After update, reset the form
+      editIndex.value = null; // Clear editIndex to reset the button to "Add Dosen"
+    } else {
+      // Add new dosen
+      const response = await axios.post('http://10.15.41.68:3000/dosen', newDosen, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      // Explicitly set the new dosen list reference
+      dosenList.value.push(response.data.data);
+      resetForm();
+    }
+  } catch (error) {
+    console.error('Gagal menambahkan data dosen', error);
+  }
+};
+
+const resetForm = () => {
+  kodeDosen.value = '';
+  namaDosen.value = '';
+  levelDosen.value = '';
+  ketersediaan.value = [...Array(3)].map(() => Array(5).fill(false));
 };
 
 const editDosen = (index) => {
@@ -216,15 +241,25 @@ const editDosen = (index) => {
   kodeDosen.value = dosen.dosen_kode;
   namaDosen.value = dosen.dosen_nama;
   levelDosen.value = dosen.dosen_level;
-  ketersediaan.value = [...Array(3)].map(() => Array(5).fill(false)); 
-  dosen.kesediaan.forEach(item => {
-    const sesiIndex = sesiList.indexOf(item.sesi);
-    const hariIndex = hariList.indexOf(item.hari);
-    if (sesiIndex !== -1 && hariIndex !== -1) {
-      ketersediaan.value[sesiIndex][hariIndex] = true;
-    }
-  });
+  ketersediaan.value = [...Array(3)].map(() => Array(5).fill(false));
+
+  // Load kesediaan into checkboxes
+  if (dosen.jadwal_dosen && Array.isArray(dosen.jadwal_dosen)) {
+    dosen.jadwal_dosen.forEach(item => {
+      const sesiIndex = sesiList.indexOf(item.dosen_sedia_sesi);
+      const hariIndex = hariList.indexOf(item.dosen_sedia_hari);
+      if (sesiIndex !== -1 && hariIndex !== -1) {
+        ketersediaan.value[sesiIndex][hariIndex] = true;
+      }
+    });
+  }
+
   editIndex.value = index;
+};
+
+const cancelEdit = () => {
+  resetForm();
+  editIndex.value = null; // Reset editIndex to null when canceling
 };
 
 const deleteDosen = async (index) => {
@@ -241,16 +276,10 @@ const deleteDosen = async (index) => {
         'Authorization': `Bearer ${token}`,
       },
     });
+    // Explicitly set the new dosen list reference
     dosenList.value.splice(index, 1);
   } catch (error) {
     console.error('Gagal menghapus data dosen', error);
   }
-};
-
-const resetForm = () => {
-  kodeDosen.value = '';
-  namaDosen.value = '';
-  levelDosen.value = '';
-  ketersediaan.value = [...Array(3)].map(() => Array(5).fill(false));
 };
 </script>
