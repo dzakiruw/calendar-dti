@@ -186,7 +186,6 @@ const formatKetersediaan = (ketersediaan) => {
   });
 };
 
-// Handle form submission for both adding and editing
 const submitDosen = async () => {
   const newDosen = {
     dosen_kode: kodeDosen.value,
@@ -209,8 +208,9 @@ const submitDosen = async () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-      // Explicitly set the new dosen list reference to trigger reactivity
-      dosenList.value[editIndex.value] = newDosen;
+
+      // Re-fetch the dosen list to get updated data
+      await fetchDosenList(); // This will refresh the dosen list
       resetForm(); // After update, reset the form
       editIndex.value = null; // Clear editIndex to reset the button to "Add Dosen"
     } else {
@@ -220,12 +220,34 @@ const submitDosen = async () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-      // Explicitly set the new dosen list reference
-      dosenList.value.push(response.data.data);
+
+      // Re-fetch the dosen list to get updated data
+      await fetchDosenList(); // This will refresh the dosen list
       resetForm();
     }
   } catch (error) {
     console.error('Gagal menambahkan data dosen', error);
+  }
+};
+
+// Function to re-fetch the dosen list
+const fetchDosenList = async () => {
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    const response = await axios.get('http://10.15.41.68:3000/dosen', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    // Update dosenList with fresh data from server
+    dosenList.value = response.data;
+  } catch (error) {
+    console.error('Gagal mengambil data dosen', error);
   }
 };
 
@@ -276,7 +298,8 @@ const deleteDosen = async (index) => {
         'Authorization': `Bearer ${token}`,
       },
     });
-    // Explicitly set the new dosen list reference
+    
+    // Update dosenList reactivity after deletion
     dosenList.value.splice(index, 1);
   } catch (error) {
     console.error('Gagal menghapus data dosen', error);
