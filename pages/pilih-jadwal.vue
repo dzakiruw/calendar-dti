@@ -10,14 +10,14 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
       <!-- Mata Kuliah -->
       <div class="bg-white p-4 shadow-md rounded-lg">
-        <h2 class="text-xl font-semibold mb-2"><i class="fas fa-book mr-2"></i> Mata Kuliah</h2>
-        <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-          <!-- Looping Mata Kuliah List -->
-          <li v-for="mk in mataKuliahList" :key="mk.kode">
-            <strong>{{ mk.nama }}</strong> - {{ mk.kode }}
-          </li>
-        </ul>
-      </div>
+  <h2 class="text-xl font-semibold mb-2"><i class="fas fa-book mr-2"></i> Mata Kuliah</h2>
+  <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
+    <!-- Looping Mata Kuliah List -->
+    <li v-for="mk in mataKuliahList" :key="mk.matkul_kode">
+      <strong>{{ mk.matkul_nama }}</strong> - {{ mk.matkul_kode }}
+    </li>
+  </ul>
+</div>
 
       <!-- Dosen -->
       <div class="bg-white p-4 shadow-md rounded-lg">
@@ -31,14 +31,14 @@
 
       <!-- Ruang Kelas -->
       <div class="bg-white p-4 shadow-md rounded-lg">
-        <h2 class="text-xl font-semibold mb-2"><i class="fas fa-chalkboard-teacher mr-2"></i> Ruang Kelas</h2>
-        <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-          <!-- Looping Ruang Kelas List -->
-          <li v-for="ruang in ruangKelasList" :key="ruang.kode_ruang">
-            <strong>{{ ruang.kode_ruang }}</strong> - Kapasitas: {{ ruang.kapasitas }}
-          </li>
-        </ul>
-      </div>
+  <h2 class="text-xl font-semibold mb-2"><i class="fas fa-chalkboard-teacher mr-2"></i> Ruang Kelas</h2>
+  <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
+    <!-- Looping Ruang Kelas List -->
+    <li v-for="ruang in ruangKelasList" :key="ruang.ruangan_kode">
+      <strong>{{ ruang.ruangan_kode }}</strong> - Kapasitas: {{ ruang.ruangan_kapasitas }}
+    </li>
+  </ul>
+</div>
 
       <!-- Jadwal Hindari -->
       <div class="bg-white p-4 shadow-md rounded-lg">
@@ -55,7 +55,7 @@
         <h2 class="text-xl font-semibold mb-2"><i class="fas fa-link mr-2"></i> Matching Dosen & Matkul</h2>
         <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
           <li v-for="match in matchingList" :key="match.id">
-            {{ match.mataKuliah.nama }} - {{ match.dosen.dosen_nama }} (Kode Dosen: {{ match.dosen.dosen_kode }})
+            {{ match.mataKuliah.nama }} - {{ match.dosen.dosen_nama }} ({{ match.dosen.dosen_kode }})
           </li>
         </ul>
       </div>
@@ -140,17 +140,17 @@ const fetchData = async () => {
     });
     mataKuliahList.value = mataKuliahResponse.data;
 
-    // Fetch Dosen
-    const dosenResponse = await axios.get('http://10.15.41.68:3000/dosen', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    dosenList.value = dosenResponse.data;
-
     // Fetch Ruang Kelas
     const ruangKelasResponse = await axios.get('http://10.15.41.68:3000/ruangan', {
       headers: { Authorization: `Bearer ${token}` }
     });
     ruangKelasList.value = ruangKelasResponse.data;
+
+    // Fetch Dosen
+    const dosenResponse = await axios.get('http://10.15.41.68:3000/dosen', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    dosenList.value = dosenResponse.data;
 
     // Fetch Jadwal Hindari
     const jadwalHindariResponse = await axios.get('http://10.15.41.68:3000/jadwal_hindari', {
@@ -158,7 +158,7 @@ const fetchData = async () => {
     });
     jadwalHindari.value = jadwalHindariResponse.data;
 
-    // Fetch Matching Data (this can be customized as needed)
+    // Matching Dosen & Mata Kuliah
     matchingList.value = mataKuliahList.value.map((mk, index) => ({
       id: index + 1,
       mataKuliah: mk,
@@ -169,6 +169,7 @@ const fetchData = async () => {
     console.error('Error fetching data:', error);
   }
 }
+
 
 // Run the fetchData function when the component is mounted
 onMounted(() => {
