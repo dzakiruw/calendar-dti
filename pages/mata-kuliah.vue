@@ -3,7 +3,7 @@
     <!-- Title -->
     <div class="mb-6 w-full sm:w-auto flex justify-center sm:justify-start">
       <h1 class="text-3xl font-bold flex items-center">
-        <img :src="logoSrc" alt="Book Icon" class="inline-block w-14 h-14 mr-2" />
+        <img src="/input-matkul.png" alt="Book Icon" class="inline-block w-14 h-14 mr-2" />
         Input Mata Kuliah
       </h1>
     </div>
@@ -148,7 +148,7 @@ const submitMataKuliah = async () => {
     matkul_nama: nama.value,
     matkul_sem: semester.value,
     matkul_tipe: jenisMataKuliah.value,
-    kelas: kelas.value.map(k => ({ kelas_mk: k })),
+    kelas: kelas.value.map(k => ({ kelas_mk: k })),  // ensure this is formatted correctly
   };
 
   try {
