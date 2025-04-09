@@ -27,8 +27,8 @@
           <label class="block text-gray-700 font-semibold">Jenis Mata Kuliah</label>
           <select v-model="jenisMataKuliah" class="w-full mt-2 p-2 border rounded-lg" required>
             <option disabled value="">Pilih Jenis Mata Kuliah</option>
-            <option value="Departemen">Departemen</option>
-            <option value="Pengayaan">Pengayaan</option>
+            <option value="DEPARTEMEN">Departemen</option>
+            <option value="PENGAYAAN">Pengayaan</option>
           </select>
         </div>
 
@@ -46,24 +46,31 @@
           <label class="block text-gray-700 font-semibold">Pilih Kelas</label>
           <div class="flex flex-wrap gap-4 mt-2">
             <label class="flex items-center">
-              <input type="checkbox" v-model="kelas" value="Kelas A" class="mr-2" /> Kelas A
+              <input type="checkbox" v-model="kelas" value="A" class="mr-2" /> Kelas A
             </label>
             <label class="flex items-center">
-              <input type="checkbox" v-model="kelas" value="Kelas B" class="mr-2" /> Kelas B
+              <input type="checkbox" v-model="kelas" value="B" class="mr-2" /> Kelas B
             </label>
             <label class="flex items-center">
-              <input type="checkbox" v-model="kelas" value="Kelas C" class="mr-2" /> Kelas C
+              <input type="checkbox" v-model="kelas" value="C" class="mr-2" /> Kelas C
             </label>
             <label class="flex items-center">
-              <input type="checkbox" v-model="kelas" value="Kelas D" class="mr-2" /> Kelas D
+              <input type="checkbox" v-model="kelas" value="D" class="mr-2" /> Kelas D
             </label>
           </div>
         </div>
 
-        <!-- Submit Button -->
-        <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
-          {{ editIndex !== null ? 'Update' : 'Submit' }}
-        </button>
+        <!-- Submit and Cancel Buttons -->
+        <div class="flex gap-4">
+          <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
+            {{ editIndex !== null ? 'Update' : 'Submit' }}
+          </button>
+
+          <!-- Cancel Edit Button -->
+          <button v-if="editIndex !== null" @click="cancelEdit" type="button" class="bg-gray-400 text-white py-2 px-4 rounded-lg w-full hover:bg-gray-500">
+            Cancel Edit
+          </button>
+        </div>
       </form>
 
       <!-- Daftar Mata Kuliah -->
@@ -81,11 +88,11 @@
         <ul v-else class="space-y-4">
           <li v-for="(mk, index) in mataKuliahList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
             <div>
-              <p>{{ mk.nama }}<br><strong>{{ mk.kode }}</strong></p>
+              <p>{{ mk.matkul_nama }}<br><strong>{{ mk.matkul_kode }}</strong></p>
               <p class="text-sm text-gray-600">
-                <span class="font-bold">Jenis:</span> {{ mk.jenisMataKuliah }}<br>
-                <span class="font-bold">Semester:</span> {{ mk.semester }}<br>
-                <span class="font-bold">Kelas:</span> {{ mk.kelas.join(", ") }}
+                <span class="font-bold">Jenis:</span> {{ mk.matkul_tipe }}<br>
+                <span class="font-bold">Semester:</span> {{ mk.matkul_sem }}<br>
+                <span class="font-bold">Kelas:</span> {{ mk.mata_kuliah_kelas.map(k => k.kelas_mk).join(", ") }}
               </p>
             </div>
             <div class="flex space-x-4">
@@ -104,9 +111,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
-// The logo path as a reactive variable to make sure it updates dynamically
+// Reactive Variables
 const logoSrc = ref("/input-matkul.png");
 
 const kode = ref("");
@@ -117,42 +125,109 @@ const kelas = ref([]);
 const mataKuliahList = ref([]);
 const editIndex = ref(null);
 
-const submitMataKuliah = () => {
-  if (editIndex.value !== null) {
-    mataKuliahList.value[editIndex.value] = { 
-      kode: kode.value, 
-      nama: nama.value, 
-      jenisMataKuliah: jenisMataKuliah.value,
-      semester: semester.value, 
-      kelas: [...kelas.value] 
-    };
-    editIndex.value = null;
-  } else {
-    mataKuliahList.value.push({ 
-      kode: kode.value, 
-      nama: nama.value, 
-      jenisMataKuliah: jenisMataKuliah.value,
-      semester: semester.value, 
-      kelas: [...kelas.value] 
+// Fetch Mata Kuliah Data from API
+const fetchMataKuliah = async () => {
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    const response = await axios.get('http://10.15.41.68:3000/mata_kuliah', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
+    mataKuliahList.value = response.data;
+  } catch (error) {
+    console.error('Gagal mengambil data mata kuliah', error);
   }
-  resetForm();
 };
 
+// Submit Mata Kuliah (Add or Update)
+const submitMataKuliah = async () => {
+  const newMataKuliah = {
+    matkul_kode: kode.value,
+    matkul_nama: nama.value,
+    matkul_sem: semester.value,
+    matkul_tipe: jenisMataKuliah.value,
+    kelas: kelas.value.map(k => ({ kelas_mk: k })),
+  };
+
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    if (editIndex.value !== null) {
+      // Update Mata Kuliah
+      const mataKuliahKode = mataKuliahList.value[editIndex.value].matkul_kode;
+      await axios.put(`http://10.15.41.68:3000/mata_kuliah/${mataKuliahKode}`, newMataKuliah, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      // After update, fetch the list again to ensure consistency
+      await fetchMataKuliah();
+      resetForm();
+      editIndex.value = null;
+    } else {
+      // Add New Mata Kuliah
+      await axios.post('http://10.15.41.68:3000/mata_kuliah', newMataKuliah, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      // Fetch updated mata kuliah list
+      await fetchMataKuliah();
+      resetForm();
+    }
+  } catch (error) {
+    console.error('Gagal mengirim data mata kuliah', error);
+  }
+};
+
+// Edit Mata Kuliah
 const editMataKuliah = (index) => {
   const mk = mataKuliahList.value[index];
-  kode.value = mk.kode;
-  nama.value = mk.nama;
-  jenisMataKuliah.value = mk.jenisMataKuliah;
-  semester.value = mk.semester;
-  kelas.value = [...mk.kelas];
+  kode.value = mk.matkul_kode;
+  nama.value = mk.matkul_nama;
+  jenisMataKuliah.value = mk.matkul_tipe;
+  semester.value = mk.matkul_sem;
+  kelas.value = mk.mata_kuliah_kelas.map(k => k.kelas_mk);
   editIndex.value = index;
 };
 
-const deleteMataKuliah = (index) => {
-  mataKuliahList.value.splice(index, 1);
+// Cancel Edit
+const cancelEdit = () => {
+  resetForm();
+  editIndex.value = null; // Reset to allow adding new mata kuliah
 };
 
+// Delete Mata Kuliah
+const deleteMataKuliah = async (index) => {
+  const mataKuliahKode = mataKuliahList.value[index].matkul_kode;
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    await axios.delete(`http://10.15.41.68:3000/mata_kuliah/${mataKuliahKode}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    mataKuliahList.value.splice(index, 1);
+  } catch (error) {
+    console.error('Gagal menghapus data mata kuliah', error);
+  }
+};
+
+// Reset Form after submit
 const resetForm = () => {
   kode.value = "";
   nama.value = "";
@@ -160,8 +235,9 @@ const resetForm = () => {
   semester.value = "";
   kelas.value = [];
 };
-</script>
 
-<style scoped>
-/* Optional: Custom styling */
-</style>
+// Fetch mata kuliah data when component is mounted
+onMounted(() => {
+  fetchMataKuliah();
+});
+</script>

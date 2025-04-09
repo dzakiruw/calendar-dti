@@ -20,6 +20,7 @@
             class="w-full mt-2 p-2 border rounded-lg"
             placeholder="Masukkan kode ruangan"
             required
+            :readonly="editIndex !== null" 
           />
         </div>
 
@@ -40,6 +41,16 @@
         >
           {{ editIndex !== null ? 'Update' : 'Submit' }}
         </button>
+
+        <!-- Cancel Edit Button -->
+        <button 
+          v-if="editIndex !== null"
+          type="button"
+          @click="cancelEdit"
+          class="bg-gray-500 text-white py-2 px-4 rounded-lg w-full mt-2 hover:bg-gray-600"
+        >
+          Cancel Edit
+        </button>
       </form>
 
       <!-- Daftar Ruang Kelas -->
@@ -59,9 +70,9 @@
             class="bg-gray-100 p-4 rounded-lg flex justify-between items-center"
           >
             <div>
-              <p><strong>{{ ruangKelas.kodeRuangan }}</strong></p>
+              <p><strong>{{ ruangKelas.ruangan_kode }}</strong></p>
               <p class="text-sm text-gray-600">
-                <span class="font-bold">Kapasitas:</span> {{ ruangKelas.kapasitasRuangan }}
+                <span class="font-bold">Kapasitas:</span> {{ ruangKelas.ruangan_kapasitas }}
               </p>
             </div>
             <div class="flex space-x-4">
@@ -80,36 +91,151 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, nextTick } from 'vue';
+import axios from 'axios';
 
+// Reactive Variables
 const form = ref({
   kodeRuangan: '',
   kapasitasRuangan: '',
-})
+});
 
-const ruangKelasList = ref([])
-const editIndex = ref(null)
+const ruangKelasList = ref([]);
+const editIndex = ref(null);
 
-const submitForm = () => {
-  if (editIndex.value !== null) {
-    ruangKelasList.value[editIndex.value] = { ...form.value }
-    editIndex.value = null
-  } else {
-    ruangKelasList.value.push({ ...form.value })
+// Fetch Ruang Kelas Data from API
+const fetchRuangKelas = async () => {
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    const response = await axios.get('http://10.15.41.68:3000/ruangan', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    ruangKelasList.value = response.data;
+  } catch (error) {
+    console.error('Gagal mengambil data ruang kelas', error);
   }
+};
 
+// Submit Form (Add or Update)
+const submitForm = async () => {
+  const newRuangKelas = {
+    ruangan_kode: form.value.kodeRuangan,
+    ruangan_kapasitas: form.value.kapasitasRuangan,
+  };
+
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    if (editIndex.value !== null) {
+      // Update Ruang Kelas
+      const ruangKelasKode = ruangKelasList.value[editIndex.value].ruangan_kode;
+      const response = await axios.put(`http://10.15.41.68:3000/ruangan/${ruangKelasKode}`, newRuangKelas, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      // Update the local list without needing to refetch
+      ruangKelasList.value[editIndex.value] = response.data.data;
+
+      resetForm();
+      editIndex.value = null;
+    } else {
+      // Add New Ruang Kelas
+      const response = await axios.post('http://10.15.41.68:3000/ruangan', newRuangKelas, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      // Add the newly created room directly to the list
+      ruangKelasList.value.push(response.data.data);
+
+      resetForm();
+    }
+  } catch (error) {
+    console.error('Gagal mengirim data ruang kelas', error);
+  }
+};
+
+// Edit Ruang Kelas
+const editRuangKelas = async (index) => {
+  const ruangKelas = ruangKelasList.value[index];
+
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    const response = await axios.get(`http://10.15.41.68:3000/ruangan/${ruangKelas.ruangan_kode}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    // Wait for the DOM to update
+    nextTick(() => {
+      // Explicitly set the values to ensure the form is reactive
+      form.value.kodeRuangan = response.data.ruangan_kode;
+      form.value.kapasitasRuangan = response.data.ruangan_kapasitas;
+      
+      // Ensure form is updated and check the value
+      console.log('Updated Form Value:', form.value);
+      editIndex.value = index;
+    });
+  } catch (error) {
+    console.error('Gagal mengambil data ruang kelas untuk edit', error);
+  }
+};
+
+// Cancel Edit
+const cancelEdit = () => {
+  resetForm();
+  editIndex.value = null;
+};
+
+// Delete Ruang Kelas
+const deleteRuangKelas = async (index) => {
+  const ruangKelasKode = ruangKelasList.value[index].ruangan_kode;
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    await axios.delete(`http://10.15.41.68:3000/ruangan/${ruangKelasKode}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    // Remove the deleted room directly from the local list
+    ruangKelasList.value.splice(index, 1);
+  } catch (error) {
+    console.error('Gagal menghapus data ruang kelas', error);
+  }
+};
+
+// Reset Form after submit
+const resetForm = () => {
   form.value = {
     kodeRuangan: '',
     kapasitasRuangan: '',
-  }
-}
+  };
+};
 
-const editRuangKelas = (index) => {
-  form.value = { ...ruangKelasList.value[index] }
-  editIndex.value = index
-}
-
-const deleteRuangKelas = (index) => {
-  ruangKelasList.value.splice(index, 1)
-}
+// Fetch ruang kelas data when component is mounted
+onMounted(() => {
+  fetchRuangKelas();
+});
 </script>

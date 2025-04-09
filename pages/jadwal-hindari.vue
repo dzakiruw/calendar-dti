@@ -15,7 +15,7 @@
         <!-- Agenda -->
         <div class="mb-4">
           <label class="block text-gray-700 font-semibold">Agenda Hindari</label>
-          <input v-model="form.agenda" type="text" class="w-full mt-2 p-2 border rounded-lg" placeholder="Masukkan agenda" required />
+          <input v-model="form.hindari_agenda" type="text" class="w-full mt-2 p-2 border rounded-lg" placeholder="Masukkan agenda" required />
         </div>
 
         <!-- Hari Hindari (Multiple) -->
@@ -23,7 +23,7 @@
           <label class="block text-gray-700 font-semibold">Hari Hindari</label>
           <div class="flex flex-wrap gap-2 mt-2">
             <label v-for="hari in hariList" :key="hari">
-              <input type="checkbox" v-model="form.hari" :value="hari" class="mr-2" /> {{ hari }}
+              <input type="checkbox" v-model="form.hindari_hari" :value="hari" class="mr-2" /> {{ hari }}
             </label>
           </div>
         </div>
@@ -33,7 +33,7 @@
           <label class="block text-gray-700 font-semibold">Sesi Hindari</label>
           <div class="flex gap-4 mt-2">
             <label v-for="sesi in sesiList" :key="sesi">
-              <input type="checkbox" v-model="form.sesi" :value="sesi" class="mr-2" /> {{ sesi }}
+              <input type="checkbox" v-model="form.hindari_sesi" :value="sesi" class="mr-2" /> {{ sesi }}
             </label>
           </div>
         </div>
@@ -49,15 +49,17 @@
           </div>
           <div class="grid grid-cols-2 gap-2">
             <label v-for="n in 8" :key="n">
-              <input type="checkbox" v-model="selectedSemesters" :value="`Semester ${n}`" class="mr-2" />
+              <input type="checkbox" v-model="selectedSemesters" :value="n" class="mr-2" />
               Semester {{ n }}
             </label>
           </div>
         </div>
 
-        <!-- Button -->
         <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
           {{ editIndex !== null ? 'Update' : 'Submit' }}
+        </button>
+        <button v-if="editIndex !== null" @click="cancelEdit" type="button" class="bg-gray-400 text-white py-2 px-4 rounded-lg w-full mt-2 hover:bg-gray-500">
+          Cancel Edit
         </button>
       </form>
 
@@ -74,10 +76,10 @@
         <ul v-else class="space-y-4">
           <li v-for="(jadwal, index) in jadwalList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
             <div>
-              <p class="font-semibold">{{ jadwal.agenda }}</p>
-              <p class="text-sm text-gray-600"><span class="font-bold">Hari:</span> {{ jadwal.hari.join(', ') }}</p>
-              <p class="text-sm text-gray-600"><span class="font-bold">Sesi:</span> {{ jadwal.sesi.join(', ') }}</p>
-              <p class="text-sm text-gray-600"><span class="font-bold">Semester:</span> {{ jadwal.semesters.join(', ') }}</p>
+              <p class="font-semibold">{{ jadwal.hindari_agenda }}</p>
+              <p class="text-sm text-gray-600"><span class="font-bold">Hari:</span> {{ formatHari(jadwal.hindari_hari) }}</p>
+              <p class="text-sm text-gray-600"><span class="font-bold">Sesi:</span> {{ formatSesi(jadwal.hindari_sesi) }}</p>
+              <p class="text-sm text-gray-600"><span class="font-bold">Semester:</span> {{ jadwal.hindari_smt.join(', ') }}</p>
             </div>
             <div class="flex space-x-4">
               <button @click="editJadwal(index)" class="text-gray-600 hover:text-gray-900">
@@ -95,70 +97,144 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
-// Data form
 const form = ref({
-  agenda: '',
-  hari: [],
-  sesi: [],
-  semesters: []
+  hindari_agenda: '',
+  hindari_hari: [],
+  hindari_sesi: [],
+  hindari_smt: []
 })
 
-// Dropdowns
-const hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']
-const sesiList = ['Sesi 1', 'Sesi 2', 'Sesi 3']
+const hariList = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT']
+const sesiList = ['SESI 1', 'SESI 2', 'SESI 3']
 
-// List
 const jadwalList = ref([])
 const editIndex = ref(null)
 
-// Semester
 const selectedSemesters = ref([])
 const selectAllSemesters = ref(false)
 
 const toggleSelectAll = () => {
   if (selectAllSemesters.value) {
-    selectedSemesters.value = Array.from({ length: 8 }, (_, i) => `Semester ${i + 1}`)
+    selectedSemesters.value = Array.from({ length: 8 }, (_, i) => i + 1)
   } else {
     selectedSemesters.value = []
   }
 }
 
-const submitForm = () => {
-  const data = {
-    agenda: form.value.agenda,
-    hari: [...form.value.hari],
-    sesi: [...form.value.sesi],
-    semesters: [...selectedSemesters.value],
+const formatHari = (hari) => {
+  return Array.isArray(hari) ? hari.join(', ') : hari || '';
+}
+
+const formatSesi = (sesi) => {
+  return Array.isArray(sesi) ? sesi.join(', ') : sesi || '';
+}
+
+const fetchJadwal = async () => {
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken
+    if (!token) {
+      throw new Error('User is not authenticated')
+    }
+
+    const response = await axios.get('http://10.15.41.68:3000/jadwal_hindari', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+    jadwalList.value = response.data
+  } catch (error) {
+    console.error('Gagal mengambil data jadwal hindari', error)
+  }
+}
+
+const submitForm = async () => {
+  const newJadwal = {
+    hindari_agenda: form.value.hindari_agenda,
+    hindari_hari: form.value.hindari_hari.join(', '),  // Convert array to string
+    hindari_sesi: form.value.hindari_sesi.join(', '),  // Convert array to string
+    hindari_smt: [...selectedSemesters.value],
   }
 
-  if (editIndex.value !== null) {
-    jadwalList.value[editIndex.value] = data
-    editIndex.value = null
-  } else {
-    jadwalList.value.push(data)
-  }
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken
+    if (!token) {
+      throw new Error('User is not authenticated')
+    }
 
-  // Reset
-  form.value = { agenda: '', hari: [], sesi: [], semesters: [] }
+    if (editIndex.value !== null) {
+      const jadwalId = jadwalList.value[editIndex.value].id_hindari
+      const response = await axios.patch(`http://10.15.41.68:3000/jadwal_hindari/${jadwalId}`, newJadwal, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      jadwalList.value[editIndex.value] = response.data.data
+      resetForm()
+      editIndex.value = null
+    } else {
+      const response = await axios.post('http://10.15.41.68:3000/jadwal_hindari', newJadwal, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      jadwalList.value.push(response.data.data)
+      resetForm()
+    }
+  } catch (error) {
+    console.error('Gagal mengirim data jadwal hindari', error)
+  }
+}
+
+const editJadwal = (index) => {
+  const jadwal = jadwalList.value[index]
+  form.value = {
+    hindari_agenda: jadwal.hindari_agenda,
+    hindari_hari: jadwal.hindari_hari.split(', '),  // Convert string back to array
+    hindari_sesi: jadwal.hindari_sesi.split(', '),  // Convert string back to array
+    hindari_smt: [...jadwal.hindari_smt],
+  }
+  selectedSemesters.value = [...jadwal.hindari_smt]
+  selectAllSemesters.value = jadwal.hindari_smt.length === 8
+  editIndex.value = index
+}
+
+const cancelEdit = () => {
+  resetForm()
+  editIndex.value = null
+}
+
+const deleteJadwal = async (index) => {
+  const jadwalId = jadwalList.value[index].id_hindari
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken
+    if (!token) {
+      throw new Error('User is not authenticated')
+    }
+
+    await axios.delete(`http://10.15.41.68:3000/jadwal_hindari/${jadwalId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+
+    jadwalList.value.splice(index, 1)
+  } catch (error) {
+    console.error('Gagal menghapus data jadwal hindari', error)
+  }
+}
+
+const resetForm = () => {
+  form.value = { hindari_agenda: '', hindari_hari: [], hindari_sesi: [], hindari_smt: [] }
   selectedSemesters.value = []
   selectAllSemesters.value = false
 }
 
-const editJadwal = (index) => {
-  const data = jadwalList.value[index]
-  form.value = {
-    agenda: data.agenda,
-    hari: [...data.hari],
-    sesi: [...data.sesi],
-    semesters: [...data.semesters]
-  }
-  selectedSemesters.value = [...data.semesters]
-  editIndex.value = index
-}
-
-const deleteJadwal = (index) => {
-  jadwalList.value.splice(index, 1)
-}
+onMounted(() => {
+  fetchJadwal()
+})
 </script>
