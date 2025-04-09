@@ -23,25 +23,20 @@
           </select>
         </div>
 
-        <!-- Dosen Dropdown Multiple -->
+        <!-- Dosen Dropdown -->
         <div class="mb-4">
           <label class="block text-gray-700 font-semibold">Pilih Dosen</label>
-          <div class="relative">
-            <button @click.prevent="toggleDropdown" class="w-full mt-2 p-2 border rounded-lg bg-white text-left">
-              {{ selectedDosen.length ? selectedDosen.map(d => d.nama).join(", ") : "Pilih Dosen" }}
-            </button>
-            <div v-if="dropdownOpen" class="absolute w-full mt-1 bg-white border rounded-lg shadow-md z-10 p-2 max-h-48 overflow-y-auto">
-              <label v-for="dosen in dosenList" :key="dosen.id" class="block px-2 py-1 hover:bg-gray-100 rounded">
-                <input type="checkbox" v-model="selectedDosen" :value="dosen" class="mr-2" />
-                {{ dosen.nama }}
-              </label>
-            </div>
-          </div>
+          <select v-model="selectedDosen" class="w-full mt-2 p-2 border rounded-lg" required>
+            <option disabled value="">Pilih Dosen</option>
+            <option v-for="dosen in dosenList" :key="dosen.dosen_kode" :value="dosen.dosen_kode">
+              {{ dosen.dosen_nama }}
+            </option>
+          </select>
         </div>
 
         <!-- Button -->
         <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
-          {{ editIndex !== null ? 'Update' : 'Submit' }}
+          Submit
         </button>
       </form>
 
@@ -60,7 +55,7 @@
             <div>
               <p><strong>{{ match.mataKuliah.kode }}</strong> - {{ match.mataKuliah.nama }}</p>
               <p class="text-sm text-gray-600">
-                <span class="font-bold">Dosen:</span> {{ match.dosen.map(d => d.nama).join(", ") }}
+                <span class="font-bold">Dosen:</span> {{ match.dosen.map(d => d.dosen_nama).join(", ") }}
               </p>
             </div>
             <div class="flex space-x-2">
@@ -79,7 +74,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
 // Dummy Data
 const mataKuliahList = ref([
@@ -87,54 +83,95 @@ const mataKuliahList = ref([
   { kode: 'MK102', nama: 'Basis Data' }
 ])
 
-const dosenList = ref([
-  { id: 1, nama: 'Dr. A' },
-  { id: 2, nama: 'Prof. B' },
-  { id: 3, nama: 'Dr. C' }
-])
-
-// States
+const dosenList = ref([])  // List dosen yang di-fetch dari API
 const selectedMataKuliah = ref(null)
-const selectedDosen = ref([])
-const dropdownOpen = ref(false)
-const matchingList = ref([])
+const selectedDosen = ref(null)
+const matchingList = ref([])  // Daftar matching yang sudah dipilih
 const editIndex = ref(null)
 
-const toggleDropdown = () => {
-  dropdownOpen.value = !dropdownOpen.value
+// Fungsi untuk mengambil token dari localStorage
+const getToken = () => {
+  const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+  return token || null;
 }
 
-const submitMatching = () => {
-  if (!selectedMataKuliah.value || selectedDosen.value.length === 0) return
+// Fungsi untuk mengambil data mata kuliah
+const fetchMataKuliah = async () => {
+  try {
+    const token = getToken();
+    if (!token) throw new Error('User is not authenticated');
 
-  const data = {
+    const response = await axios.get('http://10.15.41.68:3000/mk_dosen', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    mataKuliahList.value = response.data;
+    console.log('Mata Kuliah List:', mataKuliahList.value);  // Debugging log
+  } catch (error) {
+    console.error('Error fetching mata kuliah:', error);
+    alert('Failed to fetch Mata Kuliah data. Please check your authentication token.');
+  }
+}
+
+// Fungsi untuk mengambil data dosen
+const fetchDosen = async () => {
+  try {
+    const token = getToken();
+    if (!token) throw new Error('User is not authenticated');
+
+    const response = await axios.get('http://10.15.41.68:3000/dosen', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    dosenList.value = response.data;
+    console.log('Dosen List:', dosenList.value);  // Debugging log
+  } catch (error) {
+    console.error('Error fetching dosen:', error);
+    alert('Failed to fetch Dosen data. Please check your authentication token.');
+  }
+}
+
+// Fetch data saat halaman dimuat
+onMounted(() => {
+  fetchMataKuliah();
+  fetchDosen();
+})
+
+// Fungsi untuk menangani submit matching
+const submitMatching = () => {
+  if (!selectedMataKuliah.value || !selectedDosen.value) return
+
+  const matchingData = {
     mataKuliah: selectedMataKuliah.value,
-    dosen: [...selectedDosen.value]
+    dosen: selectedDosen.value
   }
 
   if (editIndex.value !== null) {
-    matchingList.value[editIndex.value] = data
+    matchingList.value[editIndex.value] = matchingData
     editIndex.value = null
   } else {
-    matchingList.value.push(data)
+    matchingList.value.push(matchingData)
   }
 
   resetForm()
 }
 
+// Fungsi untuk mereset form
+const resetForm = () => {
+  selectedMataKuliah.value = null
+  selectedDosen.value = null
+}
+
+// Fungsi untuk mengedit matching
 const editMatching = (index) => {
-  selectedMataKuliah.value = matchingList.value[index].mataKuliah
-  selectedDosen.value = [...matchingList.value[index].dosen]
+  const match = matchingList.value[index]
+  selectedMataKuliah.value = match.mataKuliah
+  selectedDosen.value = match.dosen
   editIndex.value = index
 }
 
+// Fungsi untuk menghapus matching
 const deleteMatching = (index) => {
   matchingList.value.splice(index, 1)
-}
-
-const resetForm = () => {
-  selectedMataKuliah.value = null
-  selectedDosen.value = []
-  dropdownOpen.value = false
 }
 </script>

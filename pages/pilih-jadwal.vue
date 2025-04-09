@@ -12,9 +12,10 @@
       <div class="bg-white p-4 shadow-md rounded-lg">
         <h2 class="text-xl font-semibold mb-2"><i class="fas fa-book mr-2"></i> Mata Kuliah</h2>
         <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-          <li>ET234601 - Algoritma</li>
-          <li>ET234602 - Basis Data</li>
-          <li>ET234603 - Struktur Data</li>
+          <!-- Looping Mata Kuliah List -->
+          <li v-for="mk in mataKuliahList" :key="mk.kode">
+            <strong>{{ mk.nama }}</strong> - {{ mk.kode }}
+          </li>
         </ul>
       </div>
 
@@ -22,9 +23,9 @@
       <div class="bg-white p-4 shadow-md rounded-lg">
         <h2 class="text-xl font-semibold mb-2"><i class="fas fa-user-tie mr-2"></i> Dosen</h2>
         <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-          <li>Dr. A (Senior)</li>
-          <li>Prof. B (Professor)</li>
-          <li>Dr. C (Junior)</li>
+          <li v-for="dosen in dosenList" :key="dosen.dosen_kode">
+            <strong>{{ dosen.dosen_nama }}</strong> - {{ dosen.dosen_kode }} (Level: {{ dosen.dosen_level }})
+          </li>
         </ul>
       </div>
 
@@ -32,8 +33,10 @@
       <div class="bg-white p-4 shadow-md rounded-lg">
         <h2 class="text-xl font-semibold mb-2"><i class="fas fa-chalkboard-teacher mr-2"></i> Ruang Kelas</h2>
         <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-          <li>R101 (Kapasitas: 40)</li>
-          <li>R102 (Kapasitas: 35)</li>
+          <!-- Looping Ruang Kelas List -->
+          <li v-for="ruang in ruangKelasList" :key="ruang.kode_ruang">
+            <strong>{{ ruang.kode_ruang }}</strong> - Kapasitas: {{ ruang.kapasitas }}
+          </li>
         </ul>
       </div>
 
@@ -41,8 +44,9 @@
       <div class="bg-white p-4 shadow-md rounded-lg">
         <h2 class="text-xl font-semibold mb-2"><i class="fas fa-calendar-times mr-2 text-red-500"></i> Jadwal Hindari</h2>
         <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-          <li>Senin - Sesi 2</li>
-          <li>Rabu - Sesi 1</li>
+          <li v-for="hindari in jadwalHindari" :key="hindari.id">
+            <strong>{{ hindari.hindari_agenda }}</strong> - {{ hindari.hindari_hari }} (Sesi: {{ hindari.hindari_sesi }})
+          </li>
         </ul>
       </div>
 
@@ -50,8 +54,9 @@
       <div class="bg-white p-4 shadow-md rounded-lg">
         <h2 class="text-xl font-semibold mb-2"><i class="fas fa-link mr-2"></i> Matching Dosen & Matkul</h2>
         <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-          <li>Capstone Project - Dr. A</li>
-          <li>Algoritma - Prof. B</li>
+          <li v-for="match in matchingList" :key="match.id">
+            {{ match.mataKuliah.nama }} - {{ match.dosen.dosen_nama }} (Kode Dosen: {{ match.dosen.dosen_kode }})
+          </li>
         </ul>
       </div>
     </div>
@@ -105,14 +110,73 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
+import axios from 'axios'
 
-const jadwalGenerated = ref([])
+// Define refs for storing lists of data
+const mataKuliahList = ref([]);
+const dosenList = ref([]);
+const ruangKelasList = ref([]);
+const jadwalHindari = ref([]);
+const matchingList = ref([]);
+const jadwalGenerated = ref([]);
 
+// Fetch Data function
+const getToken = () => {
+  const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+  return token || null;
+}
+
+const fetchData = async () => {
+  try {
+    const token = getToken();
+    if (!token) throw new Error('User is not authenticated');
+
+    // Fetch Mata Kuliah
+    const mataKuliahResponse = await axios.get('http://10.15.41.68:3000/mata_kuliah', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    mataKuliahList.value = mataKuliahResponse.data;
+
+    // Fetch Dosen
+    const dosenResponse = await axios.get('http://10.15.41.68:3000/dosen', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    dosenList.value = dosenResponse.data;
+
+    // Fetch Ruang Kelas
+    const ruangKelasResponse = await axios.get('http://10.15.41.68:3000/ruangan', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    ruangKelasList.value = ruangKelasResponse.data;
+
+    // Fetch Jadwal Hindari
+    const jadwalHindariResponse = await axios.get('http://10.15.41.68:3000/jadwal_hindari', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    jadwalHindari.value = jadwalHindariResponse.data;
+
+    // Fetch Matching Data (this can be customized as needed)
+    matchingList.value = mataKuliahList.value.map((mk, index) => ({
+      id: index + 1,
+      mataKuliah: mk,
+      dosen: dosenList.value[index % dosenList.value.length], // Example logic for matching
+    }));
+
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}
+
+// Run the fetchData function when the component is mounted
+onMounted(() => {
+  fetchData();
+})
+
+// Function to generate jadwal (dummy logic for testing)
 const generateJadwal = () => {
-  // Placeholder generate – diganti dengan algoritma nanti
   jadwalGenerated.value = [
     { hari: 'Senin', sesi: '1', matkul: 'Algoritma', dosen: 'Dr. A', ruangan: 'R101' },
     { hari: 'Rabu', sesi: '2', matkul: 'Basis Data', dosen: 'Prof. B', ruangan: 'R102' },
@@ -120,12 +184,13 @@ const generateJadwal = () => {
   ]
 }
 
+// Function to export jadwal to Excel
 const exportExcel = () => {
   const worksheet = XLSX.utils.json_to_sheet(jadwalGenerated.value)
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Jadwal')
   const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
   const blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
-  saveAs(blob, 'calendar_dti.xlsx')
+  saveAs(blob, 'jadwal.xlsx')
 }
 </script>

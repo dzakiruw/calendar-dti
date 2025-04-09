@@ -114,9 +114,6 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
-// Reactive Variables
-const logoSrc = ref("/input-matkul.png");
-
 const kode = ref("");
 const nama = ref("");
 const jenisMataKuliah = ref("");
