@@ -18,22 +18,27 @@
           <input v-model="form.hindari_agenda" type="text" class="w-full mt-2 p-2 border rounded-lg" placeholder="Masukkan agenda" required />
         </div>
 
-        <!-- Hari Hindari (Multiple) -->
+        <!-- Hari Hindari (Single Select with Radio Buttons in Two Rows) -->
         <div class="mb-4">
           <label class="block text-gray-700 font-semibold">Hari Hindari</label>
-          <div class="flex flex-wrap gap-2 mt-2">
-            <label v-for="hari in hariList" :key="hari">
-              <input type="checkbox" v-model="form.hindari_hari" :value="hari" class="mr-2" /> {{ hari }}
+          <div class="grid grid-cols-3 gap-4 mt-2">
+            <label v-for="hari in hariListRow1" :key="hari" class="inline-flex items-center">
+              <input type="radio" v-model="form.hindari_hari" :value="hari" class="mr-2" /> {{ hari }}
+            </label>
+          </div>
+          <div class="grid grid-cols-3 gap-4 mt-2">
+            <label v-for="hari in hariListRow2" :key="hari" class="inline-flex items-center">
+              <input type="radio" v-model="form.hindari_hari" :value="hari" class="mr-2" /> {{ hari }}
             </label>
           </div>
         </div>
 
-        <!-- Sesi Hindari (Multiple) -->
+        <!-- Sesi Hindari (Single Select with Radio Buttons aligned) -->
         <div class="mb-4">
           <label class="block text-gray-700 font-semibold">Sesi Hindari</label>
           <div class="flex gap-4 mt-2">
-            <label v-for="sesi in sesiList" :key="sesi">
-              <input type="checkbox" v-model="form.hindari_sesi" :value="sesi" class="mr-2" /> {{ sesi }}
+            <label v-for="sesi in sesiList" :key="sesi" class="inline-flex items-center">
+              <input type="radio" v-model="form.hindari_sesi" :value="sesi" class="mr-2" /> {{ sesi }}
             </label>
           </div>
         </div>
@@ -100,15 +105,31 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
+// Form data
 const form = ref({
   hindari_agenda: '',
-  hindari_hari: [],
-  hindari_sesi: [],
+  hindari_hari: '',
+  hindari_sesi: '',
   hindari_smt: []
 })
 
-const hariList = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT']
-const sesiList = ['SESI 1', 'SESI 2', 'SESI 3']
+const hariListRow1 = ['SENIN', 'SELASA', 'RABU']
+const hariListRow2 = ['KAMIS', 'JUMAT']
+const sesiList = ['SESI 1', 'SESI 2', 'SESI 3'];
+
+// Mapping for submission (SESI to SATU, DUA, TIGA)
+const sesiMap = {
+  'SESI 1': 'SATU',
+  'SESI 2': 'DUA',
+  'SESI 3': 'TIGA'
+}
+
+// Reverse mapping for form display (SATU to SESI 1)
+const reverseSesiMap = {
+  'SATU': 'SESI 1',
+  'DUA': 'SESI 2',
+  'TIGA': 'SESI 3'
+}
 
 const jadwalList = ref([])
 const editIndex = ref(null)
@@ -125,12 +146,14 @@ const toggleSelectAll = () => {
 }
 
 const formatHari = (hari) => {
-  return Array.isArray(hari) ? hari.join(', ') : hari || '';
+  return hari || '';
 }
 
 const formatSesi = (sesi) => {
-  return Array.isArray(sesi) ? sesi.join(', ') : sesi || '';
+  // Menampilkan nilai sesi langsung tanpa perubahan
+  return sesi || '';
 }
+
 
 const fetchJadwal = async () => {
   try {
@@ -144,58 +167,79 @@ const fetchJadwal = async () => {
         'Authorization': `Bearer ${token}`,
       },
     })
+    // Directly use "SATU", "DUA", "TIGA" from the database
     jadwalList.value = response.data
   } catch (error) {
-    console.error('Gagal mengambil data jadwal hindari', error)
+    console.log('Gagal mengambil data jadwal hindari', error)
   }
 }
 
 const submitForm = async () => {
   const newJadwal = {
     hindari_agenda: form.value.hindari_agenda,
-    hindari_hari: form.value.hindari_hari.join(', '),  // Convert array to string
-    hindari_sesi: form.value.hindari_sesi.join(', '),  // Convert array to string
+    hindari_hari: form.value.hindari_hari,
+    hindari_sesi: sesiMap[form.value.hindari_sesi] || form.value.hindari_sesi,
     hindari_smt: [...selectedSemesters.value],
-  }
+  };
 
   try {
-    const token = JSON.parse(localStorage.getItem('user'))?.accessToken
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) {
-      throw new Error('User is not authenticated')
+      throw new Error('User is not authenticated');
     }
 
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+
+    let response;
     if (editIndex.value !== null) {
-      const jadwalId = jadwalList.value[editIndex.value].id_hindari
-      const response = await axios.patch(`http://10.15.41.68:3000/jadwal_hindari/${jadwalId}`, newJadwal, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      })
-
-      jadwalList.value[editIndex.value] = response.data.data
-      resetForm()
-      editIndex.value = null
+      const jadwalId = jadwalList.value[editIndex.value].id_hindari;
+      response = await axios.patch(`http://10.15.41.68:3000/jadwal_hindari/${jadwalId}`, newJadwal, { headers });
     } else {
-      const response = await axios.post('http://10.15.41.68:3000/jadwal_hindari', newJadwal, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      })
-
-      jadwalList.value.push(response.data.data)
-      resetForm()
+      response = await axios.post('http://10.15.41.68:3000/jadwal_hindari', newJadwal, { headers });
     }
+
+    console.log(response.data); // Log the response to verify
+
+    // Re-fetch the jadwal list after submitting
+    await fetchJadwalList();
+    resetForm();
   } catch (error) {
-    console.error('Gagal mengirim data jadwal hindari', error)
+    console.error('Error in submitForm:', error);
   }
-}
+};
+
+
+const fetchJadwalList = async () => {
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    const response = await axios.get('http://10.15.41.68:3000/jadwal_hindari', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    console.log(response.data); // Log response to verify data
+    jadwalList.value = response.data; // Ensure jadwalList is updated correctly
+  } catch (error) {
+    console.error('Gagal mengambil data jadwal hindari', error);
+  }
+};
+
+
 
 const editJadwal = (index) => {
   const jadwal = jadwalList.value[index]
   form.value = {
     hindari_agenda: jadwal.hindari_agenda,
-    hindari_hari: jadwal.hindari_hari.split(', '),  // Convert string back to array
-    hindari_sesi: jadwal.hindari_sesi.split(', '),  // Convert string back to array
+    hindari_hari: jadwal.hindari_hari,  // Direct string
+    hindari_sesi: reverseSesiMap[jadwal.hindari_sesi] || jadwal.hindari_sesi,  // Convert "SATU" to "SESI 1"
     hindari_smt: [...jadwal.hindari_smt],
   }
   selectedSemesters.value = [...jadwal.hindari_smt]
@@ -224,12 +268,12 @@ const deleteJadwal = async (index) => {
 
     jadwalList.value.splice(index, 1)
   } catch (error) {
-    console.error('Gagal menghapus data jadwal hindari', error)
+    console.log('Gagal menghapus data jadwal hindari', error)
   }
 }
 
 const resetForm = () => {
-  form.value = { hindari_agenda: '', hindari_hari: [], hindari_sesi: [], hindari_smt: [] }
+  form.value = { hindari_agenda: '', hindari_hari: '', hindari_sesi: '', hindari_smt: [] }
   selectedSemesters.value = []
   selectAllSemesters.value = false
 }
