@@ -53,8 +53,10 @@
         <h2 class="text-xl font-semibold mb-2"><i class="fas fa-link mr-2"></i> Matching Dosen & Matkul</h2>
         <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
           <li v-for="match in matchingList" :key="match.id">
-            <!-- Adjusted to match data structure -->
-            <p><strong>{{ match.mataKuliah.matkul_nama }}</strong> - {{ match.dosen.dosen_nama }} (Kode Dosen: {{ match.dosen.dosen_kode }}) - Kelas: {{ match.mataKuliah.nama_kelas }}</p>
+            <!-- Iterating over mata_kuliah_kelas to display each class -->
+            <div v-for="kelas in match.mataKuliah.mata_kuliah_kelas" :key="kelas.id_mk_kelas">
+              <p><strong>{{ match.mataKuliah.matkul_nama }}</strong> - {{ match.dosen.dosen_nama }} (Kode Dosen: {{ match.dosen.dosen_kode }}) - Kelas: {{ kelas.nama_kelas }}</p>
+            </div>
           </li>
         </ul>
       </div>
@@ -169,7 +171,6 @@ const fetchData = async () => {
   }
 }
 
-// Run the fetchData function when the component is mounted
 onMounted(() => {
   fetchData();
 })

@@ -189,6 +189,22 @@ onMounted(async () => {
   }
 });
 
+const formatKetersediaan = (ketersediaan) => {
+   return ketersediaan.flatMap((sesi, sesiIndex) => {
+     return sesi
+       .map((available, hariIndex) => {
+         if (available) {
+           return {
+             hari: hariList[hariIndex],
+             sesi: sesiList[sesiIndex],
+           };
+         }
+         return null;
+       })
+       .filter(Boolean);
+   });
+ };
+
 const submitDosen = async () => {
   const newDosen = {
     dosen_kode: kodeDosen.value,
