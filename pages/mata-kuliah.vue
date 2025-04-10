@@ -14,7 +14,14 @@
       <form @submit.prevent="submitMataKuliah" class="bg-white p-6 shadow-md rounded-lg w-full sm:w-96 mb-6 sm:mb-0">
         <div class="mb-4">
           <label class="block text-gray-700 font-semibold">Kode Mata Kuliah</label>
-          <input type="text" v-model="kode" class="w-full mt-2 p-2 border rounded-lg" placeholder="ET234602" required />
+          <div v-if="editIndex !== null">
+            <!-- Display as text when in edit mode -->
+            <p class="text-gray-700"><strong>{{ kode }}</strong></p>
+          </div>
+          <div v-else>
+            <!-- Input field for new mata kuliah -->
+            <input type="text" v-model="kode" class="w-full mt-2 p-2 border rounded-lg" placeholder="ET234602" required />
+          </div>
         </div>
 
         <div class="mb-4">
@@ -67,7 +74,11 @@
           </button>
 
           <!-- Cancel Edit Button -->
-          <button v-if="editIndex !== null" @click="cancelEdit" type="button" class="bg-gray-400 text-white py-2 px-4 rounded-lg w-full hover:bg-gray-500">
+          <button 
+            type="button" 
+            @click="cancelEdit" 
+            v-if="editIndex !== null" 
+            class="bg-gray-600 text-white py-2 px-4 rounded-lg w-full hover:bg-gray-700">
             Cancel Edit
           </button>
         </div>
@@ -88,7 +99,7 @@
         <ul v-else class="space-y-4">
           <li v-for="(mk, index) in mataKuliahList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
             <div>
-              <p>{{ mk.matkul_nama }}<br><strong>{{ mk.matkul_kode }}</strong></p>
+              <p><strong>{{ mk.matkul_nama }}</strong><br>{{ mk.matkul_kode }}</p>
               <p class="text-sm text-gray-600">
                 <span class="font-bold">Jenis:</span> {{ mk.matkul_tipe }}<br>
                 <span class="font-bold">Semester:</span> {{ mk.matkul_sem }}<br>

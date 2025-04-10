@@ -46,9 +46,22 @@
         </div>
 
         <!-- Button -->
-        <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
-          Submit
-        </button>
+        <div class="flex space-x-4">
+          <button 
+            type="submit" 
+            class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
+            Submit
+          </button>
+
+          <!-- Cancel Button (Only shows in Edit Mode) -->
+          <button 
+            type="button" 
+            @click="cancelEdit" 
+            v-if="editIndex !== null" 
+            class="bg-gray-600 text-white py-2 px-4 rounded-lg w-full hover:bg-gray-700">
+            Cancel Edit
+          </button>
+        </div>
       </form>
 
       <!-- Matching List -->
@@ -69,7 +82,7 @@
                 <span class="font-bold">Dosen:</span> {{ match.dosen.dosen_kode }} - {{ match.dosen.dosen_nama }}
               </p>
             </div>
-            <div class="flex space-x-2">
+            <div class="flex space-x-4">
               <button @click="editMatching(index)" class="text-gray-600 hover:text-gray-900">
                 <i class="fas fa-pencil-alt"></i>
               </button>
@@ -196,13 +209,18 @@ const submitMatching = async () => {
 
 const editMatching = (index) => {
   const match = matchingList.value[index];
-  selectedMataKuliah.value = match.kelas;
-  selectedDosen.value = match.dosen;
+  selectedMataKuliah.value = mataKuliahList.value.find(mk => mk.matkul_kode === match.kelas.matkul_kode);
   selectedKelas.value = match.kelas;
+  selectedDosen.value = dosenList.value.find(dosen => dosen.dosen_kode === match.dosen.dosen_kode);
   editIndex.value = index;
 }
 
 const deleteMatching = (index) => {
   matchingList.value.splice(index, 1);
+}
+
+const cancelEdit = () => {
+  resetForm();  // Reset form fields to initial state
+  editIndex.value = null;  // Clear the edit index to stop edit mode
 }
 </script>

@@ -60,12 +60,23 @@
           </div>
         </div>
 
-        <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
-          {{ editIndex !== null ? 'Update' : 'Submit' }}
-        </button>
-        <button v-if="editIndex !== null" @click="cancelEdit" type="button" class="bg-gray-400 text-white py-2 px-4 rounded-lg w-full mt-2 hover:bg-gray-500">
-          Cancel Edit
-        </button>
+
+        <!-- Submit and Cancel Buttons -->
+<div class="flex gap-4">
+  <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
+    {{ editIndex !== null ? 'Update' : 'Submit' }}
+  </button>
+  
+  <!-- Cancel Edit Button -->
+  <button 
+            type="button" 
+            @click="cancelEdit" 
+            v-if="editIndex !== null" 
+            class="bg-gray-600 text-white py-2 px-4 rounded-lg w-full hover:bg-gray-700">
+            Cancel Edit
+          </button>
+</div>
+
       </form>
 
       <!-- List -->

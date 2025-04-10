@@ -11,7 +11,14 @@
       <form @submit.prevent="submitDosen" class="bg-white p-6 shadow-md rounded-lg w-full sm:w-96">
         <div class="mb-4">
           <label class="block text-gray-700 font-semibold">Kode Dosen</label>
-          <input v-model="kodeDosen" type="text" class="w-full mt-2 p-2 border rounded-lg" placeholder="D123" required />
+          <div v-if="editIndex !== null">
+            <!-- Display as text when in edit mode -->
+            <p class="text-gray-700"><strong>{{ kodeDosen }}</strong></p>
+          </div>
+          <div v-else>
+            <!-- Input field for new dosen -->
+            <input v-model="kodeDosen" type="text" class="w-full mt-2 p-2 border rounded-lg" placeholder="D123" required />
+          </div>
         </div>
 
         <div class="mb-4">
@@ -21,7 +28,9 @@
 
         <div class="mb-4">
           <label class="block text-gray-700 font-semibold">Level Dosen</label>
-          <input v-model="levelDosen" type="number" class="w-full mt-2 p-2 border rounded-lg" placeholder="Level Dosen (angka)" required />
+          <!-- Input for level with restriction to only 1 digit -->
+          <input v-model="levelDosen" type="number" class="w-full mt-2 p-2 border rounded-lg" placeholder="Level Dosen (Angka)" required 
+                 :max="9" :min="0" maxlength="1" @input="limitLevelInput" />
         </div>
 
         <!-- Ketersediaan Dosen -->
@@ -47,11 +56,15 @@
           </div>
         </div>
 
-        <div class="flex justify-between">
+        <div class="flex gap-4">
           <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
             {{ editIndex !== null ? 'Update' : 'Submit' }}
           </button>
-          <button v-if="editIndex !== null" @click="cancelEdit" type="button" class="bg-gray-400 text-white py-2 px-4 rounded-lg w-full hover:bg-gray-500">
+          <button 
+            type="button" 
+            @click="cancelEdit" 
+            v-if="editIndex !== null" 
+            class="bg-gray-600 text-white py-2 px-4 rounded-lg w-full hover:bg-gray-700">
             Cancel Edit
           </button>
         </div>
@@ -151,6 +164,13 @@ const getGroupedSessions = (jadwalDosen) => {
   return grouped.filter((group) => group.hari.length > 0);
 };
 
+// Batasi input level dosen hanya satu digit
+const limitLevelInput = () => {
+  if (levelDosen.value.length > 1) {
+    levelDosen.value = levelDosen.value.slice(0, 1);  // Hanya ambil satu digit
+  }
+};
+
 onMounted(async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
@@ -168,23 +188,6 @@ onMounted(async () => {
     console.error('Gagal mengambil data dosen', error);
   }
 });
-
-// Function to format ketersediaan data before sending it to API
-const formatKetersediaan = (ketersediaan) => {
-  return ketersediaan.flatMap((sesi, sesiIndex) => {
-    return sesi
-      .map((available, hariIndex) => {
-        if (available) {
-          return {
-            hari: hariList[hariIndex],
-            sesi: sesiList[sesiIndex],
-          };
-        }
-        return null;
-      })
-      .filter(Boolean);
-  });
-};
 
 const submitDosen = async () => {
   const newDosen = {
@@ -230,7 +233,6 @@ const submitDosen = async () => {
   }
 };
 
-// Function to re-fetch the dosen list
 const fetchDosenList = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;

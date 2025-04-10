@@ -14,14 +14,20 @@
       <form @submit.prevent="submitForm" class="bg-white p-6 shadow-md rounded-lg w-full sm:w-96 mb-6 sm:mb-0">
         <div class="mb-4">
           <label class="block text-gray-700 font-semibold">Kode Ruangan</label>
-          <input
-            v-model="form.kodeRuangan"
-            type="text"
-            class="w-full mt-2 p-2 border rounded-lg"
-            placeholder="Masukkan kode ruangan"
-            required
-            :readonly="editIndex !== null" 
-          />
+          <div v-if="editIndex !== null">
+            <!-- Display as text when in edit mode -->
+            <p class="text-gray-700">{{ form.kodeRuangan }}</p>
+          </div>
+          <div v-else>
+            <!-- Input field for new ruangan -->
+            <input
+              v-model="form.kodeRuangan"
+              type="text"
+              class="w-full mt-2 p-2 border rounded-lg"
+              placeholder="Masukkan kode ruangan"
+              required
+            />
+          </div>
         </div>
 
         <div class="mb-4">
@@ -35,22 +41,21 @@
           />
         </div>
 
-        <button
-          type="submit"
-          class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700"
-        >
-          {{ editIndex !== null ? 'Update' : 'Submit' }}
-        </button>
+        <!-- Submit and Cancel Buttons -->
+        <div class="flex gap-4">
+          <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
+            {{ editIndex !== null ? 'Update' : 'Submit' }}
+          </button>
 
-        <!-- Cancel Edit Button -->
-        <button 
-          v-if="editIndex !== null"
-          type="button"
-          @click="cancelEdit"
-          class="bg-gray-500 text-white py-2 px-4 rounded-lg w-full mt-2 hover:bg-gray-600"
-        >
-          Cancel Edit
-        </button>
+          <!-- Cancel Edit Button -->
+          <button 
+            type="button" 
+            @click="cancelEdit" 
+            v-if="editIndex !== null" 
+            class="bg-gray-600 text-white py-2 px-4 rounded-lg w-full hover:bg-gray-700">
+            Cancel Edit
+          </button>
+        </div>
       </form>
 
       <!-- Daftar Ruang Kelas -->
@@ -89,6 +94,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
