@@ -49,8 +49,9 @@
         <div class="flex space-x-4">
           <button 
             type="submit" 
-            class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
-            Submit
+            class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700"
+            :disabled="isSubmitting">
+            {{ isSubmitting ? 'Submitting...' : 'Submit' }}
           </button>
 
           <!-- Cancel Button (Only shows in Edit Mode) -->
@@ -101,24 +102,23 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
-const mataKuliahList = ref([])  // List mata kuliah yang akan di-fetch dari API
-const dosenList = ref([])  // List dosen yang di-fetch dari API
-const matchingList = ref([])  // Daftar matching yang sudah dipilih
+const mataKuliahList = ref([])  
+const dosenList = ref([])  
+const matchingList = ref([])  
 const selectedMataKuliah = ref(null)
 const selectedKelas = ref(null)
 const selectedDosen = ref(null)
-const editIndex = ref(null)  // Track the index of the item being edited
+const editIndex = ref(null)  
+const isSubmitting = ref(false)  // Loading state for form submission
 
 // Fetch Data Mata Kuliah
 const fetchMataKuliah = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
-
     const response = await axios.get('http://10.15.41.68:3000/mata_kuliah', {
       headers: { Authorization: `Bearer ${token}` }
     });
-
     mataKuliahList.value = response.data;
   } catch (error) {
     console.error('Gagal mengambil data mata kuliah', error);
@@ -130,11 +130,9 @@ const fetchDosen = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
-
     const response = await axios.get('http://10.15.41.68:3000/dosen', {
       headers: { Authorization: `Bearer ${token}` }
     });
-
     dosenList.value = response.data;
   } catch (error) {
     console.error('Gagal mengambil data dosen', error);
@@ -146,11 +144,9 @@ const fetchMatchingData = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
-
     const response = await axios.get('http://10.15.41.68:3000/mk_dosen', {
       headers: { Authorization: `Bearer ${token}` }
     });
-
     matchingList.value = response.data.map((match) => ({
       id_mk_kelas_dosen: match.id_mk_kelas_dosen,
       kelas: match.mata_kuliah_kelas,
@@ -175,7 +171,6 @@ const resetForm = () => {
 
 // Update Kelas when Mata Kuliah changes
 const updateKelas = () => {
-  // Reset selectedKelas to null when Mata Kuliah is changed
   selectedKelas.value = null;
 }
 
@@ -187,51 +182,45 @@ const submitMatching = async () => {
   }
 
   const postData = {
-    id_mk_kelas: selectedKelas.value.id_mk_kelas,  // Ensure the class ID is included
+    id_mk_kelas: selectedKelas.value.id_mk_kelas,
     nama_kelas: selectedKelas.value.nama_kelas,
     dosen_kode: selectedDosen.value.dosen_kode
   };
 
   try {
+    isSubmitting.value = true;  // Set loading state
+
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
 
-    // Log data to verify what is being sent
-    console.log("Submitting matching data:", postData);
-
     if (editIndex.value !== null) {
-      // Update existing matching using PUT method
+      // Update the existing data
       const match = matchingList.value[editIndex.value];
       const updatedData = { ...postData };
-
-      console.log("Updating matching with ID:", match.id_mk_kelas_dosen);
-      console.log("Updated data:", updatedData);
 
       const response = await axios.put(`http://10.15.41.68:3000/mk_dosen/${match.id_mk_kelas_dosen}`, updatedData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      if (response.status === 200) {
-        // After updating, fetch the latest data again
-        console.log("Update successful:", response.data);
+      console.log('Server Response:', response); // Debugging the response
 
-        // Fetch updated matching data from the backend
-        await fetchMatchingData(); // This will update `matchingList` with the latest data
+      if (response.status === 200) {
+        // After updating, re-fetch the updated matching data
+        await fetchMatchingData();
       } else {
         console.error("Update failed:", response);
       }
     } else {
-      // Create new matching using POST method
+      // Create new data
       const response = await axios.post('http://10.15.41.68:3000/mk_dosen', postData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      if (response.status === 201) {
-        // After creating, fetch the latest data again
-        console.log("Create successful:", response.data);
+      console.log('Server Response:', response); // Debugging the response
 
-        // Fetch updated matching data from the backend
-        await fetchMatchingData(); // This will update `matchingList` with the latest data
+      if (response.status === 200 || response.status === 201) {
+        // After creating, re-fetch the updated matching data
+        await fetchMatchingData();
       } else {
         console.error("Create failed:", response);
       }
@@ -241,24 +230,22 @@ const submitMatching = async () => {
     editIndex.value = null;
   } catch (error) {
     console.error('Error submitting matching:', error);
+  } finally {
+    isSubmitting.value = false;  // Reset loading state
   }
 };
+
 
 const editMatching = (index) => {
   const match = matchingList.value[index];
   selectedMataKuliah.value = mataKuliahList.value.find(mk => mk.matkul_kode === match.kelas.matkul_kode);
-  selectedKelas.value = match.kelas;  // Set the correct class when editing
+  selectedKelas.value = match.kelas;
   selectedDosen.value = dosenList.value.find(dosen => dosen.dosen_kode === match.dosen.dosen_kode);
   editIndex.value = index;
 };
 
 const deleteMatching = async (index) => {
   const match = matchingList.value[index];
-  
-  if (!match.id_mk_kelas_dosen) {
-    console.error('Error: id_mk_kelas_dosen is missing');
-    return;
-  }
 
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
