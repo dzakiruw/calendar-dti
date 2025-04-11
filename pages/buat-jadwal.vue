@@ -153,9 +153,8 @@ const fetchMatchingData = async () => {
       headers: { Authorization: `Bearer ${token}` }
     });
 
-    // Ensure the id_mk_kelas_dosen is correctly included in the mapping
     matchingList.value = response.data.map((match) => ({
-      id_mk_kelas_dosen: match.id_mk_kelas_dosen,  // Ensure this field is correctly included
+      id_mk_kelas_dosen: match.id_mk_kelas_dosen,
       kelas: match.mata_kuliah_kelas,
       dosen: match.dosen
     }));
@@ -171,17 +170,27 @@ onMounted(() => {
   fetchMatchingData();
 })
 
-// Reset Form after Matching is Submitted
 const resetForm = () => {
   selectedMataKuliah.value = null
   selectedKelas.value = null
   selectedDosen.value = null
 }
 
+// Update Kelas when Mata Kuliah changes
+const updateKelas = () => {
+  // Reset selectedKelas to null when Mata Kuliah is changed
+  selectedKelas.value = null;
+}
+
+// Submit Matching or Update if Edit Mode is Active
 const submitMatching = async () => {
-  if (!selectedMataKuliah.value || !selectedDosen.value || !selectedKelas.value) return;
+  if (!selectedMataKuliah.value || !selectedDosen.value || !selectedKelas.value) {
+    console.error("Form is incomplete, cannot submit.");
+    return;
+  }
 
   const postData = {
+    id_mk_kelas: selectedKelas.value.id_mk_kelas,  // Ensure the class ID is included
     nama_kelas: selectedKelas.value.nama_kelas,
     dosen_kode: selectedDosen.value.dosen_kode
   };
@@ -190,47 +199,45 @@ const submitMatching = async () => {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
 
+    // Log data to verify what is being sent
+    console.log("Submitting matching data:", postData);
+
     if (editIndex.value !== null) {
-      // Update existing matching using PATCH method
+      // Update existing matching using PUT method
       const match = matchingList.value[editIndex.value];
+      const updatedData = { ...postData };
 
-      // Ensure the id_mk_kelas_dosen is available for the PATCH request
-      if (!match.id_mk_kelas_dosen) {
-        console.error('Error: ID is missing for updating matching');
-        alert('Error: ID is missing for updating matching');
-        return;
-      }
-
-      const updatedData = {
-        nama_kelas: selectedKelas.value.nama_kelas,
-        dosen_kode: selectedDosen.value.dosen_kode
-      };
-
-      // Log the URL and data before sending the PATCH request
-      console.log(`PATCH Request to: http://10.15.41.68:3000/mk_dosen/${match.id_mk_kelas_dosen}`);
-      console.log('Data being sent:', updatedData);
+      console.log("Updating matching with ID:", match.id_mk_kelas_dosen);
+      console.log("Updated data:", updatedData);
 
       const response = await axios.put(`http://10.15.41.68:3000/mk_dosen/${match.id_mk_kelas_dosen}`, updatedData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      // Log the server's response
-      console.log('Server Response:', response.data);
+      if (response.status === 200) {
+        // After updating, fetch the latest data again
+        console.log("Update successful:", response.data);
 
-      matchingList.value[editIndex.value] = { ...match, ...updatedData };  // Update the local list
+        // Fetch updated matching data from the backend
+        await fetchMatchingData(); // This will update `matchingList` with the latest data
+      } else {
+        console.error("Update failed:", response);
+      }
     } else {
       // Create new matching using POST method
       const response = await axios.post('http://10.15.41.68:3000/mk_dosen', postData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      console.log(response.data.message);  // Log success message from the API
-      const matchingData = {
-        kelas: selectedKelas.value,
-        dosen: selectedDosen.value
-      };
+      if (response.status === 201) {
+        // After creating, fetch the latest data again
+        console.log("Create successful:", response.data);
 
-      matchingList.value.push(matchingData);
+        // Fetch updated matching data from the backend
+        await fetchMatchingData(); // This will update `matchingList` with the latest data
+      } else {
+        console.error("Create failed:", response);
+      }
     }
 
     resetForm();
@@ -244,14 +251,13 @@ const submitMatching = async () => {
 const editMatching = (index) => {
   const match = matchingList.value[index];
   selectedMataKuliah.value = mataKuliahList.value.find(mk => mk.matkul_kode === match.kelas.matkul_kode);
-  selectedKelas.value = match.kelas;
+  selectedKelas.value = match.kelas;  // Set the correct class when editing
   selectedDosen.value = dosenList.value.find(dosen => dosen.dosen_kode === match.dosen.dosen_kode);
-  editIndex.value = index;  // Store the index of the item being edited
-}
+  editIndex.value = index;
+};
 
 const deleteMatching = async (index) => {
   const match = matchingList.value[index];
-  console.log('Deleting matching with id:', match.id_mk_kelas_dosen);  // Add this line to log the ID
   
   if (!match.id_mk_kelas_dosen) {
     console.error('Error: id_mk_kelas_dosen is missing');
@@ -263,12 +269,11 @@ const deleteMatching = async (index) => {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
 
-    const response = await axios.delete(`http://10.15.41.68:3000/mk_dosen/${match.id_mk_kelas_dosen}`, {
+    await axios.delete(`http://10.15.41.68:3000/mk_dosen/${match.id_mk_kelas_dosen}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
-    console.log(response.data.message);  // Log success message from the API
-    matchingList.value.splice(index, 1);  // Remove the deleted match from the list
+    matchingList.value.splice(index, 1);
   } catch (error) {
     console.error('Error deleting matching:', error);
     alert('Failed to delete matching data.');
@@ -276,7 +281,7 @@ const deleteMatching = async (index) => {
 }
 
 const cancelEdit = () => {
-  resetForm();  // Reset form fields to initial state
-  editIndex.value = null;  // Clear the edit index to stop edit mode
+  resetForm();
+  editIndex.value = null;
 }
 </script>
