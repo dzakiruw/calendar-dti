@@ -107,7 +107,7 @@ const matchingList = ref([])  // Daftar matching yang sudah dipilih
 const selectedMataKuliah = ref(null)
 const selectedKelas = ref(null)
 const selectedDosen = ref(null)
-const editIndex = ref(null)
+const editIndex = ref(null)  // Track the index of the item being edited
 
 // Fetch Data Mata Kuliah
 const fetchMataKuliah = async () => {
@@ -153,7 +153,9 @@ const fetchMatchingData = async () => {
       headers: { Authorization: `Bearer ${token}` }
     });
 
+    // Ensure the id_mk_kelas_dosen is correctly included in the mapping
     matchingList.value = response.data.map((match) => ({
+      id_mk_kelas_dosen: match.id_mk_kelas_dosen,  // Ensure this field is correctly included
       kelas: match.mata_kuliah_kelas,
       dosen: match.dosen
     }));
@@ -182,41 +184,95 @@ const submitMatching = async () => {
   const postData = {
     nama_kelas: selectedKelas.value.nama_kelas,
     dosen_kode: selectedDosen.value.dosen_kode
-  }
+  };
 
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
 
-    const response = await axios.post('http://10.15.41.68:3000/mk_dosen', postData, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    if (editIndex.value !== null) {
+      // Update existing matching using PATCH method
+      const match = matchingList.value[editIndex.value];
 
-    console.log(response.data.message);  // Log success message from the API
+      // Ensure the id_mk_kelas_dosen is available for the PATCH request
+      if (!match.id_mk_kelas_dosen) {
+        console.error('Error: ID is missing for updating matching');
+        alert('Error: ID is missing for updating matching');
+        return;
+      }
 
-    const matchingData = {
-      kelas: selectedKelas.value,
-      dosen: selectedDosen.value
+      const updatedData = {
+        nama_kelas: selectedKelas.value.nama_kelas,
+        dosen_kode: selectedDosen.value.dosen_kode
+      };
+
+      // Log the URL and data before sending the PATCH request
+      console.log(`PATCH Request to: http://10.15.41.68:3000/mk_dosen/${match.id_mk_kelas_dosen}`);
+      console.log('Data being sent:', updatedData);
+
+      const response = await axios.put(`http://10.15.41.68:3000/mk_dosen/${match.id_mk_kelas_dosen}`, updatedData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // Log the server's response
+      console.log('Server Response:', response.data);
+
+      matchingList.value[editIndex.value] = { ...match, ...updatedData };  // Update the local list
+    } else {
+      // Create new matching using POST method
+      const response = await axios.post('http://10.15.41.68:3000/mk_dosen', postData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      console.log(response.data.message);  // Log success message from the API
+      const matchingData = {
+        kelas: selectedKelas.value,
+        dosen: selectedDosen.value
+      };
+
+      matchingList.value.push(matchingData);
     }
 
-    matchingList.value.push(matchingData);
     resetForm();
+    editIndex.value = null;
   } catch (error) {
     console.error('Error submitting matching:', error);
     alert('Failed to submit matching data.');
   }
-}
+};
 
 const editMatching = (index) => {
   const match = matchingList.value[index];
   selectedMataKuliah.value = mataKuliahList.value.find(mk => mk.matkul_kode === match.kelas.matkul_kode);
   selectedKelas.value = match.kelas;
   selectedDosen.value = dosenList.value.find(dosen => dosen.dosen_kode === match.dosen.dosen_kode);
-  editIndex.value = index;
+  editIndex.value = index;  // Store the index of the item being edited
 }
 
-const deleteMatching = (index) => {
-  matchingList.value.splice(index, 1);
+const deleteMatching = async (index) => {
+  const match = matchingList.value[index];
+  console.log('Deleting matching with id:', match.id_mk_kelas_dosen);  // Add this line to log the ID
+  
+  if (!match.id_mk_kelas_dosen) {
+    console.error('Error: id_mk_kelas_dosen is missing');
+    alert('Failed to delete matching: Missing ID');
+    return;
+  }
+
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) throw new Error('User is not authenticated');
+
+    const response = await axios.delete(`http://10.15.41.68:3000/mk_dosen/${match.id_mk_kelas_dosen}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    console.log(response.data.message);  // Log success message from the API
+    matchingList.value.splice(index, 1);  // Remove the deleted match from the list
+  } catch (error) {
+    console.error('Error deleting matching:', error);
+    alert('Failed to delete matching data.');
+  }
 }
 
 const cancelEdit = () => {

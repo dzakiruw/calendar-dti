@@ -49,17 +49,25 @@
       </div>
 
       <!-- Matching -->
-      <div class="bg-white p-4 shadow-md rounded-lg">
-        <h2 class="text-xl font-semibold mb-2"><i class="fas fa-link mr-2"></i> Matching Dosen & Matkul</h2>
-        <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-          <li v-for="match in matchingList" :key="match.id">
-            <!-- Iterating over mata_kuliah_kelas to display each class -->
-            <div v-for="kelas in match.mataKuliah.mata_kuliah_kelas" :key="kelas.id_mk_kelas">
-              <p><strong>{{ match.mataKuliah.matkul_nama }}</strong> - {{ match.dosen.dosen_nama }} (Kode Dosen: {{ match.dosen.dosen_kode }}) - Kelas: {{ kelas.nama_kelas }}</p>
-            </div>
-          </li>
-        </ul>
+      <div class="flex-1 bg-white p-6 shadow-md rounded-lg w-full sm:w-96">
+      <h2 class="text-xl font-bold mb-4">
+        <i class="fas fa-list-ul mr-2"></i> Daftar Matching
+      </h2>
+
+      <!-- Displaying "No data" message if matchingList is empty -->
+      <div v-if="matchingList.length === 0" class="text-gray-500">
+        Belum ada data matching.
       </div>
+
+      <!-- Simple List of Matching Items -->
+      <!-- Simple List of Matching Items -->
+<ul v-else class="space-y-2">
+  <li v-for="(match, index) in matchingList" :key="index" class="text-gray-700">
+    <!-- Ensure that match.kelas is defined before accessing nama_kelas -->
+    <strong>{{ match.kelas.nama_kelas }}</strong> - {{ match.dosen.dosen_nama }}
+  </li>
+</ul>
+    </div>
     </div>
 
     <!-- Tombol Aksi -->
@@ -159,20 +167,40 @@ const fetchData = async () => {
     });
     jadwalHindari.value = jadwalHindariResponse.data;
 
-    // Matching Dosen & Mata Kuliah
-    matchingList.value = mataKuliahList.value.map((mk, index) => ({
-      id: index + 1,
-      mataKuliah: mk,
-      dosen: dosenList.value[index % dosenList.value.length], // Example logic for matching
-    }));
-
   } catch (error) {
     console.error('Error fetching data:', error);
   }
 }
 
+const fetchMatchingData = async () => {
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) throw new Error('User is not authenticated');
+
+    const response = await axios.get('http://10.15.41.68:3000/mk_dosen', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    // Ensure the response data is properly handled
+    if (response.data && Array.isArray(response.data)) {
+      matchingList.value = response.data.map((match) => ({
+        id_mk_kelas_dosen: match.id_mk_kelas_dosen,
+        kelas: match.mata_kuliah_kelas,
+        dosen: match.dosen
+      }));
+    } else {
+      matchingList.value = [];
+      console.error('Invalid matching data format received.');
+    }
+  } catch (error) {
+    console.error('Gagal mengambil data matching', error);
+    alert('Failed to fetch Matching data. Please check your authentication token.');
+  }
+};
+
 onMounted(() => {
   fetchData();
+  fetchMatchingData();
 })
 
 // Function to generate jadwal (dummy logic for testing)
