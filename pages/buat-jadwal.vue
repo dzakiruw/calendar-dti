@@ -122,7 +122,6 @@ const fetchMataKuliah = async () => {
     mataKuliahList.value = response.data;
   } catch (error) {
     console.error('Gagal mengambil data mata kuliah', error);
-    alert('Failed to fetch Mata Kuliah data. Please check your authentication token.');
   }
 }
 
@@ -139,7 +138,6 @@ const fetchDosen = async () => {
     dosenList.value = response.data;
   } catch (error) {
     console.error('Gagal mengambil data dosen', error);
-    alert('Failed to fetch Dosen data. Please check your authentication token.');
   }
 }
 
@@ -160,7 +158,6 @@ const fetchMatchingData = async () => {
     }));
   } catch (error) {
     console.error('Gagal mengambil data matching', error);
-    alert('Failed to fetch Matching data. Please check your authentication token.');
   }
 }
 
@@ -244,7 +241,6 @@ const submitMatching = async () => {
     editIndex.value = null;
   } catch (error) {
     console.error('Error submitting matching:', error);
-    alert('Failed to submit matching data.');
   }
 };
 
@@ -261,7 +257,6 @@ const deleteMatching = async (index) => {
   
   if (!match.id_mk_kelas_dosen) {
     console.error('Error: id_mk_kelas_dosen is missing');
-    alert('Failed to delete matching: Missing ID');
     return;
   }
 
@@ -276,7 +271,6 @@ const deleteMatching = async (index) => {
     matchingList.value.splice(index, 1);
   } catch (error) {
     console.error('Error deleting matching:', error);
-    alert('Failed to delete matching data.');
   }
 }
 

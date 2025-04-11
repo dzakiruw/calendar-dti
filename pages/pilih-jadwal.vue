@@ -194,7 +194,6 @@ const fetchMatchingData = async () => {
     }
   } catch (error) {
     console.error('Gagal mengambil data matching', error);
-    alert('Failed to fetch Matching data. Please check your authentication token.');
   }
 };
 
