@@ -60,7 +60,6 @@
       </div>
 
       <!-- Simple List of Matching Items -->
-      <!-- Simple List of Matching Items -->
 <ul v-else class="space-y-2">
   <li v-for="(match, index) in matchingList" :key="index" class="text-gray-700">
     <!-- Ensure that match.kelas is defined before accessing nama_kelas -->
