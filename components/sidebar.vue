@@ -1,5 +1,5 @@
 <template>
-  <div class="w-64 bg-gray-100 text-gray-900 h-screen shadow-md flex flex-col">
+  <div v-if="user.username" class="w-64 bg-gray-100 text-gray-900 h-screen shadow-md flex flex-col">
     <!-- Sidebar Header -->
     <div class="flex items-center px-6 py-4 bg-white shadow">
       <img src="/logo-dti.png" alt="DTI Logo" class="w-8 h-8 mr-2" />
@@ -91,7 +91,7 @@ const router = useRouter();
 onMounted(() => {
   const storedUser = JSON.parse(localStorage.getItem('user'));
   if (storedUser) {
-    user.value = storedUser;  // Simpan data pengguna di state
+    user.value = storedUser;  // Save user data in state
   }
 
   // Listen for storage event to update the navbar when login occurs
@@ -99,6 +99,8 @@ onMounted(() => {
     const updatedUser = JSON.parse(localStorage.getItem('user'));
     if (updatedUser) {
       user.value = updatedUser;
+    } else {
+      user.value = {};  // Clear user data when logged out
     }
   });
 
@@ -114,7 +116,7 @@ const logout = () => {
   // Clear user data from localStorage
   localStorage.removeItem('user');
   user.value = {}; // Clear user state
-  router.push('/login'); // Redirect to login page
+  router.push('/login');  // Redirect to the login page after logout
 };
 
 // Redirect to login page if the user clicks the guest button

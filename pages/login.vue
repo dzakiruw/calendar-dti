@@ -45,14 +45,20 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios";
+import { ref, onBeforeMount } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
 
-const username = ref("");
-const password = ref("");
-const errorMessage = ref("");
+const username = ref('');
+const password = ref('');
+const errorMessage = ref('');
 const router = useRouter();
+
+// Reset any state or clear session-related information before entering the login page
+onBeforeMount(() => {
+  // Optionally clear localStorage or reset any global state (like Vuex or reactive states)
+  localStorage.removeItem('user');  // Clear user data in localStorage
+});
 
 // Handle login
 const login = async () => {
@@ -64,19 +70,19 @@ const login = async () => {
 
     if (response.data.accessToken) {
       const user = {
-        username: username.value, // Pastikan nama pengguna disimpan
+        username: username.value,
         accessToken: response.data.accessToken,
         id: response.data.id,
       };
 
-      localStorage.setItem("user", JSON.stringify(user)); // Menyimpan data pengguna
-      router.push("/"); // Arahkan ke halaman utama setelah login berhasil
-      window.dispatchEvent(new Event("storage")); // Memicu event untuk update di sidebar
+      localStorage.setItem('user', JSON.stringify(user)); // Store user data in localStorage
+      router.push('/'); // Redirect to the home page after successful login
+      window.dispatchEvent(new Event('storage')); // Trigger storage event to update sidebar
     } else {
-      errorMessage.value = "Invalid username or password.";
+      errorMessage.value = 'Invalid username or password.';
     }
   } catch (error) {
-    errorMessage.value = error.response ? error.response.data : "An error occurred. Please try again.";
+    errorMessage.value = error.response ? error.response.data : 'An error occurred. Please try again.';
   }
 };
 </script>
