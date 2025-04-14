@@ -34,16 +34,33 @@
           </select>
         </div>
 
-        <!-- Dosen Dropdown -->
-        <div class="mb-4">
-          <label class="block text-gray-700 font-semibold">Pilih Dosen</label>
-          <select v-model="selectedDosen" class="w-full mt-2 p-2 border rounded-lg" required>
-            <option disabled value="">Pilih Dosen</option>
-            <option v-for="dosen in dosenList" :key="dosen.dosen_kode" :value="dosen">
+        <!-- Dosen Dropdown Checkbox -->
+        <div class="mb-4 relative">
+          <label class="block text-gray-700 font-semibold mb-2">Pilih Dosen</label>
+          
+          <div @click="toggleDosenDropdown" class="w-full p-2 border rounded-lg bg-white cursor-pointer flex justify-between items-center">
+            <span v-if="selectedDosenList.length === 0" class="text-gray-400">Pilih Dosen</span>
+            <span v-else>{{ selectedDosenList.map(d => d.dosen_nama).join(', ') }}</span>
+            <i class="fas fa-chevron-down ml-2"></i>
+          </div>
+
+          <div v-if="showDosenDropdown" class="absolute z-10 mt-1 w-full bg-white border rounded-lg shadow-lg max-h-64 overflow-auto">
+            <label
+              v-for="dosen in dosenList"
+              :key="dosen.dosen_kode"
+              class="flex items-center px-4 py-2 hover:bg-gray-100"
+            >
+              <input
+                type="checkbox"
+                class="form-checkbox mr-2"
+                :value="dosen"
+                v-model="selectedDosenList"
+              />
               {{ dosen.dosen_kode }} - {{ dosen.dosen_nama }}
-            </option>
-          </select>
+            </label>
+          </div>
         </div>
+
 
         <!-- Semester Checkbox -->
         <div class="mb-4">
@@ -124,9 +141,21 @@ const matchingList = ref([])
 const selectedMataKuliah = ref(null)
 const selectedKelas = ref(null)
 const selectedSemesters = ref([]);
-const selectedDosen = ref(null)
+const selectedDosenList = ref([]); // untuk menyimpan dosen yang dipilih
+const showDosenDropdown = ref(false);
 const editIndex = ref(null)  
 const isSubmitting = ref(false)  // Loading state for form submission
+const toggleDosenDropdown = () => {
+  showDosenDropdown.value = !showDosenDropdown.value;
+};
+
+// Tutup dropdown saat klik di luar
+document.addEventListener('click', (e) => {
+  const dropdown = document.querySelector('.relative');
+  if (dropdown && !dropdown.contains(e.target)) {
+    showDosenDropdown.value = false;
+  }
+});
 
 // Fetch Data Mata Kuliah
 const fetchMataKuliah = async () => {
@@ -194,7 +223,8 @@ const updateKelas = () => {
 
 // Submit Matching or Update if Edit Mode is Active
 const submitMatching = async () => {
-  if (!selectedMataKuliah.value || !selectedDosen.value || !selectedKelas.value) {
+  if (!selectedMataKuliah.value || selectedDosenList.value.length === 0 || !selectedKelas.value)
+ {
     console.error("Form is incomplete, cannot submit.");
     return;
   }
@@ -202,7 +232,7 @@ const submitMatching = async () => {
   const postData = {
     id_mk_kelas: selectedKelas.value.id_mk_kelas,
     nama_kelas: selectedKelas.value.nama_kelas,
-    dosen_kode: selectedDosen.value.dosen_kode,
+    dosen_kode: selectedDosenList.value.map(d => d.dosen_kode),
     semesters: selectedSemesters.value
   };
 
