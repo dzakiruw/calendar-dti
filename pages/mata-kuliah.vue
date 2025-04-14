@@ -39,15 +39,6 @@
           </select>
         </div>
 
-        <!-- Semester Selection -->
-        <div class="mb-4">
-          <label class="block text-gray-700 font-semibold">Semester</label>
-          <select v-model="semester" class="w-full mt-2 p-2 border rounded-lg" required>
-            <option disabled value="">Pilih Semester</option>
-            <option v-for="n in 8" :key="n" :value="n">Semester {{ n }}</option>
-          </select>
-        </div>
-
         <!-- Pilih Kelas (Checkbox) -->
         <div class="mb-4">
           <label class="block text-gray-700 font-semibold">Pilih Kelas</label>
@@ -102,7 +93,6 @@
               <p><strong>{{ mk.matkul_nama }}</strong><br>{{ mk.matkul_kode }}</p>
               <p class="text-sm text-gray-600">
                 <span class="font-bold">Jenis:</span> {{ mk.matkul_tipe }}<br>
-                <span class="font-bold">Semester:</span> {{ mk.matkul_sem }}<br>
                 <span class="font-bold">Kelas:</span> {{ mk.mata_kuliah_kelas.map(k => k.kelas_mk).join(", ") }}
               </p>
             </div>
@@ -128,7 +118,6 @@ import axios from 'axios';
 const kode = ref("");
 const nama = ref("");
 const jenisMataKuliah = ref("");
-const semester = ref("");
 const kelas = ref([]);
 const mataKuliahList = ref([]);
 const editIndex = ref(null);
@@ -157,7 +146,6 @@ const submitMataKuliah = async () => {
   const newMataKuliah = {
     matkul_kode: kode.value,
     matkul_nama: nama.value,
-    matkul_sem: semester.value,
     matkul_tipe: jenisMataKuliah.value,
     kelas: kelas.value.map(k => ({ kelas_mk: k })),  // ensure this is formatted correctly
   };
@@ -204,7 +192,6 @@ const editMataKuliah = (index) => {
   kode.value = mk.matkul_kode;
   nama.value = mk.matkul_nama;
   jenisMataKuliah.value = mk.matkul_tipe;
-  semester.value = mk.matkul_sem;
   kelas.value = mk.mata_kuliah_kelas.map(k => k.kelas_mk);
   editIndex.value = index;
 };
@@ -240,7 +227,6 @@ const resetForm = () => {
   kode.value = "";
   nama.value = "";
   jenisMataKuliah.value = "";
-  semester.value = "";
   kelas.value = [];
 };
 

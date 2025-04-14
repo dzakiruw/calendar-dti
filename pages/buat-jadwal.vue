@@ -45,6 +45,22 @@
           </select>
         </div>
 
+        <!-- Semester Checkbox -->
+        <div class="mb-4">
+          <label class="block text-gray-700 font-semibold mb-2">Pilih Semester</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label v-for="semester in 8" :key="semester" class="flex items-center space-x-2">
+              <input 
+                type="checkbox" 
+                :value="semester" 
+                v-model="selectedSemesters" 
+                class="form-checkbox h-4 w-4 text-blue-600"
+              />
+              <span>Semester {{ semester }}</span>
+            </label>
+          </div>
+        </div>
+
         <!-- Button -->
         <div class="flex space-x-4">
           <button 
@@ -107,6 +123,7 @@ const dosenList = ref([])
 const matchingList = ref([])  
 const selectedMataKuliah = ref(null)
 const selectedKelas = ref(null)
+const selectedSemesters = ref([]);
 const selectedDosen = ref(null)
 const editIndex = ref(null)  
 const isSubmitting = ref(false)  // Loading state for form submission
@@ -167,6 +184,7 @@ const resetForm = () => {
   selectedMataKuliah.value = null
   selectedKelas.value = null
   selectedDosen.value = null
+  selectedSemesters.value = []
 }
 
 // Update Kelas when Mata Kuliah changes
@@ -184,7 +202,8 @@ const submitMatching = async () => {
   const postData = {
     id_mk_kelas: selectedKelas.value.id_mk_kelas,
     nama_kelas: selectedKelas.value.nama_kelas,
-    dosen_kode: selectedDosen.value.dosen_kode
+    dosen_kode: selectedDosen.value.dosen_kode,
+    semesters: selectedSemesters.value
   };
 
   try {
