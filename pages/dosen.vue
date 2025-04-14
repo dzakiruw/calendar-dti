@@ -26,11 +26,9 @@
           <input v-model="namaDosen" type="text" class="w-full mt-2 p-2 border rounded-lg" placeholder="Dr. John Doe" required />
         </div>
 
-        <div class="mb-4">
-          <label class="block text-gray-700 font-semibold">Level Dosen</label>
-          <!-- Input for level with restriction to only 1 digit -->
-          <input v-model="levelDosen" type="number" class="w-full mt-2 p-2 border rounded-lg" placeholder="Level Dosen (Angka)" required 
-                 :max="9" :min="0" maxlength="1" @input="limitLevelInput" />
+        <div class="mb-4 flex items-center">
+          <input id="prioritas" v-model="isPrioritas" type="checkbox" class="w-5 h-5 text-blue-600 border-gray-300 rounded mr-3">
+          <label for="prioritas" class="text-gray-700 font-semibold">Dosen Prioritas</label>
         </div>
 
         <!-- Ketersediaan Dosen -->
@@ -88,13 +86,25 @@
             :key="index"
             class="bg-gray-100 p-4 rounded-lg flex justify-between items-center"
           >
-            <div>
-              <p class="font-bold text-base">{{ dosen.dosen_nama }}<br /><span class="text-sm font-normal">{{ dosen.dosen_kode }}</span></p>
-              <p class="text-sm text-gray-600 mt-1">
-                <span class="font-bold">Level:</span> {{ dosen.dosen_level }}<br />
-                <span class="font-bold">Ketersediaan:</span>
+          <div>
+            <p class="font-bold text-base">
+              {{ dosen.dosen_nama }}
+              <br />
+              <span class="text-sm font-normal text-gray-600">{{ dosen.dosen_kode }}</span>
+            </p>
+
+            <div class="text-sm text-gray-600 mt-2 space-y-1">
+              <p><span class="font-bold">Level:</span> {{ dosen.dosen_level }}</p>
+              <p>
+                <span class="font-bold">Prioritas:</span>
+                <span
+                  :class="dosen.dosen_prioritas ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'"
+                >
+                  {{ dosen.dosen_prioritas ? 'Prioritas' : 'Biasa' }}
+                </span>
               </p>
-              <ul class="text-sm text-gray-600 list-disc ml-5 mt-1 space-y-0.5">
+              <p><span class="font-bold">Ketersediaan:</span></p>
+              <ul class="list-disc ml-5 space-y-0.5">
                 <li
                   v-for="(result, sesiIndex) in getGroupedSessions(dosen.jadwal_dosen)"
                   :key="sesiIndex"
@@ -109,6 +119,7 @@
                 </li>
               </ul>
             </div>
+          </div>
 
             <div class="flex flex-col space-y-2 ml-4">
               <button @click="editDosen(index)" class="text-gray-600 hover:text-gray-900" title="Edit">
@@ -134,7 +145,7 @@ const sesiList = ['SATU', 'DUA', 'TIGA']; // Sesi sesuai dengan API
 
 const kodeDosen = ref('');
 const namaDosen = ref('');
-const levelDosen = ref('');
+const isPrioritas = ref(false);
 const ketersediaan = ref([...Array(3)].map(() => Array(5).fill(false))); // Menyimpan ketersediaan dosen
 
 const dosenList = ref([]);
@@ -209,7 +220,7 @@ const submitDosen = async () => {
   const newDosen = {
     dosen_kode: kodeDosen.value,
     dosen_nama: namaDosen.value,
-    dosen_level: levelDosen.value,
+    dosen_prioritas: isPrioritas.value,
     kesediaan: formatKetersediaan(ketersediaan.value),
   };
 
@@ -272,7 +283,7 @@ const fetchDosenList = async () => {
 const resetForm = () => {
   kodeDosen.value = '';
   namaDosen.value = '';
-  levelDosen.value = '';
+  isPrioritas.value = false;
   ketersediaan.value = [...Array(3)].map(() => Array(5).fill(false));
 };
 
@@ -280,7 +291,7 @@ const editDosen = (index) => {
   const dosen = dosenList.value[index];
   kodeDosen.value = dosen.dosen_kode;
   namaDosen.value = dosen.dosen_nama;
-  levelDosen.value = dosen.dosen_level;
+  isPrioritas.value = dosen.dosen_prioritas || false;
   ketersediaan.value = [...Array(3)].map(() => Array(5).fill(false));
 
   // Load kesediaan into checkboxes
