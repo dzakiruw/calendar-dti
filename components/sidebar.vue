@@ -3,7 +3,7 @@
     <!-- Sidebar Header -->
     <div class="flex items-center px-6 py-4 bg-white shadow">
       <img src="/logo-dti.png" alt="DTI Logo" class="w-8 h-8 mr-2" />
-      <h1 class="text-lg font-bold">Calendar-DTI</h1>
+      <h1 class="text-lg font-bold">Perkuliahan DTI</h1>
     </div>
 
     <!-- Sidebar Menu -->

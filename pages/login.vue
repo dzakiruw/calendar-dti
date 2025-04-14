@@ -36,11 +36,6 @@
         Login
       </button>
     </form>
-
-    <!-- Register Link -->
-    <p class="mt-4">
-      Don't have an account? <NuxtLink to="/register" class="text-blue-600">Register here</NuxtLink>
-    </p>
   </div>
 </template>
 
