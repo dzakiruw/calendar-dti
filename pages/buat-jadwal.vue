@@ -34,33 +34,16 @@
           </select>
         </div>
 
-        <!-- Dosen Dropdown Checkbox -->
-        <div class="mb-4 relative">
-          <label class="block text-gray-700 font-semibold mb-2">Pilih Dosen</label>
-          
-          <div @click="toggleDosenDropdown" class="w-full p-2 border rounded-lg bg-white cursor-pointer flex justify-between items-center">
-            <span v-if="selectedDosenList.length === 0" class="text-gray-400">Pilih Dosen</span>
-            <span v-else>{{ selectedDosenList.map(d => d.dosen_nama).join(', ') }}</span>
-            <i class="fas fa-chevron-down ml-2"></i>
-          </div>
-
-          <div v-if="showDosenDropdown" class="absolute z-10 mt-1 w-full bg-white border rounded-lg shadow-lg max-h-64 overflow-auto">
-            <label
-              v-for="dosen in dosenList"
-              :key="dosen.dosen_kode"
-              class="flex items-center px-4 py-2 hover:bg-gray-100"
-            >
-              <input
-                type="checkbox"
-                class="form-checkbox mr-2"
-                :value="dosen"
-                v-model="selectedDosenList"
-              />
+        <!-- Dosen Dropdown -->
+        <div class="mb-4">
+          <label class="block text-gray-700 font-semibold">Pilih Dosen</label>
+          <select v-model="selectedDosen" class="w-full mt-2 p-2 border rounded-lg" required>
+            <option disabled value="">Pilih Dosen</option>
+            <option v-for="dosen in dosenList" :key="dosen.dosen_kode" :value="dosen">
               {{ dosen.dosen_kode }} - {{ dosen.dosen_nama }}
-            </label>
-          </div>
+            </option>
+          </select>
         </div>
-
 
         <!-- Semester Checkbox -->
         <div class="mb-4">
@@ -111,9 +94,12 @@
         <ul v-else class="space-y-4">
           <li v-for="(match, index) in matchingList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
             <div>
-              <p><strong>{{ match.kelas.nama_kelas }}</strong></p>
+              <p><strong>{{ match.nama_kelas }}</strong></p>
               <p class="text-sm text-gray-600">
-                <span class="font-bold">Dosen:</span> {{ match.dosen.dosen_kode }} - {{ match.dosen.dosen_nama }}
+                <span class="font-bold">Dosen:</span> {{ match.dosen_kode }} - {{ getDosenName(match.dosen_kode) }}
+              </p>
+              <p class="text-sm text-gray-600">
+                <span class="font-bold">Semester:</span> {{ formatSemesters(match.mk_kelas_sem) }}
               </p>
             </div>
             <div class="flex space-x-4">
@@ -140,29 +126,17 @@ const dosenList = ref([])
 const matchingList = ref([])  
 const selectedMataKuliah = ref(null)
 const selectedKelas = ref(null)
-const selectedSemesters = ref([]);
-const selectedDosenList = ref([]); // untuk menyimpan dosen yang dipilih
-const showDosenDropdown = ref(false);
-const editIndex = ref(null)  
-const isSubmitting = ref(false)  // Loading state for form submission
-const toggleDosenDropdown = () => {
-  showDosenDropdown.value = !showDosenDropdown.value;
-};
-
-// Tutup dropdown saat klik di luar
-document.addEventListener('click', (e) => {
-  const dropdown = document.querySelector('.relative');
-  if (dropdown && !dropdown.contains(e.target)) {
-    showDosenDropdown.value = false;
-  }
-});
+const selectedSemesters = ref([])
+const selectedDosen = ref(null)
+const editIndex = ref(null)
+const isSubmitting = ref(false)
 
 // Fetch Data Mata Kuliah
 const fetchMataKuliah = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
-    const response = await axios.get('http://10.15.41.68:3000/mata_kuliah', {
+    const response = await axios.get('http://localhost:3000/mata_kuliah', {
       headers: { Authorization: `Bearer ${token}` }
     });
     mataKuliahList.value = response.data;
@@ -176,7 +150,7 @@ const fetchDosen = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
-    const response = await axios.get('http://10.15.41.68:3000/dosen', {
+    const response = await axios.get('http://localhost:3000/dosen', {
       headers: { Authorization: `Bearer ${token}` }
     });
     dosenList.value = response.data;
@@ -190,17 +164,25 @@ const fetchMatchingData = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
-    const response = await axios.get('http://10.15.41.68:3000/mk_dosen', {
+    const response = await axios.get('http://localhost:3000/mk_dosen', {
       headers: { Authorization: `Bearer ${token}` }
     });
-    matchingList.value = response.data.map((match) => ({
-      id_mk_kelas_dosen: match.id_mk_kelas_dosen,
-      kelas: match.mata_kuliah_kelas,
-      dosen: match.dosen
-    }));
+    matchingList.value = response.data;
   } catch (error) {
     console.error('Gagal mengambil data matching', error);
   }
+}
+
+// Helper to get dosen name from dosen_kode
+const getDosenName = (dosenKode) => {
+  const dosen = dosenList.value.find(d => d.dosen_kode === dosenKode);
+  return dosen ? dosen.dosen_nama : 'Unknown';
+}
+
+// Format semesters for display
+const formatSemesters = (semesters) => {
+  if (!semesters || !Array.isArray(semesters)) return '';
+  return semesters.sort((a, b) => a - b).join(', ');
 }
 
 onMounted(() => {
@@ -223,21 +205,19 @@ const updateKelas = () => {
 
 // Submit Matching or Update if Edit Mode is Active
 const submitMatching = async () => {
-  if (!selectedMataKuliah.value || selectedDosenList.value.length === 0 || !selectedKelas.value)
- {
+  if (!selectedMataKuliah.value || !selectedDosen.value || !selectedKelas.value) {
     console.error("Form is incomplete, cannot submit.");
     return;
   }
 
   const postData = {
-    id_mk_kelas: selectedKelas.value.id_mk_kelas,
     nama_kelas: selectedKelas.value.nama_kelas,
-    dosen_kode: selectedDosenList.value.map(d => d.dosen_kode),
-    semesters: selectedSemesters.value
+    dosen_kode: selectedDosen.value.dosen_kode,
+    mk_kelas_sem: selectedSemesters.value
   };
 
   try {
-    isSubmitting.value = true;  // Set loading state
+    isSubmitting.value = true;
 
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
@@ -245,30 +225,23 @@ const submitMatching = async () => {
     if (editIndex.value !== null) {
       // Update the existing data
       const match = matchingList.value[editIndex.value];
-      const updatedData = { ...postData };
-
-      const response = await axios.put(`http://10.15.41.68:3000/mk_dosen/${match.id_mk_kelas_dosen}`, updatedData, {
+      
+      const response = await axios.patch(`http://localhost:3000/mk_dosen/${match.id}`, postData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      console.log('Server Response:', response); // Debugging the response
-
       if (response.status === 200) {
-        // After updating, re-fetch the updated matching data
         await fetchMatchingData();
       } else {
         console.error("Update failed:", response);
       }
     } else {
       // Create new data
-      const response = await axios.post('http://10.15.41.68:3000/mk_dosen', postData, {
+      const response = await axios.post('http://localhost:3000/mk_dosen', postData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      console.log('Server Response:', response); // Debugging the response
-
       if (response.status === 200 || response.status === 201) {
-        // After creating, re-fetch the updated matching data
         await fetchMatchingData();
       } else {
         console.error("Create failed:", response);
@@ -280,19 +253,35 @@ const submitMatching = async () => {
   } catch (error) {
     console.error('Error submitting matching:', error);
   } finally {
-    isSubmitting.value = false;  // Reset loading state
+    isSubmitting.value = false;
   }
 };
 
-
+// Edit matching data
 const editMatching = (index) => {
   const match = matchingList.value[index];
-  selectedMataKuliah.value = mataKuliahList.value.find(mk => mk.matkul_kode === match.kelas.matkul_kode);
-  selectedKelas.value = match.kelas;
-  selectedDosen.value = dosenList.value.find(dosen => dosen.dosen_kode === match.dosen.dosen_kode);
+  
+  // Find the mata kuliah based on kelas name
+  const matkul = mataKuliahList.value.find(mk => 
+    mk.mata_kuliah_kelas && mk.mata_kuliah_kelas.some(kelas => kelas.nama_kelas === match.nama_kelas)
+  );
+  
+  if (matkul) {
+    selectedMataKuliah.value = matkul;
+    // Find the specific kelas within this matkul
+    selectedKelas.value = matkul.mata_kuliah_kelas.find(kelas => kelas.nama_kelas === match.nama_kelas);
+  }
+  
+  // Find the dosen
+  selectedDosen.value = dosenList.value.find(dosen => dosen.dosen_kode === match.dosen_kode);
+  
+  // Set selected semesters
+  selectedSemesters.value = [...match.mk_kelas_sem];
+  
   editIndex.value = index;
 };
 
+// Delete matching data
 const deleteMatching = async (index) => {
   const match = matchingList.value[index];
 
@@ -300,7 +289,7 @@ const deleteMatching = async (index) => {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
 
-    await axios.delete(`http://10.15.41.68:3000/mk_dosen/${match.id_mk_kelas_dosen}`, {
+    await axios.delete(`http://localhost:3000/mk_dosen/${match.id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 

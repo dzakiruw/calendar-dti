@@ -118,7 +118,7 @@ import axios from 'axios';
 const kode = ref("");
 const nama = ref("");
 const jenisMataKuliah = ref("");
-const kelas = ref([]);
+const kelasDipilih = ref([]);
 const mataKuliahList = ref([]);
 const editIndex = ref(null);
 
@@ -143,12 +143,12 @@ const fetchMataKuliah = async () => {
 
 // Submit Mata Kuliah (Add or Update)
 const submitMataKuliah = async () => {
-  const newMataKuliah = {
+  const newMataKuliah = () => ({
     matkul_kode: kode.value,
     matkul_nama: nama.value,
     matkul_tipe: jenisMataKuliah.value,
-    kelas: kelas.value.map(k => ({ kelas_mk: k })),  // ensure this is formatted correctly
-  };
+    kelas: kelasDipilih.value.map(k => ({ kelas_mk: k })),
+  });
 
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
@@ -159,7 +159,7 @@ const submitMataKuliah = async () => {
     if (editIndex.value !== null) {
       // Update Mata Kuliah
       const mataKuliahKode = mataKuliahList.value[editIndex.value].matkul_kode;
-      await axios.put(`http://10.15.41.68:3000/mata_kuliah/${mataKuliahKode}`, newMataKuliah, {
+      await axios.patch(`http://10.15.41.68:3000/mata_kuliah/${mataKuliahKode}`, newMataKuliah, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -204,6 +204,7 @@ const cancelEdit = () => {
 
 // Delete Mata Kuliah
 const deleteMataKuliah = async (index) => {
+  if (!confirm('Yakin ingin menghapus mata kuliah ini?')) return;
   const mataKuliahKode = mataKuliahList.value[index].matkul_kode;
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;

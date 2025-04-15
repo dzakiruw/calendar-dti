@@ -15,6 +15,7 @@
     "axios": "^1.8.4",
     "file-saver": "^2.0.5",
     "nuxt": "^3.16.1",
+    "sweetalert2": "^11.18.0",
     "vue": "^3.5.13",
     "vue-icons": "^2.0.0",
     "vue-router": "^4.5.0",

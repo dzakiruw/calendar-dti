@@ -140,26 +140,20 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
-const hariList = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT']; // Hari sesuai dengan API
-const sesiList = ['SATU', 'DUA', 'TIGA']; // Sesi sesuai dengan API
+const hariList = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT'];
+const sesiList = ['SATU', 'DUA', 'TIGA'];
 
 const kodeDosen = ref('');
 const namaDosen = ref('');
 const isPrioritas = ref(false);
-const ketersediaan = ref([...Array(3)].map(() => Array(5).fill(false))); // Menyimpan ketersediaan dosen
+const ketersediaan = ref([...Array(3)].map(() => Array(5).fill(false)));
 
 const dosenList = ref([]);
 const editIndex = ref(null);
 
-// Fungsi untuk mendapatkan sesi yang difilter dan mengelompokkan hari berdasarkan sesi
 const getGroupedSessions = (jadwalDosen) => {
-  // Check if jadwal_dosen exists and is an array
-  if (!Array.isArray(jadwalDosen)) {
-    console.warn('Invalid jadwal_dosen format:', jadwalDosen);
-    return [];
-  }
+  if (!Array.isArray(jadwalDosen)) return [];
 
-  // Grouping hari per sesi
   const grouped = sesiList.map((sesi) => {
     const hariListForSesi = jadwalDosen
       .filter((item) => item.dosen_sedia_sesi === sesi)
@@ -171,112 +165,75 @@ const getGroupedSessions = (jadwalDosen) => {
     };
   });
 
-  // Remove sessions that have no available days
   return grouped.filter((group) => group.hari.length > 0);
 };
 
-// Batasi input level dosen hanya satu digit
-const limitLevelInput = () => {
-  if (levelDosen.value.length > 1) {
-    levelDosen.value = levelDosen.value.slice(0, 1);  // Hanya ambil satu digit
-  }
-};
-
-onMounted(async () => {
-  try {
-    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-    if (!token) {
-      throw new Error('User is not authenticated');
-    }
-
-    const response = await axios.get('http://10.15.41.68:3000/dosen', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    dosenList.value = response.data; // Make sure dosenList is properly initialized
-  } catch (error) {
-    console.error('Gagal mengambil data dosen', error);
-  }
-});
-
 const formatKetersediaan = (ketersediaan) => {
-   return ketersediaan.flatMap((sesi, sesiIndex) => {
-     return sesi
-       .map((available, hariIndex) => {
-         if (available) {
-           return {
-             hari: hariList[hariIndex],
-             sesi: sesiList[sesiIndex],
-           };
-         }
-         return null;
-       })
-       .filter(Boolean);
-   });
- };
-
-const submitDosen = async () => {
-  const newDosen = {
-    dosen_kode: kodeDosen.value,
-    dosen_nama: namaDosen.value,
-    dosen_prioritas: isPrioritas.value,
-    kesediaan: formatKetersediaan(ketersediaan.value),
-  };
-
-  try {
-    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-    if (!token) {
-      throw new Error('User is not authenticated');
-    }
-
-    if (editIndex.value !== null) {
-      // Update existing dosen
-      const dosenKode = dosenList.value[editIndex.value].dosen_kode;
-      await axios.patch(`http://10.15.41.68:3000/dosen/${dosenKode}`, newDosen, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      // Re-fetch the dosen list to get updated data
-      await fetchDosenList(); // This will refresh the dosen list
-      resetForm(); // After update, reset the form
-      editIndex.value = null; // Clear editIndex to reset the button to "Add Dosen"
-    } else {
-      // Add new dosen
-      const response = await axios.post('http://10.15.41.68:3000/dosen', newDosen, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      // Re-fetch the dosen list to get updated data
-      await fetchDosenList(); // This will refresh the dosen list
-      resetForm();
-    }
-  } catch (error) {
-    console.error('Gagal menambahkan data dosen', error);
-  }
+  return ketersediaan.flatMap((sesi, sesiIndex) =>
+    sesi.map((available, hariIndex) => {
+      if (available) {
+        return {
+          hari: hariList[hariIndex],
+          sesi: sesiList[sesiIndex],
+        };
+      }
+      return null;
+    }).filter(Boolean)
+  );
 };
 
 const fetchDosenList = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-    if (!token) {
-      throw new Error('User is not authenticated');
-    }
-
-    const response = await axios.get('http://10.15.41.68:3000/dosen', {
+    const response = await axios.get('http://localhost:3000/dosen', {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
-
-    // Update dosenList with fresh data from server
     dosenList.value = response.data;
   } catch (error) {
     console.error('Gagal mengambil data dosen', error);
+  }
+};
+
+onMounted(fetchDosenList);
+
+const submitDosen = async () => {
+  const kesediaanFormatted = formatKetersediaan(ketersediaan.value);
+  const newDosen = {
+    dosen_kode: kodeDosen.value,
+    dosen_nama: namaDosen.value,
+    dosen_prioritas: isPrioritas.value ? 'PRIORITAS' : 'BIASA',
+    kesediaan: kesediaanFormatted,
+  };
+
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+
+    if (editIndex.value !== null && dosenList.value[editIndex.value]) {
+      const kode = dosenList.value[editIndex.value].dosen_kode;
+      if (!kode) {
+        console.error("Kode dosen tidak ditemukan.");
+        return;
+      }
+      await axios.patch(`http://localhost:3000/dosen/${kode}`, newDosen, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } else {
+      await axios.post('http://localhost:3000/dosen', newDosen, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
+
+    await fetchDosenList();
+    resetForm();
+    editIndex.value = null;
+  } catch (error) {
+    console.error('Gagal mengirim data dosen', error);
   }
 };
 
@@ -291,14 +248,13 @@ const editDosen = (index) => {
   const dosen = dosenList.value[index];
   kodeDosen.value = dosen.dosen_kode;
   namaDosen.value = dosen.dosen_nama;
-  isPrioritas.value = dosen.dosen_prioritas || false;
+  isPrioritas.value = dosen.dosen_prioritas === 'PRIORITAS';
   ketersediaan.value = [...Array(3)].map(() => Array(5).fill(false));
 
-  // Load kesediaan into checkboxes
-  if (dosen.jadwal_dosen && Array.isArray(dosen.jadwal_dosen)) {
-    dosen.jadwal_dosen.forEach(item => {
-      const sesiIndex = sesiList.indexOf(item.dosen_sedia_sesi);
-      const hariIndex = hariList.indexOf(item.dosen_sedia_hari);
+  if (Array.isArray(dosen.jadwal_dosen)) {
+    dosen.jadwal_dosen.forEach(({ dosen_sedia_hari, dosen_sedia_sesi }) => {
+      const sesiIndex = sesiList.indexOf(dosen_sedia_sesi);
+      const hariIndex = hariList.indexOf(dosen_sedia_hari);
       if (sesiIndex !== -1 && hariIndex !== -1) {
         ketersediaan.value[sesiIndex][hariIndex] = true;
       }
@@ -310,28 +266,21 @@ const editDosen = (index) => {
 
 const cancelEdit = () => {
   resetForm();
-  editIndex.value = null; // Reset editIndex to null when canceling
+  editIndex.value = null;
 };
 
 const deleteDosen = async (index) => {
   const dosenKode = dosenList.value[index].dosen_kode;
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-
-    if (!token) {
-      throw new Error('User is not authenticated');
-    }
-
-    await axios.delete(`http://10.15.41.68:3000/dosen/${dosenKode}`, {
+    await axios.delete(`http://localhost:3000/dosen/${dosenKode}`, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
-    
-    // Update dosenList reactivity after deletion
-    dosenList.value.splice(index, 1);
+    await fetchDosenList();
   } catch (error) {
-    console.error('Gagal menghapus data dosen', error);
+    console.error('Gagal menghapus dosen', error);
   }
 };
 </script>
