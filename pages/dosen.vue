@@ -91,41 +91,43 @@
         </div>
 
         <!-- Dosen List -->
-        <ul v-else class="space-y-4">
-          <li v-for="(dosen, index) in dosenList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-            <div>
-              <p><strong>{{ dosen.dosen_nama }}</strong><br>{{ dosen.dosen_kode }}</p>
-              <p class="text-sm text-gray-600">
-                <span class="font-bold">Prioritas:</span> {{ dosen.dosen_prioritas }}
-              </p>
-              <p class="text-sm text-gray-600">
-                <span class="font-bold">Ketersediaan:</span>
-              </p>
-              <ul class="text-sm text-gray-600 list-disc ml-5 mt-1 space-y-0.5">
-                <li
-                  v-for="(result, sesiIndex) in getGroupedSessions(dosen.jadwal_dosen)"
-                  :key="sesiIndex"
-                >
-                  Sesi {{ result.sesi }}: {{ result.hari.join(', ') }}
-                </li>
-                <li
-                  v-if="getGroupedSessions(dosen.jadwal_dosen).length === 0"
-                  class="italic text-gray-400 list-none"
-                >
-                  Tidak tersedia
-                </li>
-              </ul>
-            </div>
-            <div class="flex space-x-4">
-              <button @click="editDosen(index)" class="text-gray-600 hover:text-gray-900">
-                <i class="fas fa-pencil-alt"></i>
-              </button>
-              <button @click="deleteDosen(index)" class="text-red-600 hover:text-red-900">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </div>
-          </li>
-        </ul>
+        <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)] pr-2">
+          <ul class="space-y-4">
+            <li v-for="(dosen, index) in dosenList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+              <div>
+                <p><strong>{{ dosen.dosen_nama }}</strong><br>{{ dosen.dosen_kode }}</p>
+                <p class="text-sm text-gray-600">
+                  <span class="font-bold">Prioritas:</span> {{ dosen.dosen_prioritas }}
+                </p>
+                <p class="text-sm text-gray-600">
+                  <span class="font-bold">Ketersediaan:</span>
+                </p>
+                <ul class="text-sm text-gray-600 list-disc ml-5 mt-1 space-y-0.5">
+                  <li
+                    v-for="(result, sesiIndex) in getGroupedSessions(dosen.jadwal_dosen)"
+                    :key="sesiIndex"
+                  >
+                    Sesi {{ result.sesi }}: {{ result.hari.join(', ') }}
+                  </li>
+                  <li
+                    v-if="getGroupedSessions(dosen.jadwal_dosen).length === 0"
+                    class="italic text-gray-400 list-none"
+                  >
+                    Tidak tersedia
+                  </li>
+                </ul>
+              </div>
+              <div class="flex space-x-4">
+                <button @click="editDosen(index)" class="text-gray-600 hover:text-gray-900">
+                  <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button @click="deleteDosen(index)" class="text-red-600 hover:text-red-900">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

@@ -11,62 +11,72 @@
       <!-- Mata Kuliah -->
       <div class="bg-white p-4 shadow-md rounded-lg">
         <h2 class="text-xl font-semibold mb-2"><i class="fas fa-book mr-2"></i> Mata Kuliah</h2>
-        <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-          <li v-for="mk in mataKuliahList" :key="mk.matkul_kode">
-            <strong>{{ mk.matkul_nama }}</strong> - {{ mk.matkul_kode }}
-          </li>
-        </ul>
+        <div class="overflow-y-auto max-h-[200px] pr-2">
+          <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
+            <li v-for="mk in mataKuliahList" :key="mk.matkul_kode">
+              <strong>{{ mk.matkul_nama }}</strong> - {{ mk.matkul_kode }}
+            </li>
+          </ul>
+        </div>
       </div>
 
       <!-- Dosen -->
       <div class="bg-white p-4 shadow-md rounded-lg">
         <h2 class="text-xl font-semibold mb-2"><i class="fas fa-user-tie mr-2"></i> Dosen</h2>
-        <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-          <li v-for="dosen in dosenList" :key="dosen.dosen_kode">
-            <strong>{{ dosen.dosen_nama }}</strong> - {{ dosen.dosen_kode }} (Level: {{ dosen.dosen_level }})
-          </li>
-        </ul>
+        <div class="overflow-y-auto max-h-[200px] pr-2">
+          <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
+            <li v-for="dosen in dosenList" :key="dosen.dosen_kode">
+              <strong>{{ dosen.dosen_nama }}</strong> - {{ dosen.dosen_kode }} (Level: {{ dosen.dosen_level }})
+            </li>
+          </ul>
+        </div>
       </div>
 
       <!-- Ruang Kelas -->
       <div class="bg-white p-4 shadow-md rounded-lg">
         <h2 class="text-xl font-semibold mb-2"><i class="fas fa-chalkboard-teacher mr-2"></i> Ruang Kelas</h2>
-        <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-          <li v-for="ruang in ruangKelasList" :key="ruang.ruangan_kode">
-            <strong>{{ ruang.ruangan_kode }}</strong> - Kapasitas: {{ ruang.ruangan_kapasitas }}
-          </li>
-        </ul>
+        <div class="overflow-y-auto max-h-[200px] pr-2">
+          <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
+            <li v-for="ruang in ruangKelasList" :key="ruang.ruangan_kode">
+              <strong>{{ ruang.ruangan_kode }}</strong> - Kapasitas: {{ ruang.ruangan_kapasitas }}
+            </li>
+          </ul>
+        </div>
       </div>
 
       <!-- Jadwal Hindari -->
       <div class="bg-white p-4 shadow-md rounded-lg">
         <h2 class="text-xl font-semibold mb-2"><i class="fas fa-calendar-times mr-2 text-red-500"></i> Jadwal Hindari</h2>
-        <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-          <li v-for="hindari in jadwalHindari" :key="hindari.id">
-            <strong>{{ hindari.hindari_agenda }}</strong> - {{ hindari.hindari_hari }} (Sesi: {{ hindari.hindari_sesi }})
-          </li>
-        </ul>
+        <div class="overflow-y-auto max-h-[200px] pr-2">
+          <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
+            <li v-for="hindari in jadwalHindari" :key="hindari.id">
+              <strong>{{ hindari.hindari_agenda }}</strong> - {{ hindari.hindari_hari }} (Sesi: {{ hindari.hindari_sesi }})
+            </li>
+          </ul>
+        </div>
       </div>
 
       <!-- Matching -->
       <div class="flex-1 bg-white p-6 shadow-md rounded-lg w-full sm:w-96">
-      <h2 class="text-xl font-bold mb-4">
-        <i class="fas fa-list-ul mr-2"></i> Daftar Matching
-      </h2>
+        <h2 class="text-xl font-bold mb-4">
+          <i class="fas fa-list-ul mr-2"></i> Daftar Matching
+        </h2>
 
-      <!-- Displaying "No data" message if matchingList is empty -->
-      <div v-if="matchingList.length === 0" class="text-gray-500">
-        Belum ada data matching.
+        <!-- Displaying "No data" message if matchingList is empty -->
+        <div v-if="matchingList.length === 0" class="text-gray-500">
+          Belum ada data matching.
+        </div>
+
+        <!-- Simple List of Matching Items -->
+        <div v-else class="overflow-y-auto max-h-[200px] pr-2">
+          <ul class="space-y-2">
+            <li v-for="(match, index) in matchingList" :key="index" class="text-gray-700">
+              <!-- Ensure that match.kelas is defined before accessing nama_kelas -->
+              <strong>{{ match.kelas.nama_kelas }}</strong> - {{ match.dosen.dosen_nama }}
+            </li>
+          </ul>
+        </div>
       </div>
-
-      <!-- Simple List of Matching Items -->
-<ul v-else class="space-y-2">
-  <li v-for="(match, index) in matchingList" :key="index" class="text-gray-700">
-    <!-- Ensure that match.kelas is defined before accessing nama_kelas -->
-    <strong>{{ match.kelas.nama_kelas }}</strong> - {{ match.dosen.dosen_nama }}
-  </li>
-</ul>
-    </div>
     </div>
 
     <!-- Tombol Aksi -->

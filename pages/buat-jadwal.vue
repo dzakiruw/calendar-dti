@@ -101,27 +101,29 @@
           Belum ada data matching.
         </div>
 
-        <ul v-else class="space-y-4">
-          <li v-for="(match, index) in matchingList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-            <div>
-              <p><strong>{{ match.nama_kelas }}</strong></p>
-              <p class="text-sm text-gray-600">
-                <span class="font-bold">Dosen:</span> {{ match.dosen_kode }} - {{ getDosenName(match.dosen_kode) }}
-              </p>
-              <p class="text-sm text-gray-600">
-                <span class="font-bold">Semester:</span> {{ formatSemesters(match.mk_kelas_sem) }}
-              </p>
-            </div>
-            <div class="flex space-x-4">
-              <button @click="editMatching(index)" class="text-gray-600 hover:text-gray-900">
-                <i class="fas fa-pencil-alt"></i>
-              </button>
-              <button @click="deleteMatching(index)" class="text-red-600 hover:text-red-900">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </div>
-          </li>
-        </ul>
+        <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)] pr-2">
+          <ul class="space-y-4">
+            <li v-for="(match, index) in matchingList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+              <div>
+                <p><strong>{{ match.nama_kelas }}</strong></p>
+                <p class="text-sm text-gray-600">
+                  <span class="font-bold">Dosen:</span> {{ match.dosen_kode }} - {{ getDosenName(match.dosen_kode) }}
+                </p>
+                <p class="text-sm text-gray-600">
+                  <span class="font-bold">Semester:</span> {{ formatSemesters(match.mk_kelas_sem) }}
+                </p>
+              </div>
+              <div class="flex space-x-4">
+                <button @click="editMatching(index)" class="text-gray-600 hover:text-gray-900">
+                  <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button @click="deleteMatching(index)" class="text-red-600 hover:text-red-900">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

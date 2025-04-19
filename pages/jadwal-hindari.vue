@@ -89,24 +89,26 @@
           Belum ada jadwal yang dihindari.
         </div>
 
-        <ul v-else class="space-y-4">
-          <li v-for="(jadwal, index) in jadwalList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-            <div>
-              <p class="font-semibold">{{ jadwal.hindari_agenda }}</p>
-              <p class="text-sm text-gray-600"><span class="font-bold">Hari:</span> {{ formatHari(jadwal.hindari_hari) }}</p>
-              <p class="text-sm text-gray-600"><span class="font-bold">Sesi:</span> {{ formatSesi(jadwal.hindari_sesi) }}</p>
-              <p class="text-sm text-gray-600"><span class="font-bold">Semester:</span> {{ jadwal.hindari_smt.join(', ') }}</p>
-            </div>
-            <div class="flex space-x-4">
-              <button @click="editJadwal(index)" class="text-gray-600 hover:text-gray-900">
-                <i class="fas fa-pencil-alt"></i>
-              </button>
-              <button @click="deleteJadwal(index)" class="text-red-600 hover:text-red-900">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </div>
-          </li>
-        </ul>
+        <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)] pr-2">
+          <ul class="space-y-4">
+            <li v-for="(jadwal, index) in jadwalList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+              <div>
+                <p class="font-semibold">{{ jadwal.hindari_agenda }}</p>
+                <p class="text-sm text-gray-600"><span class="font-bold">Hari:</span> {{ formatHari(jadwal.hindari_hari) }}</p>
+                <p class="text-sm text-gray-600"><span class="font-bold">Sesi:</span> {{ formatSesi(jadwal.hindari_sesi) }}</p>
+                <p class="text-sm text-gray-600"><span class="font-bold">Semester:</span> {{ jadwal.hindari_smt.join(', ') }}</p>
+              </div>
+              <div class="flex space-x-4">
+                <button @click="editJadwal(index)" class="text-gray-600 hover:text-gray-900">
+                  <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button @click="deleteJadwal(index)" class="text-red-600 hover:text-red-900">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

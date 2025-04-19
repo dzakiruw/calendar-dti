@@ -68,28 +68,30 @@
           Belum ada data ruang kelas.
         </div>
 
-        <ul v-else class="space-y-4">
-          <li
-            v-for="(ruangKelas, index) in ruangKelasList"
-            :key="index"
-            class="bg-gray-100 p-4 rounded-lg flex justify-between items-center"
-          >
-            <div>
-              <p><strong>{{ ruangKelas.ruangan_kode }}</strong></p>
-              <p class="text-sm text-gray-600">
-                <span class="font-bold">Kapasitas:</span> {{ ruangKelas.ruangan_kapasitas }}
-              </p>
-            </div>
-            <div class="flex space-x-4">
-              <button @click="editRuangKelas(index)" class="text-gray-600 hover:text-gray-900">
-                <i class="fas fa-pencil-alt"></i>
-              </button>
-              <button @click="deleteRuangKelas(index)" class="text-red-600 hover:text-red-900">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </div>
-          </li>
-        </ul>
+        <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)] pr-2">
+          <ul class="space-y-4">
+            <li
+              v-for="(ruangKelas, index) in ruangKelasList"
+              :key="index"
+              class="bg-gray-100 p-4 rounded-lg flex justify-between items-center"
+            >
+              <div>
+                <p><strong>{{ ruangKelas.ruangan_kode }}</strong></p>
+                <p class="text-sm text-gray-600">
+                  <span class="font-bold">Kapasitas:</span> {{ ruangKelas.ruangan_kapasitas }}
+                </p>
+              </div>
+              <div class="flex space-x-4">
+                <button @click="editRuangKelas(index)" class="text-gray-600 hover:text-gray-900">
+                  <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button @click="deleteRuangKelas(index)" class="text-red-600 hover:text-red-900">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
