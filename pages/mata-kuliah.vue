@@ -29,31 +29,21 @@
           <input type="text" v-model="nama" class="w-full mt-2 p-2 border rounded-lg" placeholder="Capstone Project" required />
         </div>
 
-        <!-- Jenis Mata Kuliah Selection -->
-        <div class="mb-4">
-          <label class="block text-gray-700 font-semibold">Jenis Mata Kuliah</label>
-          <select v-model="jenisMataKuliah" class="w-full mt-2 p-2 border rounded-lg" required>
-            <option disabled value="">Pilih Jenis Mata Kuliah</option>
-            <option value="DEPARTEMEN">Departemen</option>
-            <option value="PENGAYAAN">Pengayaan</option>
-          </select>
-        </div>
-
         <!-- Pilih Kelas (Checkbox) -->
         <div class="mb-4">
           <label class="block text-gray-700 font-semibold">Pilih Kelas</label>
           <div class="flex flex-wrap gap-4 mt-2">
             <label class="flex items-center">
-              <input type="checkbox" v-model="kelas" value="A" class="mr-2" /> Kelas A
+              <input type="checkbox" v-model="kelasDipilih" value="A" class="mr-2" /> Kelas A
             </label>
             <label class="flex items-center">
-              <input type="checkbox" v-model="kelas" value="B" class="mr-2" /> Kelas B
+              <input type="checkbox" v-model="kelasDipilih" value="B" class="mr-2" /> Kelas B
             </label>
             <label class="flex items-center">
-              <input type="checkbox" v-model="kelas" value="C" class="mr-2" /> Kelas C
+              <input type="checkbox" v-model="kelasDipilih" value="C" class="mr-2" /> Kelas C
             </label>
             <label class="flex items-center">
-              <input type="checkbox" v-model="kelas" value="D" class="mr-2" /> Kelas D
+              <input type="checkbox" v-model="kelasDipilih" value="D" class="mr-2" /> Kelas D
             </label>
           </div>
         </div>
@@ -92,7 +82,6 @@
             <div>
               <p><strong>{{ mk.matkul_nama }}</strong><br>{{ mk.matkul_kode }}</p>
               <p class="text-sm text-gray-600">
-                <span class="font-bold">Jenis:</span> {{ mk.matkul_tipe }}<br>
                 <span class="font-bold">Kelas:</span> {{ mk.mata_kuliah_kelas.map(k => k.kelas_mk).join(", ") }}
               </p>
             </div>
@@ -117,7 +106,6 @@ import axios from 'axios';
 
 const kode = ref("");
 const nama = ref("");
-const jenisMataKuliah = ref("");
 const kelasDipilih = ref([]);
 const mataKuliahList = ref([]);
 const editIndex = ref(null);
@@ -143,12 +131,11 @@ const fetchMataKuliah = async () => {
 
 // Submit Mata Kuliah (Add or Update)
 const submitMataKuliah = async () => {
-  const newMataKuliah = () => ({
+  const newMataKuliah = {
     matkul_kode: kode.value,
     matkul_nama: nama.value,
-    matkul_tipe: jenisMataKuliah.value,
-    kelas: kelasDipilih.value.map(k => ({ kelas_mk: k })),
-  });
+    kelas: kelasDipilih.value.map(k => ({ kelas_mk: k }))
+  };
 
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
@@ -191,8 +178,7 @@ const editMataKuliah = (index) => {
   const mk = mataKuliahList.value[index];
   kode.value = mk.matkul_kode;
   nama.value = mk.matkul_nama;
-  jenisMataKuliah.value = mk.matkul_tipe;
-  kelas.value = mk.mata_kuliah_kelas.map(k => k.kelas_mk);
+  kelasDipilih.value = mk.mata_kuliah_kelas.map(k => k.kelas_mk);
   editIndex.value = index;
 };
 
@@ -227,8 +213,7 @@ const deleteMataKuliah = async (index) => {
 const resetForm = () => {
   kode.value = "";
   nama.value = "";
-  jenisMataKuliah.value = "";
-  kelas.value = [];
+  kelasDipilih.value = [];
 };
 
 // Fetch mata kuliah data when component is mounted

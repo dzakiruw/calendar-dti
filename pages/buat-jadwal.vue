@@ -23,6 +23,16 @@
           </select>
         </div>
 
+        <!-- Mata Kuliah Type -->
+        <div class="mb-4">
+          <label class="block text-gray-700 font-semibold">Jenis Mata Kuliah</label>
+          <select v-model="selectedMataKuliahType" class="w-full mt-2 p-2 border rounded-lg" required>
+            <option disabled value="">Pilih Jenis Mata Kuliah</option>
+            <option value="DEPARTEMEN">Departemen</option>
+            <option value="PENGAYAAN">Pengayaan</option>
+          </select>
+        </div>
+
         <!-- Mata Kuliah Kelas -->
         <div class="mb-4" v-if="selectedMataKuliah">
           <label class="block text-gray-700 font-semibold">Pilih Kelas</label>
@@ -125,6 +135,7 @@ const mataKuliahList = ref([])
 const dosenList = ref([])  
 const matchingList = ref([])  
 const selectedMataKuliah = ref(null)
+const selectedMataKuliahType = ref("")
 const selectedKelas = ref(null)
 const selectedSemesters = ref([])
 const selectedDosen = ref(null)
@@ -135,9 +146,14 @@ const isSubmitting = ref(false)
 const fetchMataKuliah = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-    if (!token) throw new Error('User is not authenticated');
-    const response = await axios.get('http://localhost:3000/mata_kuliah', {
-      headers: { Authorization: `Bearer ${token}` }
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    const response = await axios.get('http://10.15.41.68:3000/mata_kuliah', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
     mataKuliahList.value = response.data;
   } catch (error) {
@@ -149,13 +165,19 @@ const fetchMataKuliah = async () => {
 const fetchDosen = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-    if (!token) throw new Error('User is not authenticated');
-    const response = await axios.get('http://localhost:3000/dosen', {
-      headers: { Authorization: `Bearer ${token}` }
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    const response = await axios.get('http://10.15.41.68:3000/dosen', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
-    dosenList.value = response.data;
+    dosenList.value = response.data || [];
   } catch (error) {
     console.error('Gagal mengambil data dosen', error);
+    dosenList.value = [];
   }
 }
 
@@ -163,9 +185,14 @@ const fetchDosen = async () => {
 const fetchMatchingData = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-    if (!token) throw new Error('User is not authenticated');
-    const response = await axios.get('http://localhost:3000/mk_dosen', {
-      headers: { Authorization: `Bearer ${token}` }
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    const response = await axios.get('http://10.15.41.68:3000/mk_dosen', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
     matchingList.value = response.data;
   } catch (error) {
@@ -175,6 +202,7 @@ const fetchMatchingData = async () => {
 
 // Helper to get dosen name from dosen_kode
 const getDosenName = (dosenKode) => {
+  if (!Array.isArray(dosenList.value)) return 'Unknown';
   const dosen = dosenList.value.find(d => d.dosen_kode === dosenKode);
   return dosen ? dosen.dosen_nama : 'Unknown';
 }
@@ -193,6 +221,7 @@ onMounted(() => {
 
 const resetForm = () => {
   selectedMataKuliah.value = null
+  selectedMataKuliahType.value = ""
   selectedKelas.value = null
   selectedDosen.value = null
   selectedSemesters.value = []
@@ -213,21 +242,26 @@ const submitMatching = async () => {
   const postData = {
     nama_kelas: selectedKelas.value.nama_kelas,
     dosen_kode: selectedDosen.value.dosen_kode,
-    mk_kelas_sem: selectedSemesters.value
+    mk_kelas_sem: selectedSemesters.value,
+    matkul_tipe: selectedMataKuliahType.value
   };
 
   try {
     isSubmitting.value = true;
 
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-    if (!token) throw new Error('User is not authenticated');
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
 
     if (editIndex.value !== null) {
       // Update the existing data
       const match = matchingList.value[editIndex.value];
       
-      const response = await axios.patch(`http://localhost:3000/mk_dosen/${match.id}`, postData, {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await axios.patch(`http://10.15.41.68:3000/mk_dosen/${match.id}`, postData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       if (response.status === 200) {
@@ -237,8 +271,11 @@ const submitMatching = async () => {
       }
     } else {
       // Create new data
-      const response = await axios.post('http://localhost:3000/mk_dosen', postData, {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await axios.post('http://10.15.41.68:3000/mk_dosen', postData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
       });
 
       if (response.status === 200 || response.status === 201) {
@@ -289,8 +326,10 @@ const deleteMatching = async (index) => {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
 
-    await axios.delete(`http://localhost:3000/mk_dosen/${match.id}`, {
-      headers: { Authorization: `Bearer ${token}` }
+    await axios.delete(`http://10.15.41.68:3000/mk_dosen/${match.id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
 
     matchingList.value.splice(index, 1);
