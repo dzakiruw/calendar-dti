@@ -1,16 +1,16 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-6">
+  <div class="min-h-screen bg-gray-50 p-4 md:p-6 overflow-x-hidden">
     <!-- Title -->
     <div class="mb-6 flex items-center justify-center gap-3">
-      <img src="/pilih-jadwal.png" alt="Icon Pilih Jadwal" class="w-12 h-12" />
-      <h1 class="text-3xl font-bold text-center">Pilih Jadwal</h1>
+      <img src="/pilih-jadwal.png" alt="Icon Pilih Jadwal" class="w-10 h-10 md:w-12 md:h-12" />
+      <h1 class="text-2xl md:text-3xl font-bold text-center">Pilih Jadwal</h1>
     </div>
 
     <!-- Informasi Daftar Data -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
       <!-- Mata Kuliah -->
       <div class="bg-white p-4 shadow-md rounded-lg">
-        <h2 class="text-xl font-semibold mb-2"><i class="fas fa-book mr-2"></i> Mata Kuliah</h2>
+        <h2 class="text-lg md:text-xl font-semibold mb-2"><i class="fas fa-book mr-2"></i> Mata Kuliah</h2>
         <div class="overflow-y-auto max-h-[200px] pr-2">
           <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
             <li v-for="mk in mataKuliahList" :key="mk.matkul_kode">
@@ -22,7 +22,7 @@
 
       <!-- Dosen -->
       <div class="bg-white p-4 shadow-md rounded-lg">
-        <h2 class="text-xl font-semibold mb-2"><i class="fas fa-user-tie mr-2"></i> Dosen</h2>
+        <h2 class="text-lg md:text-xl font-semibold mb-2"><i class="fas fa-user-tie mr-2"></i> Dosen</h2>
         <div class="overflow-y-auto max-h-[200px] pr-2">
           <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
             <li v-for="dosen in dosenList" :key="dosen.dosen_kode">
@@ -34,7 +34,7 @@
 
       <!-- Ruang Kelas -->
       <div class="bg-white p-4 shadow-md rounded-lg">
-        <h2 class="text-xl font-semibold mb-2"><i class="fas fa-chalkboard-teacher mr-2"></i> Ruang Kelas</h2>
+        <h2 class="text-lg md:text-xl font-semibold mb-2"><i class="fas fa-chalkboard-teacher mr-2"></i> Ruang Kelas</h2>
         <div class="overflow-y-auto max-h-[200px] pr-2">
           <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
             <li v-for="ruang in ruangKelasList" :key="ruang.ruangan_kode">
@@ -46,7 +46,7 @@
 
       <!-- Jadwal Hindari -->
       <div class="bg-white p-4 shadow-md rounded-lg">
-        <h2 class="text-xl font-semibold mb-2"><i class="fas fa-calendar-times mr-2 text-red-500"></i> Jadwal Hindari</h2>
+        <h2 class="text-lg md:text-xl font-semibold mb-2"><i class="fas fa-calendar-times mr-2 text-red-500"></i> Jadwal Hindari</h2>
         <div class="overflow-y-auto max-h-[200px] pr-2">
           <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
             <li v-for="hindari in jadwalHindari" :key="hindari.id">
@@ -57,8 +57,8 @@
       </div>
 
       <!-- Matching -->
-      <div class="flex-1 bg-white p-6 shadow-md rounded-lg w-full sm:w-96">
-        <h2 class="text-xl font-bold mb-4">
+      <div class="bg-white p-4 shadow-md rounded-lg">
+        <h2 class="text-lg md:text-xl font-semibold mb-2">
           <i class="fas fa-list-ul mr-2"></i> Daftar Matching
         </h2>
 
@@ -71,7 +71,6 @@
         <div v-else class="overflow-y-auto max-h-[200px] pr-2">
           <ul class="space-y-2">
             <li v-for="(match, index) in matchingList" :key="index" class="text-gray-700">
-              <!-- Ensure that match.kelas is defined before accessing nama_kelas -->
               <strong>{{ match.kelas.nama_kelas }}</strong> - {{ match.dosen.dosen_nama }}
             </li>
           </ul>
@@ -80,49 +79,51 @@
     </div>
 
     <!-- Tombol Aksi -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-start mt-4">
+    <div class="flex flex-col sm:flex-row gap-4 justify-start mb-6">
       <button
         @click="generateJadwal"
-        class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 shadow"
+        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 shadow w-full sm:w-auto"
       >
         <i class="fas fa-cogs mr-2"></i> Generate Jadwal
       </button>
 
       <button
         @click="exportExcel"
-        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 shadow"
+        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 shadow w-full sm:w-auto"
       >
         <i class="fas fa-file-excel mr-2"></i> Export ke Excel
       </button>
     </div>
 
     <!-- Hasil Jadwal -->
-    <div v-if="jadwalGenerated.length" class="mt-8">
+    <div v-if="jadwalGenerated.length" class="overflow-x-auto">
       <h2 class="text-xl font-bold mb-4"><i class="fas fa-calendar-alt mr-2"></i> Hasil Jadwal</h2>
-      <table class="w-full bg-white rounded-lg shadow-md overflow-hidden">
-        <thead class="bg-gray-200 text-left text-sm font-semibold">
-          <tr>
-            <th class="px-4 py-2">Hari</th>
-            <th class="px-4 py-2">Sesi</th>
-            <th class="px-4 py-2">Mata Kuliah</th>
-            <th class="px-4 py-2">Dosen</th>
-            <th class="px-4 py-2">Ruangan</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(row, index) in jadwalGenerated"
-            :key="index"
-            class="border-t text-sm"
-          >
-            <td class="px-4 py-2">{{ row.hari }}</td>
-            <td class="px-4 py-2">{{ row.sesi }}</td>
-            <td class="px-4 py-2">{{ row.matkul }}</td>
-            <td class="px-4 py-2">{{ row.dosen }}</td>
-            <td class="px-4 py-2">{{ row.ruangan }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="min-w-full max-h-[600px] overflow-y-auto">
+        <table class="w-full bg-white rounded-lg shadow-md">
+          <thead class="bg-gray-200 text-left text-sm font-semibold sticky top-0">
+            <tr>
+              <th class="px-4 py-2 sticky left-0 bg-gray-200">Hari</th>
+              <th class="px-4 py-2 sticky left-[100px] bg-gray-200">Sesi</th>
+              <th class="px-4 py-2">Kelas</th>
+              <th class="px-4 py-2">Dosen</th>
+              <th class="px-4 py-2">Ruangan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(row, index) in jadwalGenerated"
+              :key="index"
+              class="border-t text-sm hover:bg-gray-50 transition-colors duration-200"
+            >
+              <td class="px-4 py-2 sticky left-0 bg-white">{{ row.hari }}</td>
+              <td class="px-4 py-2 sticky left-[100px] bg-white">{{ row.sesi }}</td>
+              <td class="px-4 py-2">{{ row.kelas }}</td>
+              <td class="px-4 py-2">{{ row.dosen }}</td>
+              <td class="px-4 py-2">{{ row.ruangan }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -132,6 +133,10 @@ import { ref, onMounted } from 'vue'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
 import axios from 'axios'
+
+// Define constants for days and sessions
+const hariList = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT']
+const sesiList = ['SATU', 'DUA', 'TIGA']
 
 // Define refs for storing lists of data
 const mataKuliahList = ref([]);
@@ -211,22 +216,335 @@ onMounted(() => {
   fetchMatchingData();
 })
 
-// Function to generate jadwal (dummy logic for testing)
-const generateJadwal = () => {
-  jadwalGenerated.value = [
-    { hari: 'Senin', sesi: '1', matkul: 'Algoritma', dosen: 'Dr. A', ruangan: 'R101' },
-    { hari: 'Rabu', sesi: '2', matkul: 'Basis Data', dosen: 'Prof. B', ruangan: 'R102' },
-    { hari: 'Jumat', sesi: '3', matkul: 'Struktur Data', dosen: 'Dr. C', ruangan: 'R101' },
-  ]
-}
+// Function to generate jadwal
+const generateJadwal = async () => {
+  try {
+    console.log('Starting schedule generation...');
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    // Fetch all necessary data
+    console.log('Fetching data from API...');
+    const [mataKuliahResponse, dosenResponse, ruanganResponse, jadwalHindariResponse, mkDosenResponse] = await Promise.all([
+      axios.get('http://10.15.41.68:3000/mata_kuliah', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }),
+      axios.get('http://10.15.41.68:3000/dosen', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }),
+      axios.get('http://10.15.41.68:3000/ruangan', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }),
+      axios.get('http://10.15.41.68:3000/jadwal_hindari', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }),
+      axios.get('http://10.15.41.68:3000/mk_dosen', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+    ]);
+
+    const mataKuliah = mataKuliahResponse.data;
+    const dosen = dosenResponse.data;
+    const ruangan = ruanganResponse.data;
+    const jadwalHindari = jadwalHindariResponse.data;
+    const mkDosen = mkDosenResponse.data;
+
+    // Initialize schedule matrix and lecturer availability tracker
+    const schedule = Array(5).fill().map(() => 
+      Array(3).fill().map(() => [])
+    );
+    const lecturerSchedule = {}; // Track lecturer availability
+
+    // Helper function to check if time slot is available
+    const isTimeSlotAvailable = (day, session) => {
+      return !jadwalHindari.some(jh => 
+        jh.hindari_hari === hariList[day] && 
+        jh.hindari_sesi === sesiList[session]
+      );
+    };
+
+    // Helper function to check if lecturer is available
+    const isLecturerAvailable = (lecturerCode, day, session) => {
+      const lecturer = dosen.find(d => d.dosen_kode === lecturerCode);
+      if (!lecturer || !lecturer.jadwal_dosen) return false;
+      
+      // Check if lecturer is already scheduled for this time slot
+      const key = `${lecturerCode}|${day}|${session}`;
+      if (lecturerSchedule[key]) return false;
+      
+      return lecturer.jadwal_dosen.some(jd => 
+        jd.dosen_sedia_hari === hariList[day] && 
+        jd.dosen_sedia_sesi === sesiList[session]
+      );
+    };
+
+    // Helper function to check if room is available
+    const isRoomAvailable = (roomCode, day, session) => {
+      return !schedule[day][session].some(s => s.ruangan_kode === roomCode);
+    };
+
+    // Helper function to schedule a course
+    const scheduleCourse = (course, day, session, room) => {
+      const matkul = mataKuliah.find(mk => 
+        mk.mata_kuliah_kelas.some(mkk => mkk.nama_kelas === course.mata_kuliah_kelas?.nama_kelas)
+      );
+      if (!matkul) return false;
+
+      const matkulKelas = matkul.mata_kuliah_kelas.find(mkk => 
+        mkk.nama_kelas === course.mata_kuliah_kelas?.nama_kelas
+      );
+      if (!matkulKelas) return false;
+
+      // Mark lecturer as scheduled for this time slot
+      const lecturerKey = `${course.dosen_kode}|${day}|${session}`;
+      lecturerSchedule[lecturerKey] = true;
+
+      schedule[day][session].push({
+        nama_kelas: course.mata_kuliah_kelas?.nama_kelas,
+        dosen_kode: course.dosen_kode,
+        ruangan_kode: room.ruangan_kode,
+        matkul_kode: matkulKelas.matkul_kode,
+        matkul_nama: matkul.matkul_nama,
+        kelas: course.mata_kuliah_kelas?.nama_kelas
+      });
+
+      return true;
+    };
+
+    // Schedule SKBP courses first
+    console.log('Scheduling SKBP courses...');
+    const skbpCourses = mkDosen.filter(md => md.matkul_tipe === 'SKBP');
+    for (const course of skbpCourses) {
+      let scheduled = false;
+      for (let day = 0; day < 5; day++) {
+        for (let session = 0; session < 3; session++) {
+          if (isTimeSlotAvailable(day, session) && 
+              isLecturerAvailable(course.dosen_kode, day, session)) {
+            const availableRoom = ruangan.find(room => 
+              isRoomAvailable(room.ruangan_kode, day, session)
+            );
+            
+            if (availableRoom) {
+              scheduled = scheduleCourse(course, day, session, availableRoom);
+              if (scheduled) break;
+            }
+          }
+          if (scheduled) break;
+        }
+        if (scheduled) break;
+      }
+    }
+
+    // Schedule enrichment courses (prioritize Friday sessions 2/3)
+    console.log('Scheduling enrichment courses...');
+    const enrichmentCourses = mkDosen.filter(md => md.matkul_tipe === 'PENGAYAAN');
+    
+    // Try Friday sessions 2/3 first
+    for (const course of enrichmentCourses) {
+      let scheduled = false;
+      for (let session = 1; session < 3; session++) {
+        if (isTimeSlotAvailable(4, session) && 
+            isLecturerAvailable(course.dosen_kode, 4, session)) {
+          const availableRoom = ruangan.find(room => 
+            isRoomAvailable(room.ruangan_kode, 4, session)
+          );
+          
+          if (availableRoom) {
+            scheduled = scheduleCourse(course, 4, session, availableRoom);
+            if (scheduled) break;
+          }
+        }
+      }
+
+      // If not scheduled on Friday, try other days
+      if (!scheduled) {
+        for (let day = 0; day < 5; day++) {
+          for (let session = 0; session < 3; session++) {
+            if (isTimeSlotAvailable(day, session) && 
+                isLecturerAvailable(course.dosen_kode, day, session)) {
+              const availableRoom = ruangan.find(room => 
+                isRoomAvailable(room.ruangan_kode, day, session)
+              );
+              
+              if (availableRoom) {
+                scheduled = scheduleCourse(course, day, session, availableRoom);
+                if (scheduled) break;
+              }
+            }
+            if (scheduled) break;
+          }
+          if (scheduled) break;
+        }
+      }
+    }
+
+    // Schedule regular courses
+    console.log('Scheduling regular courses...');
+    const regularCourses = mkDosen.filter(md => md.matkul_tipe === 'DEPARTEMEN');
+    for (const course of regularCourses) {
+      let scheduled = false;
+      for (let day = 0; day < 5; day++) {
+        for (let session = 0; session < 3; session++) {
+          if (isTimeSlotAvailable(day, session) && 
+              isLecturerAvailable(course.dosen_kode, day, session)) {
+            const availableRoom = ruangan.find(room => 
+              isRoomAvailable(room.ruangan_kode, day, session)
+            );
+            
+            if (availableRoom) {
+              scheduled = scheduleCourse(course, day, session, availableRoom);
+              if (scheduled) break;
+            }
+          }
+          if (scheduled) break;
+        }
+        if (scheduled) break;
+      }
+    }
+
+    // Convert schedule to flat array for display
+    const flatSchedule = [];
+    for (let day = 0; day < 5; day++) {
+      for (let session = 0; session < 3; session++) {
+        const classes = schedule[day][session];
+        for (const classInfo of classes) {
+          flatSchedule.push({
+            hari: hariList[day],
+            sesi: sesiList[session],
+            matkul: classInfo.matkul_nama,
+            dosen: classInfo.dosen_kode,
+            ruangan: classInfo.ruangan_kode,
+            kelas: classInfo.kelas
+          });
+        }
+      }
+    }
+
+    // Update the generated schedule
+    jadwalGenerated.value = flatSchedule;
+    console.log('Schedule generation completed');
+  } catch (error) {
+    console.error('Error generating schedule:', error);
+    alert('Terjadi kesalahan saat membuat jadwal. Silakan coba lagi.');
+  }
+};
 
 // Function to export jadwal to Excel
 const exportExcel = () => {
-  const worksheet = XLSX.utils.json_to_sheet(jadwalGenerated.value)
-  const workbook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Jadwal')
-  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
-  const blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
-  saveAs(blob, 'jadwal.xlsx')
+  // Get unique rooms and sort them
+  const uniqueRooms = [...new Set(jadwalGenerated.value.map(item => item.ruangan))].sort();
+  
+  // Get unique time slots (hari + sesi combinations) and sort them
+  const uniqueTimeSlots = [...new Set(jadwalGenerated.value.map(item => `${item.hari}|${item.sesi}`))].sort((a, b) => {
+    const [hariA, sesiA] = a.split('|');
+    const [hariB, sesiB] = b.split('|');
+    const hariOrder = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT'];
+    const sesiOrder = ['SATU', 'DUA', 'TIGA'];
+    return hariOrder.indexOf(hariA) - hariOrder.indexOf(hariB) || 
+           sesiOrder.indexOf(sesiA) - sesiOrder.indexOf(sesiB);
+  });
+  
+  // Create a matrix of data
+  const matrixData = [];
+  
+  // Add header row with room capacity
+  const headerRow = ['Hari', 'Sesi', ...uniqueRooms];
+  matrixData.push(headerRow);
+  
+  // Group data by hari and sesi
+  const groupedData = {};
+  jadwalGenerated.value.forEach(item => {
+    const key = `${item.hari}|${item.sesi}`;
+    if (!groupedData[key]) {
+      groupedData[key] = {
+        hari: item.hari,
+        sesi: item.sesi,
+        classes: {}
+      };
+    }
+    
+    // Format the output as "Kelas - Dosen"
+    groupedData[key].classes[item.ruangan] = `${item.kelas} - ${item.dosen}`;
+  });
+  
+  // Add data rows
+  uniqueTimeSlots.forEach(timeSlot => {
+    const [hari, sesi] = timeSlot.split('|');
+    const row = [hari, sesi];
+    
+    // Fill in class data for each room
+    uniqueRooms.forEach(room => {
+      const classData = groupedData[timeSlot]?.classes[room] || '';
+      row.push(classData);
+    });
+    
+    matrixData.push(row);
+  });
+  
+  // Create worksheet
+  const worksheet = XLSX.utils.aoa_to_sheet(matrixData);
+  
+  // Set column widths
+  const colWidths = [
+    { wch: 15 }, // Hari
+    { wch: 15 }, // Sesi
+    ...uniqueRooms.map(() => ({ wch: 50 })) // Room columns
+  ];
+  worksheet['!cols'] = colWidths;
+  
+  // Add styling
+  const range = XLSX.utils.decode_range(worksheet['!ref']);
+  for (let R = range.s.r; R <= range.e.r; R++) {
+    for (let C = range.s.c; C <= range.e.c; C++) {
+      const cell_address = { c: C, r: R };
+      const cell_ref = XLSX.utils.encode_cell(cell_address);
+      
+      // Style header row
+      if (R === 0) {
+        worksheet[cell_ref].s = {
+          font: { bold: true, color: { rgb: "FFFFFF" } },
+          fill: { fgColor: { rgb: "4F81BD" } },
+          alignment: { wrapText: true, vertical: "center", horizontal: "center" }
+        };
+      } else {
+        // Style data rows
+        worksheet[cell_ref].s = {
+          alignment: { wrapText: true, vertical: "center" },
+          border: {
+            top: { style: 'thin' },
+            bottom: { style: 'thin' },
+            left: { style: 'thin' },
+            right: { style: 'thin' }
+          }
+        };
+        
+        // Alternate row colors
+        if (R % 2 === 0) {
+          worksheet[cell_ref].s.fill = { fgColor: { rgb: "F2F2F2" } };
+        }
+      }
+    }
+  }
+  
+  // Freeze header row and first two columns
+  worksheet['!freeze'] = { xSplit: 2, ySplit: 1 };
+  
+  // Create workbook and save
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Jadwal');
+  
+  // Save the file
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+  saveAs(blob, 'jadwal.xlsx');
 }
+
+// Add this helper function to get classes for a specific time slot
+const getClassesForTimeSlot = (hari, sesi) => {
+  return jadwalGenerated.value.filter(
+    kelas => kelas.hari === hari && kelas.sesi === sesi
+  );
+};
 </script>
