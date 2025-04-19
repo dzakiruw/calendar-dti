@@ -1,10 +1,10 @@
 <template>
   <div class="h-screen flex flex-col items-center justify-start bg-gray-50 p-6">
     <!-- Title with Image -->
-    <div class="mb-6 w-full sm:w-auto">
+    <div class="mb-6 w-full sm:w-auto flex justify-center sm:justify-start">
       <h1 class="text-3xl font-bold flex items-center">
-        <img src="/input-kelas.png" alt="Kelas Icon" class="inline-block w-16 h-16 mr-2" />
-        Input Kelas
+        <img src="/input-kelas.png" alt="Classroom Icon" class="inline-block w-14 h-14 mr-2" />
+        Input Ruang Kelas
       </h1>
     </div>
 
@@ -59,26 +59,37 @@
       </form>
 
       <!-- Daftar Ruang Kelas -->
-      <div class="flex-1 bg-white p-6 shadow-md rounded-lg w-full sm:w-96">
+      <div class="flex-1 w-full sm:w-96 bg-white p-6 shadow-md rounded-lg mt-6 sm:mt-0">
         <h2 class="text-xl font-bold mb-4">
           <i class="fas fa-list-ul mr-2"></i> Daftar Ruang Kelas
         </h2>
 
-        <div v-if="ruangKelasList.length === 0" class="text-gray-500">
-          Belum ada data ruang kelas.
+        <!-- Search Bar -->
+        <div class="mb-4">
+          <div class="relative">
+            <input
+              type="text"
+              v-model="searchQuery"
+              class="w-full p-2 pl-10 border rounded-lg"
+              placeholder="Cari ruang kelas..."
+            />
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+          </div>
         </div>
 
+        <!-- Empty State -->
+        <div v-if="filteredRuangKelasList.length === 0" class="text-gray-500">
+          {{ searchQuery ? 'Tidak ditemukan ruang kelas yang sesuai.' : 'Belum ada ruang kelas yang diinputkan.' }}
+        </div>
+
+        <!-- Ruang Kelas List -->
         <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)] pr-2">
           <ul class="space-y-4">
-            <li
-              v-for="(ruangKelas, index) in ruangKelasList"
-              :key="index"
-              class="bg-gray-100 p-4 rounded-lg flex justify-between items-center"
-            >
+            <li v-for="(ruang, index) in filteredRuangKelasList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
               <div>
-                <p><strong>{{ ruangKelas.ruangan_kode }}</strong></p>
+                <p><strong>{{ ruang.ruangan_kode }}</strong></p>
                 <p class="text-sm text-gray-600">
-                  <span class="font-bold">Kapasitas:</span> {{ ruangKelas.ruangan_kapasitas }}
+                  <span class="font-bold">Kapasitas:</span> {{ ruang.ruangan_kapasitas }}
                 </p>
               </div>
               <div class="flex space-x-4">
@@ -99,7 +110,7 @@
 
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, computed } from 'vue';
 import axios from 'axios';
 
 // Reactive Variables
@@ -110,6 +121,18 @@ const form = ref({
 
 const ruangKelasList = ref([]);
 const editIndex = ref(null);
+const searchQuery = ref("");
+
+// Computed property for filtered ruang kelas list
+const filteredRuangKelasList = computed(() => {
+  if (!searchQuery.value) return ruangKelasList.value;
+  
+  const query = searchQuery.value.toLowerCase();
+  return ruangKelasList.value.filter(ruang => 
+    ruang.ruangan_kode.toLowerCase().includes(query) ||
+    ruang.ruangan_kapasitas.toString().includes(query)
+  );
+});
 
 // Fetch Ruang Kelas Data from API
 const fetchRuangKelas = async () => {

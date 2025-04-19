@@ -79,24 +79,45 @@
 
       </form>
 
-      <!-- List -->
-      <div class="flex-1 bg-white p-6 shadow-md rounded-lg w-full sm:w-96">
+      <!-- Daftar Jadwal Hindari -->
+      <div class="flex-1 w-full sm:w-96 bg-white p-6 shadow-md rounded-lg mt-6 sm:mt-0">
         <h2 class="text-xl font-bold mb-4">
-          <i class="fas fa-list-ul mr-2"></i> Daftar Jadwal Dihindari
+          <i class="fas fa-list-ul mr-2"></i> Daftar Jadwal Hindari
         </h2>
 
-        <div v-if="jadwalList.length === 0" class="text-gray-500">
-          Belum ada jadwal yang dihindari.
+        <!-- Search Bar -->
+        <div class="mb-4">
+          <div class="relative">
+            <input
+              type="text"
+              v-model="searchQuery"
+              class="w-full p-2 pl-10 border rounded-lg"
+              placeholder="Cari jadwal hindari..."
+            />
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+          </div>
         </div>
 
+        <!-- Empty State -->
+        <div v-if="filteredJadwalHindariList.length === 0" class="text-gray-500">
+          {{ searchQuery ? 'Tidak ditemukan jadwal hindari yang sesuai.' : 'Belum ada jadwal hindari yang diinputkan.' }}
+        </div>
+
+        <!-- Jadwal Hindari List -->
         <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)] pr-2">
           <ul class="space-y-4">
-            <li v-for="(jadwal, index) in jadwalList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+            <li v-for="(jadwal, index) in filteredJadwalHindariList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
               <div>
-                <p class="font-semibold">{{ jadwal.hindari_agenda }}</p>
-                <p class="text-sm text-gray-600"><span class="font-bold">Hari:</span> {{ formatHari(jadwal.hindari_hari) }}</p>
-                <p class="text-sm text-gray-600"><span class="font-bold">Sesi:</span> {{ formatSesi(jadwal.hindari_sesi) }}</p>
-                <p class="text-sm text-gray-600"><span class="font-bold">Semester:</span> {{ jadwal.hindari_smt.join(', ') }}</p>
+                <p><strong>{{ jadwal.hindari_agenda }}</strong></p>
+                <p class="text-sm text-gray-600">
+                  <span class="font-bold">Hari:</span> {{ jadwal.hindari_hari }}
+                </p>
+                <p class="text-sm text-gray-600">
+                  <span class="font-bold">Sesi:</span> {{ jadwal.hindari_sesi }}
+                </p>
+                <p class="text-sm text-gray-600">
+                  <span class="font-bold">Semester:</span> {{ jadwal.hindari_smt.join(', ') }}
+                </p>
               </div>
               <div class="flex space-x-4">
                 <button @click="editJadwal(index)" class="text-gray-600 hover:text-gray-900">
@@ -115,7 +136,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 
 // Form data
@@ -150,6 +171,21 @@ const editIndex = ref(null)
 const selectedSemesters = ref([])
 const selectAllSemesters = ref(false)
 
+const searchQuery = ref("");
+
+// Computed property for filtered jadwal hindari list
+const filteredJadwalHindariList = computed(() => {
+  if (!searchQuery.value) return jadwalList.value;
+  
+  const query = searchQuery.value.toLowerCase();
+  return jadwalList.value.filter(jadwal => 
+    jadwal.hindari_agenda.toLowerCase().includes(query) ||
+    jadwal.hindari_hari.toLowerCase().includes(query) ||
+    jadwal.hindari_sesi.toLowerCase().includes(query) ||
+    jadwal.hindari_smt.some(semester => semester.toString().includes(query))
+  );
+});
+
 const toggleSelectAll = () => {
   if (selectAllSemesters.value) {
     selectedSemesters.value = Array.from({ length: 8 }, (_, i) => i + 1)
@@ -170,22 +206,30 @@ const formatSesi = (sesi) => {
 
 const fetchJadwal = async () => {
   try {
-    const token = JSON.parse(localStorage.getItem('user'))?.accessToken
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) {
-      throw new Error('User is not authenticated')
+      throw new Error('User is not authenticated');
     }
 
     const response = await axios.get('http://10.15.41.68:3000/jadwal_hindari', {
       headers: {
         'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       },
-    })
-    // Directly use "SATU", "DUA", "TIGA" from the database
-    jadwalList.value = response.data
+    });
+    
+    // Log the response to verify the data structure
+    console.log('Jadwal Hindari Response:', response.data);
+    
+    // Update the jadwalList with the response data
+    jadwalList.value = response.data;
   } catch (error) {
-    console.log('Gagal mengambil data jadwal hindari', error)
+    console.error('Gagal mengambil data jadwal hindari', error);
+    if (error.response) {
+      console.error('Error response:', error.response.data);
+    }
   }
-}
+};
 
 const submitForm = async () => {
   const newJadwal = {
@@ -210,17 +254,23 @@ const submitForm = async () => {
     if (editIndex.value !== null) {
       const jadwalId = jadwalList.value[editIndex.value].id_hindari;
       response = await axios.patch(`http://10.15.41.68:3000/jadwal_hindari/${jadwalId}`, newJadwal, { headers });
+      
+      // Update the local list with the new data
+      jadwalList.value[editIndex.value] = response.data.data;
     } else {
       response = await axios.post('http://10.15.41.68:3000/jadwal_hindari', newJadwal, { headers });
+      
+      // Add the new jadwal to the list
+      jadwalList.value.push(response.data.data);
     }
 
-    console.log(response.data); // Log the response to verify
-
-    // Re-fetch the jadwal list after submitting
-    await fetchJadwalList();
     resetForm();
+    editIndex.value = null;
   } catch (error) {
     console.error('Error in submitForm:', error);
+    if (error.response) {
+      console.error('Error response:', error.response.data);
+    }
   }
 };
 
@@ -251,8 +301,8 @@ const editJadwal = (index) => {
   const jadwal = jadwalList.value[index]
   form.value = {
     hindari_agenda: jadwal.hindari_agenda,
-    hindari_hari: jadwal.hindari_hari,  // Direct string
-    hindari_sesi: reverseSesiMap[jadwal.hindari_sesi] || jadwal.hindari_sesi,  // Convert "SATU" to "SESI 1"
+    hindari_hari: jadwal.hindari_hari,
+    hindari_sesi: reverseSesiMap[jadwal.hindari_sesi] || jadwal.hindari_sesi,
     hindari_smt: [...jadwal.hindari_smt],
   }
   selectedSemesters.value = [...jadwal.hindari_smt]
@@ -266,22 +316,26 @@ const cancelEdit = () => {
 }
 
 const deleteJadwal = async (index) => {
-  const jadwalId = jadwalList.value[index].id_hindari
+  if (!confirm('Yakin ingin menghapus jadwal ini?')) return;
+  
+  const jadwalId = jadwalList.value[index].id_hindari;
   try {
-    const token = JSON.parse(localStorage.getItem('user'))?.accessToken
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) {
-      throw new Error('User is not authenticated')
+      throw new Error('User is not authenticated');
     }
 
     await axios.delete(`http://10.15.41.68:3000/jadwal_hindari/${jadwalId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       },
-    })
+    });
 
-    jadwalList.value.splice(index, 1)
+    // Remove the deleted jadwal from the list
+    jadwalList.value.splice(index, 1);
   } catch (error) {
-    console.log('Gagal menghapus data jadwal hindari', error)
+    console.error('Gagal menghapus data jadwal hindari', error);
   }
 }
 

@@ -26,7 +26,7 @@
         <div class="overflow-y-auto max-h-[200px] pr-2">
           <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
             <li v-for="dosen in dosenList" :key="dosen.dosen_kode">
-              <strong>{{ dosen.dosen_nama }}</strong> - {{ dosen.dosen_kode }} (Level: {{ dosen.dosen_level }})
+              <strong>{{ dosen.dosen_nama }}</strong> - {{ dosen.dosen_kode }} (Prioritas: {{ dosen.dosen_prioritas }})
             </li>
           </ul>
         </div>

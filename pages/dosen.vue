@@ -85,15 +85,28 @@
           <i class="fas fa-list-ul mr-2"></i> Daftar Dosen
         </h2>
 
+        <!-- Search Bar -->
+        <div class="mb-4">
+          <div class="relative">
+            <input
+              type="text"
+              v-model="searchQuery"
+              class="w-full p-2 pl-10 border rounded-lg"
+              placeholder="Cari dosen..."
+            />
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+          </div>
+        </div>
+
         <!-- Empty State -->
-        <div v-if="dosenList.length === 0" class="text-gray-500">
-          Belum ada dosen yang diinputkan.
+        <div v-if="filteredDosenList.length === 0" class="text-gray-500">
+          {{ searchQuery ? 'Tidak ditemukan dosen yang sesuai.' : 'Belum ada dosen yang diinputkan.' }}
         </div>
 
         <!-- Dosen List -->
         <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)] pr-2">
           <ul class="space-y-4">
-            <li v-for="(dosen, index) in dosenList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+            <li v-for="(dosen, index) in filteredDosenList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
               <div>
                 <p><strong>{{ dosen.dosen_nama }}</strong><br>{{ dosen.dosen_kode }}</p>
                 <p class="text-sm text-gray-600">
@@ -134,7 +147,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 
 const hariList = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT'];
@@ -146,6 +159,19 @@ const prioritas = ref("");
 const ketersediaan = ref([...Array(3)].map(() => Array(5).fill(false)));
 const dosenList = ref([]);
 const editIndex = ref(null);
+const searchQuery = ref("");
+
+// Computed property for filtered dosen list
+const filteredDosenList = computed(() => {
+  if (!searchQuery.value) return dosenList.value;
+  
+  const query = searchQuery.value.toLowerCase();
+  return dosenList.value.filter(dosen => 
+    dosen.dosen_nama.toLowerCase().includes(query) ||
+    dosen.dosen_kode.toLowerCase().includes(query) ||
+    dosen.dosen_prioritas.toLowerCase().includes(query)
+  );
+});
 
 // Fungsi untuk mendapatkan sesi yang difilter dan mengelompokkan hari berdasarkan sesi
 const getGroupedSessions = (jadwalDosen) => {

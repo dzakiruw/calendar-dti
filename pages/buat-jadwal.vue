@@ -91,38 +91,61 @@
         </div>
       </form>
 
-      <!-- Matching List -->
-      <div class="flex-1 bg-white p-6 shadow-md rounded-lg w-full sm:w-96">
+      <!-- Daftar Matching -->
+      <div class="flex-1 w-full sm:w-96 bg-white p-6 shadow-md rounded-lg mt-6 sm:mt-0">
         <h2 class="text-xl font-bold mb-4">
           <i class="fas fa-list-ul mr-2"></i> Daftar Matching
         </h2>
 
-        <div v-if="matchingList.length === 0" class="text-gray-500">
-          Belum ada data matching.
+        <!-- Search Bar -->
+        <div class="mb-4">
+          <div class="relative">
+            <input
+              type="text"
+              v-model="searchQuery"
+              class="w-full p-2 pl-10 border rounded-lg"
+              placeholder="Cari matching..."
+            />
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+          </div>
         </div>
 
+        <!-- Empty State -->
+        <div v-if="filteredMatchingList.length === 0" class="text-gray-500">
+          {{ searchQuery ? 'Tidak ditemukan matching yang sesuai.' : 'Belum ada matching yang diinputkan.' }}
+        </div>
+
+        <!-- Matching List -->
         <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)] pr-2">
-          <ul class="space-y-4">
-            <li v-for="(match, index) in matchingList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-              <div>
-                <p><strong>{{ match.nama_kelas }}</strong></p>
-                <p class="text-sm text-gray-600">
-                  <span class="font-bold">Dosen:</span> {{ match.dosen_kode }} - {{ getDosenName(match.dosen_kode) }}
-                </p>
-                <p class="text-sm text-gray-600">
-                  <span class="font-bold">Semester:</span> {{ formatSemesters(match.mk_kelas_sem) }}
-                </p>
-              </div>
-              <div class="flex space-x-4">
-                <button @click="editMatching(index)" class="text-gray-600 hover:text-gray-900">
-                  <i class="fas fa-pencil-alt"></i>
-                </button>
-                <button @click="deleteMatching(index)" class="text-red-600 hover:text-red-900">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </div>
-            </li>
-          </ul>
+          <div v-for="(classes, dosenName) in groupedMatchingList" :key="dosenName" class="mb-6">
+            <h3 class="text-lg font-semibold mb-2">{{ dosenName }}:</h3>
+            <ul class="space-y-4">
+              <li v-for="(matching, index) in classes" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+                <div>
+                  <p class="text-sm text-gray-600">
+                    <span class="font-bold">Kelas:</span> {{ matching.mata_kuliah_kelas.nama_kelas }}
+                  </p>
+                  <p class="text-sm text-gray-600">
+                    <span class="font-bold">Kode MK:</span> {{ matching.mata_kuliah_kelas.matkul_kode }}
+                  </p>
+                  <p class="text-sm text-gray-600">
+                    <span class="font-bold">Semester:</span> {{ matching.mk_kelas_sem.join(', ') }}
+                  </p>
+                  <p class="text-sm text-gray-600">
+                    <span class="font-bold">Tipe:</span> {{ matching.matkul_tipe }}
+                  </p>
+                </div>
+                <div class="flex space-x-4">
+                  <button @click="editMatching(matchingList.value.indexOf(matching))" class="text-gray-600 hover:text-gray-900">
+                    <i class="fas fa-pencil-alt"></i>
+                  </button>
+                  <button @click="deleteMatching(matchingList.value.indexOf(matching))" class="text-red-600 hover:text-red-900">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -130,7 +153,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 
 const mataKuliahList = ref([])  
@@ -143,6 +166,7 @@ const selectedSemesters = ref([])
 const selectedDosen = ref(null)
 const editIndex = ref(null)
 const isSubmitting = ref(false)
+const searchQuery = ref("")
 
 // Fetch Data Mata Kuliah
 const fetchMataKuliah = async () => {
@@ -194,11 +218,20 @@ const fetchMatchingData = async () => {
     const response = await axios.get('http://10.15.41.68:3000/mk_dosen', {
       headers: {
         'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       },
     });
+    
+    // Log the response to verify the data structure
+    console.log('Matching Data Response:', response.data);
+    
+    // Update the matchingList with the response data
     matchingList.value = response.data;
   } catch (error) {
     console.error('Gagal mengambil data matching', error);
+    if (error.response) {
+      console.error('Error response:', error.response.data);
+    }
   }
 }
 
@@ -234,6 +267,33 @@ const updateKelas = () => {
   selectedKelas.value = null;
 }
 
+// Edit matching data
+const editMatching = (index) => {
+  const match = matchingList.value[index];
+  
+  // Find the mata kuliah based on kelas name
+  const matkul = mataKuliahList.value.find(mk => 
+    mk.mata_kuliah_kelas && mk.mata_kuliah_kelas.some(kelas => kelas.nama_kelas === match.nama_kelas)
+  );
+  
+  if (matkul) {
+    selectedMataKuliah.value = matkul;
+    // Find the specific kelas within this matkul
+    selectedKelas.value = matkul.mata_kuliah_kelas.find(kelas => kelas.nama_kelas === match.nama_kelas);
+  }
+  
+  // Find the dosen
+  selectedDosen.value = dosenList.value.find(dosen => dosen.dosen_kode === match.dosen_kode);
+  
+  // Set selected semesters
+  selectedSemesters.value = [...match.mk_kelas_sem];
+  
+  // Set mata kuliah type
+  selectedMataKuliahType.value = match.matkul_tipe;
+  
+  editIndex.value = index;
+};
+
 // Submit Matching or Update if Edit Mode is Active
 const submitMatching = async () => {
   if (!selectedMataKuliah.value || !selectedDosen.value || !selectedKelas.value) {
@@ -256,32 +316,30 @@ const submitMatching = async () => {
       throw new Error('User is not authenticated');
     }
 
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+
     if (editIndex.value !== null) {
       // Update the existing data
       const match = matchingList.value[editIndex.value];
       
-      const response = await axios.patch(`http://10.15.41.68:3000/mk_dosen/${match.id}`, postData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await axios.patch(`http://10.15.41.68:3000/mk_dosen/${match.id}`, postData, { headers });
 
       if (response.status === 200) {
-        await fetchMatchingData();
+        // Update the local list with the new data
+        matchingList.value[editIndex.value] = response.data.data;
       } else {
         console.error("Update failed:", response);
       }
     } else {
       // Create new data
-      const response = await axios.post('http://10.15.41.68:3000/mk_dosen', postData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-      });
+      const response = await axios.post('http://10.15.41.68:3000/mk_dosen', postData, { headers });
 
       if (response.status === 200 || response.status === 201) {
-        await fetchMatchingData();
+        // Add the new matching to the list
+        matchingList.value.push(response.data.data);
       } else {
         console.error("Create failed:", response);
       }
@@ -291,37 +349,18 @@ const submitMatching = async () => {
     editIndex.value = null;
   } catch (error) {
     console.error('Error submitting matching:', error);
+    if (error.response) {
+      console.error('Error response:', error.response.data);
+    }
   } finally {
     isSubmitting.value = false;
   }
 };
 
-// Edit matching data
-const editMatching = (index) => {
-  const match = matchingList.value[index];
-  
-  // Find the mata kuliah based on kelas name
-  const matkul = mataKuliahList.value.find(mk => 
-    mk.mata_kuliah_kelas && mk.mata_kuliah_kelas.some(kelas => kelas.nama_kelas === match.nama_kelas)
-  );
-  
-  if (matkul) {
-    selectedMataKuliah.value = matkul;
-    // Find the specific kelas within this matkul
-    selectedKelas.value = matkul.mata_kuliah_kelas.find(kelas => kelas.nama_kelas === match.nama_kelas);
-  }
-  
-  // Find the dosen
-  selectedDosen.value = dosenList.value.find(dosen => dosen.dosen_kode === match.dosen_kode);
-  
-  // Set selected semesters
-  selectedSemesters.value = [...match.mk_kelas_sem];
-  
-  editIndex.value = index;
-};
-
 // Delete matching data
 const deleteMatching = async (index) => {
+  if (!confirm('Yakin ingin menghapus matching ini?')) return;
+  
   const match = matchingList.value[index];
 
   try {
@@ -331,9 +370,11 @@ const deleteMatching = async (index) => {
     await axios.delete(`http://10.15.41.68:3000/mk_dosen/${match.id}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       },
     });
 
+    // Remove the deleted matching from the list
     matchingList.value.splice(index, 1);
   } catch (error) {
     console.error('Error deleting matching:', error);
@@ -344,4 +385,33 @@ const cancelEdit = () => {
   resetForm();
   editIndex.value = null;
 }
+
+// Computed property for filtered matching list
+const filteredMatchingList = computed(() => {
+  if (!searchQuery.value) return matchingList.value;
+  
+  const query = searchQuery.value.toLowerCase();
+  return matchingList.value.filter(matching => 
+    matching.mata_kuliah_kelas.nama_kelas.toLowerCase().includes(query) ||
+    matching.mata_kuliah_kelas.matkul_kode.toLowerCase().includes(query) ||
+    matching.dosen.dosen_nama.toLowerCase().includes(query) ||
+    matching.mk_kelas_sem.join(', ').toLowerCase().includes(query) ||
+    matching.matkul_tipe.toLowerCase().includes(query)
+  );
+});
+
+// Computed property to group matchings by lecturer
+const groupedMatchingList = computed(() => {
+  const groups = {};
+  
+  filteredMatchingList.value.forEach(matching => {
+    const dosenName = matching.dosen.dosen_nama;
+    if (!groups[dosenName]) {
+      groups[dosenName] = [];
+    }
+    groups[dosenName].push(matching);
+  });
+  
+  return groups;
+});
 </script>
