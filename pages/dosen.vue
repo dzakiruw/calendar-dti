@@ -231,6 +231,64 @@
         </div>
       </div>
     </div>
+
+    <!-- Popup Konfirmasi Delete -->
+    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Hapus</h3>
+          <p class="text-gray-600 mb-6">
+            Apakah Anda yakin ingin menghapus data dosen ini?
+          </p>
+          <div class="flex justify-center space-x-4">
+            <button 
+              @click="confirmDelete" 
+              class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-300"
+            >
+              Ya, Hapus
+            </button>
+            <button 
+              @click="showDeleteConfirm = false" 
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popup Konfirmasi Edit -->
+    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-pencil-alt text-2xl text-blue-600"></i>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Edit</h3>
+          <p class="text-gray-600 mb-6">
+            Apakah Anda yakin ingin mengedit data dosen ini?
+          </p>
+          <div class="flex justify-center space-x-4">
+            <button 
+              @click="confirmEdit" 
+              class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-300"
+            >
+              Ya, Edit
+            </button>
+            <button 
+              @click="showEditConfirm = false" 
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -248,6 +306,11 @@ const ketersediaan = ref([...Array(3)].map(() => Array(5).fill(false)));
 const dosenList = ref([]);
 const editIndex = ref(null);
 const searchQuery = ref("");
+
+// Add new refs for confirmation popups
+const showDeleteConfirm = ref(false);
+const showEditConfirm = ref(false);
+const selectedIndex = ref(null);
 
 // Computed property for filtered dosen list
 const filteredDosenList = computed(() => {
@@ -288,8 +351,8 @@ const formatKetersediaan = (ketersediaan) => {
       .map((available, hariIndex) => {
         if (available) {
           return {
-            hari: hariList[hariIndex],
-            sesi: sesiList[sesiIndex]
+            dosen_sedia_hari: hariList[hariIndex],
+            dosen_sedia_sesi: sesiList[sesiIndex]
           };
         }
         return null;
@@ -325,13 +388,26 @@ const submitDosen = async () => {
       throw new Error('User is not authenticated');
     }
 
+    // Format kesediaan
+    const kesediaan = [];
+    ketersediaan.value.forEach((sesi, sesiIndex) => {
+      sesi.forEach((available, hariIndex) => {
+        if (available) {
+          kesediaan.push({
+            hari: hariList[hariIndex],
+            sesi: sesiList[sesiIndex]
+          });
+        }
+      });
+    });
+
     if (editIndex.value !== null) {
       // Update Dosen
       const updateData = {
         dosen_kode: kode.value,
         dosen_nama: nama.value,
         dosen_prioritas: prioritas.value,
-        kesediaan: formatKetersediaan(ketersediaan.value)
+        kesediaan: kesediaan
       };
 
       const dosenKode = dosenList.value[editIndex.value].dosen_kode;
@@ -346,13 +422,14 @@ const submitDosen = async () => {
       await fetchDosen();
       resetForm();
       editIndex.value = null;
+      showEditConfirm.value = false;
     } else {
       // Add New Dosen
       const newDosen = {
         dosen_kode: kode.value,
         dosen_nama: nama.value,
         dosen_prioritas: prioritas.value,
-        kesediaan: formatKetersediaan(ketersediaan.value)
+        kesediaan: kesediaan
       };
 
       await axios.post('http://10.15.41.68:3000/dosen', newDosen, {
@@ -371,59 +448,78 @@ const submitDosen = async () => {
     if (error.response) {
       console.error('Error response:', error.response.data);
       alert('Gagal mengupdate data: ' + (error.response.data.error || error.message));
+    } else {
+      alert('Gagal mengupdate data: ' + error.message);
     }
   }
 };
 
-// Edit Dosen
+// Update edit function to show confirmation
 const editDosen = (index) => {
+  selectedIndex.value = index;
+  showEditConfirm.value = true;
+};
+
+// Confirm edit function
+const confirmEdit = () => {
+  const index = selectedIndex.value;
   const dosen = dosenList.value[index];
   kode.value = dosen.dosen_kode;
   nama.value = dosen.dosen_nama;
   prioritas.value = dosen.dosen_prioritas;
   
-  // Reset ketersediaan
-  ketersediaan.value = [...Array(3)].map(() => Array(5).fill(false));
+  // Reset ketersediaan array
+  ketersediaan.value = Array(sesiList.length).fill().map(() => Array(hariList.length).fill(false));
   
-  // Load kesediaan into checkboxes
+  // Set ketersediaan based on jadwal_dosen
   if (dosen.jadwal_dosen && Array.isArray(dosen.jadwal_dosen)) {
-    dosen.jadwal_dosen.forEach(item => {
-      const sesiIndex = sesiList.indexOf(item.dosen_sedia_sesi);
-      const hariIndex = hariList.indexOf(item.dosen_sedia_hari);
-      if (sesiIndex !== -1 && hariIndex !== -1) {
+    dosen.jadwal_dosen.forEach(jadwal => {
+      const sesiIndex = sesiList.indexOf(jadwal.dosen_sedia_sesi);
+      const hariIndex = hariList.indexOf(jadwal.dosen_sedia_hari);
+      if (sesiIndex >= 0 && hariIndex >= 0) {
         ketersediaan.value[sesiIndex][hariIndex] = true;
       }
     });
   }
   
   editIndex.value = index;
+  showEditConfirm.value = false;
 };
 
-// Cancel Edit
-const cancelEdit = () => {
-  resetForm();
-  editIndex.value = null;
+// Update delete function to show confirmation
+const deleteDosen = (index) => {
+  selectedIndex.value = index;
+  showDeleteConfirm.value = true;
 };
 
-// Delete Dosen
-const deleteDosen = async (index) => {
-  if (!confirm('Yakin ingin menghapus dosen ini?')) return;
-  const dosenKode = dosenList.value[index].dosen_kode;
+// Confirm delete function
+const confirmDelete = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) {
       throw new Error('User is not authenticated');
     }
 
-    await axios.delete(`http://10.15.41.68:3000/dosen/${dosenKode}`, {
+    const dosen = dosenList.value[selectedIndex.value];
+    await axios.delete(`http://10.15.41.68:3000/dosen/${dosen.dosen_kode}`, {
       headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
-    dosenList.value.splice(index, 1);
+
+    dosenList.value.splice(selectedIndex.value, 1);
+    showDeleteConfirm.value = false;
   } catch (error) {
-    console.error('Gagal menghapus data dosen', error);
+    console.error('Error deleting dosen:', error);
+    alert('Gagal menghapus data dosen');
   }
+};
+
+// Cancel Edit
+const cancelEdit = () => {
+  resetForm();
+  editIndex.value = null;
+  showEditConfirm.value = false;
 };
 
 // Reset Form after submit
@@ -431,7 +527,7 @@ const resetForm = () => {
   kode.value = "";
   nama.value = "";
   prioritas.value = "";
-  ketersediaan.value = [...Array(3)].map(() => Array(5).fill(false));
+  ketersediaan.value = Array(sesiList.length).fill().map(() => Array(hariList.length).fill(false));
 };
 
 // Fetch dosen data when component is mounted

@@ -100,7 +100,7 @@
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
               :disabled="isSubmitting"
             >
-              {{ isSubmitting ? 'Submitting...' : 'Submit' }}
+              {{ isSubmitting ? 'Submitting...' : editIndex !== null ? 'Update' : 'Submit' }}
             </button>
 
             <button 
@@ -185,14 +185,14 @@
                     </div>
                     <div class="flex space-x-3">
                       <button 
-                        @click="editMatching(matchingList.value.indexOf(matching))" 
+                        @click="editJadwal(matching)" 
                         class="p-2 text-gray-400 hover:text-blue-600 transition-colors duration-300"
                         title="Edit"
                       >
                         <i class="fas fa-pencil-alt"></i>
                       </button>
                       <button 
-                        @click="deleteMatching(matchingList.value.indexOf(matching))" 
+                        @click="deleteJadwal(matching)" 
                         class="p-2 text-gray-400 hover:text-red-600 transition-colors duration-300"
                         title="Hapus"
                       >
@@ -203,6 +203,64 @@
                 </li>
               </ul>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popup Konfirmasi Delete -->
+    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Hapus</h3>
+          <p class="text-gray-600 mb-6">
+            Apakah Anda yakin ingin menghapus data jadwal ini?
+          </p>
+          <div class="flex justify-center space-x-4">
+            <button 
+              @click="confirmDelete" 
+              class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-300"
+            >
+              Ya, Hapus
+            </button>
+            <button 
+              @click="showDeleteConfirm = false" 
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popup Konfirmasi Edit -->
+    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-pencil-alt text-2xl text-blue-600"></i>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Edit</h3>
+          <p class="text-gray-600 mb-6">
+            Apakah Anda yakin ingin mengedit data jadwal ini?
+          </p>
+          <div class="flex justify-center space-x-4">
+            <button 
+              @click="confirmEdit" 
+              class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-300"
+            >
+              Ya, Edit
+            </button>
+            <button 
+              @click="showEditConfirm = false" 
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+            >
+              Batal
+            </button>
           </div>
         </div>
       </div>
@@ -225,6 +283,11 @@ const selectedDosen = ref(null)
 const editIndex = ref(null)
 const isSubmitting = ref(false)
 const searchQuery = ref("")
+
+// Add new refs for confirmation popups
+const showDeleteConfirm = ref(false);
+const showEditConfirm = ref(false);
+const selectedIndex = ref(null);
 
 // Fetch Data Mata Kuliah
 const fetchMataKuliah = async () => {
@@ -359,13 +422,6 @@ const submitMatching = async () => {
     return;
   }
 
-  const postData = {
-    nama_kelas: selectedKelas.value.nama_kelas,
-    dosen_kode: selectedDosen.value.dosen_kode,
-    mk_kelas_sem: selectedSemesters.value,
-    matkul_tipe: selectedMataKuliahType.value
-  };
-
   try {
     isSubmitting.value = true;
 
@@ -382,22 +438,48 @@ const submitMatching = async () => {
     if (editIndex.value !== null) {
       // Update the existing data
       const match = matchingList.value[editIndex.value];
+      console.log("Updating match:", match);
       
-      const response = await axios.patch(`http://10.15.41.68:3000/mk_dosen/${match.id}`, postData, { headers });
+      const updateData = {
+        id_mk_kelas: selectedKelas.value.id_mk_kelas,
+        dosen_kode: selectedDosen.value.dosen_kode,
+        mk_kelas_sem: selectedSemesters.value,
+        matkul_tipe: selectedMataKuliahType.value
+      };
+      
+      console.log("Update data being sent:", updateData);
+      
+      const response = await axios.put(
+        `http://10.15.41.68:3000/mk_dosen/${match.id_mk_kelas_dosen}`, 
+        updateData, 
+        { headers }
+      );
 
       if (response.status === 200) {
         // Update the local list with the new data
-        matchingList.value[editIndex.value] = response.data.data;
+        matchingList.value[editIndex.value] = {
+          ...match,
+          ...response.data.data
+        };
+        console.log("Update successful:", response.data);
       } else {
         console.error("Update failed:", response);
       }
     } else {
       // Create new data
+      const postData = {
+        nama_kelas: selectedKelas.value.nama_kelas,
+        dosen_kode: selectedDosen.value.dosen_kode,
+        mk_kelas_sem: selectedSemesters.value,
+        matkul_tipe: selectedMataKuliahType.value
+      };
+
       const response = await axios.post('http://10.15.41.68:3000/mk_dosen', postData, { headers });
 
       if (response.status === 200 || response.status === 201) {
         // Add the new matching to the list
         matchingList.value.push(response.data.data);
+        console.log("Create successful:", response.data);
       } else {
         console.error("Create failed:", response);
       }
@@ -472,4 +554,96 @@ const groupedMatchingList = computed(() => {
   
   return groups;
 });
+
+// Update edit function to show confirmation
+const editJadwal = (jadwal) => {
+  // Store the jadwal object directly instead of finding by index
+  selectedIndex.value = jadwal;
+  showEditConfirm.value = true;
+};
+
+// Confirm edit function
+const confirmEdit = () => {
+  const jadwal = selectedIndex.value;
+  console.log("Selected jadwal for edit:", jadwal);
+  
+  // Find mata kuliah based on matkul_kode from jadwal
+  const matkul = mataKuliahList.value.find(mk => 
+    mk.matkul_kode === jadwal.mata_kuliah_kelas.matkul_kode
+  );
+  console.log("Found matkul:", matkul);
+  
+  if (matkul) {
+    selectedMataKuliah.value = matkul;
+    
+    // Find and set kelas after mata kuliah is set
+    const kelas = matkul.mata_kuliah_kelas.find(
+      k => k.id_mk_kelas === jadwal.mata_kuliah_kelas.id_mk_kelas
+    );
+    console.log("Found kelas:", kelas);
+    selectedKelas.value = kelas;
+  }
+  
+  // Set mata kuliah type
+  selectedMataKuliahType.value = jadwal.matkul_tipe;
+  
+  // Find and set dosen
+  const dosen = dosenList.value.find(
+    d => d.dosen_kode === jadwal.dosen_kode
+  );
+  console.log("Found dosen:", dosen);
+  selectedDosen.value = dosen;
+  
+  // Set semester values - ensure it's a new array
+  selectedSemesters.value = [...jadwal.mk_kelas_sem];
+  
+  // Set edit mode - find the index in matchingList for the selected jadwal
+  editIndex.value = matchingList.value.findIndex(
+    item => item.id_mk_kelas_dosen === jadwal.id_mk_kelas_dosen
+  );
+  
+  showEditConfirm.value = false;
+};
+
+// Update delete function to show confirmation
+const deleteJadwal = (jadwal) => {
+  // Store the jadwal object directly instead of finding index
+  selectedIndex.value = jadwal;
+  showDeleteConfirm.value = true;
+};
+
+// Confirm delete function
+const confirmDelete = async () => {
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    const jadwal = selectedIndex.value;
+    console.log("Deleting jadwal:", jadwal);
+
+    const response = await axios.delete(`http://10.15.41.68:3000/mk_dosen/${jadwal.id_mk_kelas_dosen}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (response.status === 200) {
+      // Remove the item from the list
+      const deleteIndex = matchingList.value.findIndex(
+        item => item.id_mk_kelas_dosen === jadwal.id_mk_kelas_dosen
+      );
+      if (deleteIndex > -1) {
+        matchingList.value.splice(deleteIndex, 1);
+      }
+      console.log("Delete successful");
+    }
+    
+    showDeleteConfirm.value = false;
+  } catch (error) {
+    console.error('Error deleting jadwal:', error);
+    alert('Gagal menghapus data jadwal');
+  }
+};
 </script>

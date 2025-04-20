@@ -139,6 +139,64 @@
         </div>
       </div>
     </div>
+
+    <!-- Popup Konfirmasi Delete -->
+    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Hapus</h3>
+          <p class="text-gray-600 mb-6">
+            Apakah Anda yakin ingin menghapus data ruang kelas ini?
+          </p>
+          <div class="flex justify-center space-x-4">
+            <button 
+              @click="confirmDelete" 
+              class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-300"
+            >
+              Ya, Hapus
+            </button>
+            <button 
+              @click="showDeleteConfirm = false" 
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popup Konfirmasi Edit -->
+    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-pencil-alt text-2xl text-blue-600"></i>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Edit</h3>
+          <p class="text-gray-600 mb-6">
+            Apakah Anda yakin ingin mengedit data ruang kelas ini?
+          </p>
+          <div class="flex justify-center space-x-4">
+            <button 
+              @click="confirmEdit" 
+              class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-300"
+            >
+              Ya, Edit
+            </button>
+            <button 
+              @click="showEditConfirm = false" 
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -155,6 +213,11 @@ const form = ref({
 const ruangKelasList = ref([]);
 const editIndex = ref(null);
 const searchQuery = ref("");
+
+// Add new refs for confirmation popups
+const showDeleteConfirm = ref(false);
+const showEditConfirm = ref(false);
+const selectedIndex = ref(null);
 
 // Computed property for filtered ruang kelas list
 const filteredRuangKelasList = computed(() => {
@@ -231,35 +294,20 @@ const submitForm = async () => {
   }
 };
 
-// Edit Ruang Kelas
-const editRuangKelas = async (index) => {
+// Update edit function to show confirmation
+const editRuangKelas = (index) => {
+  selectedIndex.value = index;
+  showEditConfirm.value = true;
+};
+
+// Confirm edit function
+const confirmEdit = () => {
+  const index = selectedIndex.value;
   const ruangKelas = ruangKelasList.value[index];
-
-  try {
-    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-    if (!token) {
-      throw new Error('User is not authenticated');
-    }
-
-    const response = await axios.get(`http://10.15.41.68:3000/ruangan/${ruangKelas.ruangan_kode}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    // Wait for the DOM to update
-    nextTick(() => {
-      // Explicitly set the values to ensure the form is reactive
-      form.value.kodeRuangan = response.data.ruangan_kode;
-      form.value.kapasitasRuangan = response.data.ruangan_kapasitas;
-      
-      // Ensure form is updated and check the value
-      console.log('Updated Form Value:', form.value);
-      editIndex.value = index;
-    });
-  } catch (error) {
-    console.error('Gagal mengambil data ruang kelas untuk edit', error);
-  }
+  form.value.kodeRuangan = ruangKelas.ruangan_kode;
+  form.value.kapasitasRuangan = ruangKelas.ruangan_kapasitas;
+  editIndex.value = index;
+  showEditConfirm.value = false;
 };
 
 // Cancel Edit
@@ -268,25 +316,32 @@ const cancelEdit = () => {
   editIndex.value = null;
 };
 
-// Delete Ruang Kelas
-const deleteRuangKelas = async (index) => {
-  const ruangKelasKode = ruangKelasList.value[index].ruangan_kode;
+// Update delete function to show confirmation
+const deleteRuangKelas = (index) => {
+  selectedIndex.value = index;
+  showDeleteConfirm.value = true;
+};
+
+// Confirm delete function
+const confirmDelete = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) {
       throw new Error('User is not authenticated');
     }
 
-    await axios.delete(`http://10.15.41.68:3000/ruangan/${ruangKelasKode}`, {
+    const ruangKelas = ruangKelasList.value[selectedIndex.value];
+    await axios.delete(`http://10.15.41.68:3000/ruangan/${ruangKelas.ruangan_kode}`, {
       headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
 
-    // Remove the deleted room directly from the local list
-    ruangKelasList.value.splice(index, 1);
+    ruangKelasList.value.splice(selectedIndex.value, 1);
+    showDeleteConfirm.value = false;
   } catch (error) {
-    console.error('Gagal menghapus data ruang kelas', error);
+    console.error('Error deleting ruang kelas:', error);
+    alert('Gagal menghapus data ruang kelas');
   }
 };
 

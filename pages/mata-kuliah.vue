@@ -58,7 +58,7 @@
                   class="hidden peer" 
                 />
                 <div class="p-3 text-center border border-gray-200 rounded-xl cursor-pointer transition-all duration-300
-                           peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-600
+                           peer-checked:bg-green-50 peer-checked:border-green-500 peer-checked:text-green-600
                            hover:bg-gray-50">
                   Kelas {{ kelas }}
                 </div>
@@ -163,6 +163,64 @@
         </div>
       </div>
     </div>
+
+    <!-- Popup Konfirmasi Delete -->
+    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Hapus</h3>
+          <p class="text-gray-600 mb-6">
+            Apakah Anda yakin ingin menghapus mata kuliah ini?
+          </p>
+          <div class="flex justify-center space-x-4">
+            <button 
+              @click="confirmDelete" 
+              class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-300"
+            >
+              Ya, Hapus
+            </button>
+            <button 
+              @click="showDeleteConfirm = false" 
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popup Konfirmasi Edit -->
+    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-pencil-alt text-2xl text-blue-600"></i>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Edit</h3>
+          <p class="text-gray-600 mb-6">
+            Apakah Anda yakin ingin mengedit mata kuliah ini?
+          </p>
+          <div class="flex justify-center space-x-4">
+            <button 
+              @click="confirmEdit" 
+              class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-300"
+            >
+              Ya, Edit
+            </button>
+            <button 
+              @click="showEditConfirm = false" 
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -176,6 +234,9 @@ const kelasDipilih = ref([]);
 const mataKuliahList = ref([]);
 const editIndex = ref(null);
 const searchQuery = ref("");
+const showDeleteConfirm = ref(false);
+const showEditConfirm = ref(false);
+const selectedIndex = ref(null);
 
 // Computed property for filtered mata kuliah list
 const filteredMataKuliahList = computed(() => {
@@ -254,11 +315,19 @@ const submitMataKuliah = async () => {
 
 // Edit Mata Kuliah
 const editMataKuliah = (index) => {
+  selectedIndex.value = index;
+  showEditConfirm.value = true;
+};
+
+// Confirm edit function
+const confirmEdit = () => {
+  const index = selectedIndex.value;
   const mk = mataKuliahList.value[index];
   kode.value = mk.matkul_kode;
   nama.value = mk.matkul_nama;
   kelasDipilih.value = mk.mata_kuliah_kelas.map(k => k.kelas_mk);
   editIndex.value = index;
+  showEditConfirm.value = false;
 };
 
 // Cancel Edit
@@ -268,23 +337,31 @@ const cancelEdit = () => {
 };
 
 // Delete Mata Kuliah
-const deleteMataKuliah = async (index) => {
-  if (!confirm('Yakin ingin menghapus mata kuliah ini?')) return;
-  const mataKuliahKode = mataKuliahList.value[index].matkul_kode;
+const deleteMataKuliah = (index) => {
+  selectedIndex.value = index;
+  showDeleteConfirm.value = true;
+};
+
+// Confirm delete function
+const confirmDelete = async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) {
       throw new Error('User is not authenticated');
     }
 
-    await axios.delete(`http://10.15.41.68:3000/mata_kuliah/${mataKuliahKode}`, {
+    const mk = mataKuliahList.value[selectedIndex.value];
+    await axios.delete(`http://10.15.41.68:3000/mata_kuliah/${mk.matkul_kode}`, {
       headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
-    mataKuliahList.value.splice(index, 1);
+
+    mataKuliahList.value.splice(selectedIndex.value, 1);
+    showDeleteConfirm.value = false;
   } catch (error) {
-    console.error('Gagal menghapus data mata kuliah', error);
+    console.error('Error deleting mata kuliah:', error);
+    alert('Gagal menghapus mata kuliah');
   }
 };
 
