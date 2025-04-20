@@ -1,77 +1,122 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-4 md:p-6 overflow-x-hidden">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
     <!-- Title -->
-    <div class="mb-6 flex items-center justify-center gap-3">
-      <img src="/pilih-jadwal.png" alt="Icon Pilih Jadwal" class="w-10 h-10 md:w-12 md:h-12" />
-      <h1 class="text-2xl md:text-3xl font-bold text-center">Pilih Jadwal</h1>
+    <div class="mb-8 w-full flex justify-center">
+      <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transform hover:scale-105 transition-all duration-300">
+        <img src="/pilih-jadwal.png" alt="Icon Pilih Jadwal" class="w-16 h-16 object-contain" />
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          Pilih Jadwal
+        </h1>
+      </div>
     </div>
 
     <!-- Informasi Daftar Data -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <!-- Mata Kuliah -->
-      <div class="bg-white p-4 shadow-md rounded-lg">
-        <h2 class="text-lg md:text-xl font-semibold mb-2"><i class="fas fa-book mr-2"></i> Mata Kuliah</h2>
-        <div class="overflow-y-auto max-h-[200px] pr-2">
-          <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-            <li v-for="mk in mataKuliahList" :key="mk.matkul_kode">
-              <strong>{{ mk.matkul_nama }}</strong> - {{ mk.matkul_kode }}
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100">
+        <h2 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4">
+          <i class="fas fa-book mr-3"></i> Mata Kuliah
+        </h2>
+        <div class="h-[200px] overflow-y-auto pr-2">
+          <ul class="space-y-3">
+            <li v-for="mk in mataKuliahList" :key="mk.matkul_kode" 
+                class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300">
+              <p class="font-semibold text-gray-800">{{ mk.matkul_nama }}</p>
+              <p class="text-sm text-gray-600">{{ mk.matkul_kode }}</p>
             </li>
           </ul>
         </div>
       </div>
 
       <!-- Dosen -->
-      <div class="bg-white p-4 shadow-md rounded-lg">
-        <h2 class="text-lg md:text-xl font-semibold mb-2"><i class="fas fa-user-tie mr-2"></i> Dosen</h2>
-        <div class="overflow-y-auto max-h-[200px] pr-2">
-          <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-            <li v-for="dosen in dosenList" :key="dosen.dosen_kode">
-              <strong>{{ dosen.dosen_nama }}</strong> - {{ dosen.dosen_kode }} (Prioritas: {{ dosen.dosen_prioritas }})
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100">
+        <h2 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4">
+          <i class="fas fa-user-tie mr-3"></i> Dosen
+        </h2>
+        <div class="h-[200px] overflow-y-auto pr-2">
+          <ul class="space-y-3">
+            <li v-for="dosen in dosenList" :key="dosen.dosen_kode"
+                class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300">
+              <p class="font-semibold text-gray-800">{{ dosen.dosen_nama }}</p>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-sm text-gray-600">{{ dosen.dosen_kode }}</span>
+                <span :class="{
+                  'px-2 py-1 rounded-lg text-xs font-medium': true,
+                  'bg-green-100 text-green-600': dosen.dosen_prioritas === 'PRIORITAS',
+                  'bg-red-100 text-red-600': dosen.dosen_prioritas !== 'PRIORITAS'
+                }">
+                  {{ dosen.dosen_prioritas === 'PRIORITAS' ? 'Prioritas' : 'Non Prioritas' }}
+                </span>
+              </div>
             </li>
           </ul>
         </div>
       </div>
 
       <!-- Ruang Kelas -->
-      <div class="bg-white p-4 shadow-md rounded-lg">
-        <h2 class="text-lg md:text-xl font-semibold mb-2"><i class="fas fa-chalkboard-teacher mr-2"></i> Ruang Kelas</h2>
-        <div class="overflow-y-auto max-h-[200px] pr-2">
-          <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-            <li v-for="ruang in ruangKelasList" :key="ruang.ruangan_kode">
-              <strong>{{ ruang.ruangan_kode }}</strong> - Kapasitas: {{ ruang.ruangan_kapasitas }}
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100">
+        <h2 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4">
+          <i class="fas fa-chalkboard-teacher mr-3"></i> Ruang Kelas
+        </h2>
+        <div class="h-[200px] overflow-y-auto pr-2">
+          <ul class="space-y-3">
+            <li v-for="ruang in ruangKelasList" :key="ruang.ruangan_kode"
+                class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300">
+              <p class="font-semibold text-gray-800">{{ ruang.ruangan_kode }}</p>
+              <span class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium mt-1">
+                Kapasitas: {{ ruang.ruangan_kapasitas }}
+              </span>
             </li>
           </ul>
         </div>
       </div>
 
       <!-- Jadwal Hindari -->
-      <div class="bg-white p-4 shadow-md rounded-lg">
-        <h2 class="text-lg md:text-xl font-semibold mb-2"><i class="fas fa-calendar-times mr-2 text-red-500"></i> Jadwal Hindari</h2>
-        <div class="overflow-y-auto max-h-[200px] pr-2">
-          <ul class="text-sm text-gray-700 list-disc ml-5 space-y-1">
-            <li v-for="hindari in jadwalHindari" :key="hindari.id">
-              <strong>{{ hindari.hindari_agenda }}</strong> - {{ hindari.hindari_hari }} (Sesi: {{ hindari.hindari_sesi }})
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100">
+        <h2 class="text-xl font-bold bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent flex items-center mb-4">
+          <i class="fas fa-calendar-times mr-3"></i> Jadwal Hindari
+        </h2>
+        <div class="h-[200px] overflow-y-auto pr-2">
+          <ul class="space-y-3">
+            <li v-for="hindari in jadwalHindari" :key="hindari.id"
+                class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-red-50 hover:border-red-200 transition-all duration-300">
+              <p class="font-semibold text-gray-800">{{ hindari.hindari_agenda }}</p>
+              <div class="flex flex-wrap gap-2 mt-2">
+                <div class="flex items-center">
+                  <span class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 rounded-l-lg text-sm font-medium border-r border-red-200">
+                    <i class="fas fa-calendar-day mr-2"></i>
+                    {{ hindari.hindari_hari }}
+                  </span>
+                  <span class="inline-flex items-center px-3 py-1.5 bg-red-50 text-red-700 rounded-r-lg text-sm font-medium">
+                    <i class="fas fa-clock mr-2"></i>
+                    Sesi {{ hindari.hindari_sesi }}
+                  </span>
+                </div>
+              </div>
             </li>
           </ul>
         </div>
       </div>
 
       <!-- Matching -->
-      <div class="bg-white p-4 shadow-md rounded-lg">
-        <h2 class="text-lg md:text-xl font-semibold mb-2">
-          <i class="fas fa-list-ul mr-2"></i> Daftar Matching
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100">
+        <h2 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4">
+          <i class="fas fa-list-ul mr-3"></i> Daftar Matching
         </h2>
+        <div class="h-[200px] overflow-y-auto pr-2">
+          <!-- Empty State -->
+          <div v-if="matchingList.length === 0" 
+               class="flex flex-col items-center justify-center h-full text-gray-500">
+            <i class="fas fa-clipboard-list text-4xl mb-2"></i>
+            <p>Belum ada data matching.</p>
+          </div>
 
-        <!-- Displaying "No data" message if matchingList is empty -->
-        <div v-if="matchingList.length === 0" class="text-gray-500">
-          Belum ada data matching.
-        </div>
-
-        <!-- Simple List of Matching Items -->
-        <div v-else class="overflow-y-auto max-h-[200px] pr-2">
-          <ul class="space-y-2">
-            <li v-for="(match, index) in matchingList" :key="index" class="text-gray-700">
-              <strong>{{ match.kelas.nama_kelas }}</strong> - {{ match.dosen.dosen_nama }}
+          <!-- Matching List -->
+          <ul v-else class="space-y-3">
+            <li v-for="(match, index) in matchingList" :key="index"
+                class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300">
+              <p class="font-semibold text-gray-800">{{ match.kelas.nama_kelas }}</p>
+              <p class="text-sm text-gray-600 mt-1">{{ match.dosen.dosen_nama }}</p>
             </li>
           </ul>
         </div>
@@ -79,50 +124,55 @@
     </div>
 
     <!-- Tombol Aksi -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-start mb-6">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row gap-4 mb-8">
       <button
         @click="generateJadwal"
-        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 shadow w-full sm:w-auto"
+        class="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-6 rounded-xl
+               hover:from-green-700 hover:to-green-800 transform hover:scale-105 transition-all duration-300
+               focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 shadow-lg"
       >
         <i class="fas fa-cogs mr-2"></i> Generate Jadwal
       </button>
 
       <button
         @click="exportExcel"
-        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 shadow w-full sm:w-auto"
+        class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
+               hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
+               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow-lg"
       >
         <i class="fas fa-file-excel mr-2"></i> Export ke Excel
       </button>
     </div>
 
     <!-- Hasil Jadwal -->
-    <div v-if="jadwalGenerated.length" class="overflow-x-auto">
-      <h2 class="text-xl font-bold mb-4"><i class="fas fa-calendar-alt mr-2"></i> Hasil Jadwal</h2>
-      <div class="min-w-full max-h-[600px] overflow-y-auto">
-        <table class="w-full bg-white rounded-lg shadow-md">
-          <thead class="bg-gray-200 text-left text-sm font-semibold sticky top-0">
-            <tr>
-              <th class="px-4 py-2 sticky left-0 bg-gray-200">Hari</th>
-              <th class="px-4 py-2 sticky left-[100px] bg-gray-200">Sesi</th>
-              <th class="px-4 py-2">Kelas</th>
-              <th class="px-4 py-2">Dosen</th>
-              <th class="px-4 py-2">Ruangan</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(row, index) in jadwalGenerated"
-              :key="index"
-              class="border-t text-sm hover:bg-gray-50 transition-colors duration-200"
-            >
-              <td class="px-4 py-2 sticky left-0 bg-white">{{ row.hari }}</td>
-              <td class="px-4 py-2 sticky left-[100px] bg-white">{{ row.sesi }}</td>
-              <td class="px-4 py-2">{{ row.kelas }}</td>
-              <td class="px-4 py-2">{{ row.dosen }}</td>
-              <td class="px-4 py-2">{{ row.ruangan }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <div v-if="jadwalGenerated.length" class="max-w-7xl mx-auto">
+      <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4">
+        <i class="fas fa-calendar-alt mr-3"></i> Hasil Jadwal
+      </h2>
+      <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-100">
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 sticky left-0 bg-gray-50">Hari</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 sticky left-[140px] bg-gray-50">Sesi</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Kelas</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Dosen</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Ruangan</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr v-for="(row, index) in jadwalGenerated" :key="index"
+                  class="hover:bg-blue-50 transition-colors duration-200">
+                <td class="px-6 py-4 text-sm text-gray-700 sticky left-0 bg-white">{{ row.hari }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 sticky left-[140px] bg-white">{{ row.sesi }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700">{{ row.kelas }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700">{{ row.dosen }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700">{{ row.ruangan }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

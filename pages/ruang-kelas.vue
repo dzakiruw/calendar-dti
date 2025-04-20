@@ -1,113 +1,146 @@
 <template>
-  <div class="h-screen flex flex-col items-center justify-start bg-gray-50 p-6">
-    <!-- Title with Image -->
-    <div class="mb-6 w-full sm:w-auto flex justify-center sm:justify-start">
-      <h1 class="text-3xl font-bold flex items-center">
-        <img src="/input-kelas.png" alt="Classroom Icon" class="inline-block w-14 h-14 mr-2" />
-        Input Ruang Kelas
-      </h1>
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
+    <!-- Title -->
+    <div class="mb-8 w-full flex justify-center">
+      <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transform hover:scale-105 transition-all duration-300">
+        <img src="/input-kelas.png" alt="Classroom Icon" class="w-16 h-16 object-contain" />
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          Input Ruang Kelas
+        </h1>
+      </div>
     </div>
 
-    <!-- Layout for Form & List -->
-    <div class="flex flex-col sm:flex-row w-full sm:w-auto gap-6">
+    <!-- Form and List Container -->
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Input Form -->
-      <form @submit.prevent="submitForm" class="bg-white p-6 shadow-md rounded-lg w-full sm:w-96 mb-6 sm:mb-0">
-        <div class="mb-4">
-          <label class="block text-gray-700 font-semibold">Kode Ruangan</label>
-          <div v-if="editIndex !== null">
-            <!-- Display as text when in edit mode -->
-            <p class="text-gray-700">{{ form.kodeRuangan }}</p>
+      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+        <form @submit.prevent="submitForm" class="space-y-6">
+          <div>
+            <label class="block text-gray-700 font-semibold mb-2">Kode Ruangan</label>
+            <div v-if="editIndex !== null">
+              <p class="text-lg font-bold text-blue-600">{{ form.kodeRuangan }}</p>
+            </div>
+            <div v-else>
+              <input
+                v-model="form.kodeRuangan"
+                type="text"
+                class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                placeholder="Masukkan kode ruangan"
+                required
+              />
+            </div>
           </div>
-          <div v-else>
-            <!-- Input field for new ruangan -->
+
+          <div>
+            <label class="block text-gray-700 font-semibold mb-2">Kapasitas Ruangan</label>
             <input
-              v-model="form.kodeRuangan"
-              type="text"
-              class="w-full mt-2 p-2 border rounded-lg"
-              placeholder="Masukkan kode ruangan"
+              v-model="form.kapasitasRuangan"
+              type="number"
+              class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              placeholder="Masukkan kapasitas ruangan"
               required
             />
           </div>
-        </div>
 
-        <div class="mb-4">
-          <label class="block text-gray-700 font-semibold">Kapasitas Ruangan</label>
-          <input
-            v-model="form.kapasitasRuangan"
-            type="number"
-            class="w-full mt-2 p-2 border rounded-lg"
-            placeholder="Masukkan kapasitas ruangan"
-            required
-          />
-        </div>
+          <!-- Submit and Cancel Buttons -->
+          <div class="flex gap-4">
+            <button 
+              type="submit" 
+              class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
+                     hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            >
+              {{ editIndex !== null ? 'Update' : 'Submit' }}
+            </button>
 
-        <!-- Submit and Cancel Buttons -->
-        <div class="flex gap-4">
-          <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
-            {{ editIndex !== null ? 'Update' : 'Submit' }}
-          </button>
-
-          <!-- Cancel Edit Button -->
-          <button 
-            type="button" 
-            @click="cancelEdit" 
-            v-if="editIndex !== null" 
-            class="bg-gray-600 text-white py-2 px-4 rounded-lg w-full hover:bg-gray-700">
-            Cancel Edit
-          </button>
-        </div>
-      </form>
+            <button 
+              v-if="editIndex !== null"
+              type="button" 
+              @click="cancelEdit" 
+              class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-6 rounded-xl
+                     hover:from-gray-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300
+                     focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
 
       <!-- Daftar Ruang Kelas -->
-      <div class="flex-1 w-full sm:w-96 bg-white p-6 shadow-md rounded-lg mt-6 sm:mt-0">
-        <h2 class="text-xl font-bold mb-4">
-          <i class="fas fa-list-ul mr-2"></i> Daftar Ruang Kelas
-        </h2>
-
-        <!-- Search Bar -->
-        <div class="mb-4">
-          <div class="relative">
-            <input
-              type="text"
-              v-model="searchQuery"
-              class="w-full p-2 pl-10 border rounded-lg"
-              placeholder="Cari ruang kelas..."
-            />
-            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+        <div class="flex flex-col h-full">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <i class="fas fa-list-ul mr-2"></i> Daftar Ruang Kelas
+            </h2>
+            
+            <!-- Search Input -->
+            <div class="relative flex-1 max-w-xs ml-4">
+              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input
+                type="text"
+                v-model="searchQuery"
+                placeholder="Cari ruang kelas..."
+                class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              />
+            </div>
           </div>
-        </div>
 
-        <!-- Empty State -->
-        <div v-if="filteredRuangKelasList.length === 0" class="text-gray-500">
-          {{ searchQuery ? 'Tidak ditemukan ruang kelas yang sesuai.' : 'Belum ada ruang kelas yang diinputkan.' }}
-        </div>
+          <!-- Empty State -->
+          <div 
+            v-if="filteredRuangKelasList.length === 0" 
+            class="flex-1 flex flex-col items-center justify-center text-gray-500"
+          >
+            <i class="fas fa-door-closed text-4xl mb-4"></i>
+            <p class="text-center">
+              {{ searchQuery ? 'Tidak ditemukan ruang kelas yang sesuai.' : 'Belum ada ruang kelas yang diinputkan.' }}
+            </p>
+          </div>
 
-        <!-- Ruang Kelas List -->
-        <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)] pr-2">
-          <ul class="space-y-4">
-            <li v-for="(ruang, index) in filteredRuangKelasList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-              <div>
-                <p><strong>{{ ruang.ruangan_kode }}</strong></p>
-                <p class="text-sm text-gray-600">
-                  <span class="font-bold">Kapasitas:</span> {{ ruang.ruangan_kapasitas }}
-                </p>
-              </div>
-              <div class="flex space-x-4">
-                <button @click="editRuangKelas(index)" class="text-gray-600 hover:text-gray-900">
-                  <i class="fas fa-pencil-alt"></i>
-                </button>
-                <button @click="deleteRuangKelas(index)" class="text-red-600 hover:text-red-900">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </div>
-            </li>
-          </ul>
+          <!-- Ruang Kelas List -->
+          <div v-else class="overflow-y-auto pr-2" style="height: 400px;">
+            <ul class="space-y-4">
+              <li 
+                v-for="(ruang, index) in filteredRuangKelasList" 
+                :key="index" 
+                class="group bg-gray-50 p-6 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+              >
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h3 class="font-bold text-lg text-gray-800 mb-2">{{ ruang.ruangan_kode }}</h3>
+                    <div class="flex items-center gap-3">
+                      <span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-600 rounded-lg text-sm font-medium">
+                        <i class="fas fa-users"></i>
+                        Kapasitas: {{ ruang.ruangan_kapasitas }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="flex space-x-3">
+                    <button 
+                      @click="editRuangKelas(index)" 
+                      class="p-2 text-gray-400 hover:text-blue-600 transition-colors duration-300"
+                      title="Edit"
+                    >
+                      <i class="fas fa-pencil-alt"></i>
+                    </button>
+                    <button 
+                      @click="deleteRuangKelas(index)" 
+                      class="p-2 text-gray-400 hover:text-red-600 transition-colors duration-300"
+                      title="Hapus"
+                    >
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { ref, onMounted, nextTick, computed } from 'vue';

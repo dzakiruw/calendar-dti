@@ -1,98 +1,162 @@
 <template>
-  <div class="h-screen flex flex-col items-center justify-start bg-gray-50 p-6">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
     <!-- Title -->
-    <div class="mb-6 w-full sm:w-auto flex justify-center sm:justify-start">
-      <h1 class="text-3xl font-bold flex items-center">
-        <img src="/input-matkul.png" alt="Book Icon" class="inline-block w-14 h-14 mr-2" />
-        Input Mata Kuliah
-      </h1>
+    <div class="mb-8 w-full flex justify-center">
+      <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transform hover:scale-105 transition-all duration-300">
+        <img src="/input-matkul.png" alt="Book Icon" class="w-16 h-16 object-contain" />
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          Input Mata Kuliah
+        </h1>
+      </div>
     </div>
 
-    <!-- Mata Kuliah Form and Mata Kuliah List -->
-    <div class="flex flex-col sm:flex-row w-full sm:w-auto gap-6">
+    <!-- Mata Kuliah Form and List Container -->
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Mata Kuliah Form -->
-      <form @submit.prevent="submitMataKuliah" class="bg-white p-6 shadow-md rounded-lg w-full sm:w-96 mb-6 sm:mb-0">
-        <div class="mb-4">
-          <label class="block text-gray-700 font-semibold">Kode Mata Kuliah</label>
-          <div v-if="editIndex !== null">
-            <!-- Display as text when in edit mode -->
-            <p class="text-gray-700"><strong>{{ kode }}</strong></p>
+      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+        <form @submit.prevent="submitMataKuliah" class="space-y-6">
+          <div>
+            <label class="block text-gray-700 font-semibold mb-2">Kode Mata Kuliah</label>
+            <div v-if="editIndex !== null">
+              <p class="text-lg font-bold text-blue-600">{{ kode }}</p>
+            </div>
+            <div v-else>
+              <input 
+                type="text" 
+                v-model="kode" 
+                class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" 
+                placeholder="ET234602" 
+                required 
+              />
+            </div>
           </div>
-          <div v-else>
-            <!-- Input field for new mata kuliah -->
-            <input type="text" v-model="kode" class="w-full mt-2 p-2 border rounded-lg" placeholder="ET234602" required />
+
+          <div>
+            <label class="block text-gray-700 font-semibold mb-2">Nama Mata Kuliah</label>
+            <input 
+              type="text" 
+              v-model="nama" 
+              class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" 
+              placeholder="Capstone Project" 
+              required 
+            />
           </div>
-        </div>
 
-        <div class="mb-4">
-          <label class="block text-gray-700 font-semibold">Nama Mata Kuliah</label>
-          <input type="text" v-model="nama" class="w-full mt-2 p-2 border rounded-lg" placeholder="Capstone Project" required />
-        </div>
-
-        <!-- Pilih Kelas (Checkbox) -->
-        <div class="mb-4">
-          <label class="block text-gray-700 font-semibold">Pilih Kelas</label>
-          <div class="flex flex-wrap gap-4 mt-2">
-            <label class="flex items-center">
-              <input type="checkbox" v-model="kelasDipilih" value="A" class="mr-2" /> Kelas A
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" v-model="kelasDipilih" value="B" class="mr-2" /> Kelas B
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" v-model="kelasDipilih" value="C" class="mr-2" /> Kelas C
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" v-model="kelasDipilih" value="D" class="mr-2" /> Kelas D
-            </label>
+          <!-- Pilih Kelas -->
+          <div>
+            <label class="block text-gray-700 font-semibold mb-4">Pilih Kelas</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <label 
+                v-for="kelas in ['A', 'B', 'C', 'D']" 
+                :key="kelas"
+                class="relative"
+              >
+                <input 
+                  type="checkbox" 
+                  v-model="kelasDipilih" 
+                  :value="kelas" 
+                  class="hidden peer" 
+                />
+                <div class="p-3 text-center border border-gray-200 rounded-xl cursor-pointer transition-all duration-300
+                           peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-600
+                           hover:bg-gray-50">
+                  Kelas {{ kelas }}
+                </div>
+              </label>
+            </div>
           </div>
-        </div>
 
-        <!-- Submit and Cancel Buttons -->
-        <div class="flex gap-4">
-          <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-700">
-            {{ editIndex !== null ? 'Update' : 'Submit' }}
-          </button>
+          <!-- Submit and Cancel Buttons -->
+          <div class="flex gap-4">
+            <button 
+              type="submit" 
+              class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
+                     hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            >
+              {{ editIndex !== null ? 'Update' : 'Submit' }}
+            </button>
 
-          <!-- Cancel Edit Button -->
-          <button 
-            type="button" 
-            @click="cancelEdit" 
-            v-if="editIndex !== null" 
-            class="bg-gray-600 text-white py-2 px-4 rounded-lg w-full hover:bg-gray-700">
-            Cancel Edit
-          </button>
-        </div>
-      </form>
+            <button 
+              v-if="editIndex !== null"
+              type="button" 
+              @click="cancelEdit" 
+              class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-6 rounded-xl
+                     hover:from-gray-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300
+                     focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
 
       <!-- Daftar Mata Kuliah -->
-      <div class="flex-1 w-full sm:w-96 bg-white p-6 shadow-md rounded-lg mt-6 sm:mt-0">
-        <h2 class="text-xl font-bold mb-4">
-          <i class="fas fa-list-ul mr-2"></i> Daftar Mata Kuliah
-        </h2>
+      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <i class="fas fa-list-ul mr-2"></i> Daftar Mata Kuliah
+          </h2>
+          
+          <!-- Search Input -->
+          <div class="relative flex-1 max-w-xs ml-4">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input
+              type="text"
+              v-model="searchQuery"
+              placeholder="Cari mata kuliah..."
+              class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+            />
+          </div>
+        </div>
 
         <!-- Empty State -->
-        <div v-if="mataKuliahList.length === 0" class="text-gray-500">
-          Belum ada mata kuliah yang diinputkan.
+        <div 
+          v-if="filteredMataKuliahList.length === 0" 
+          class="flex flex-col items-center justify-center py-12 text-gray-500"
+        >
+          <i class="fas fa-folder-open text-4xl mb-4"></i>
+          <p class="text-center">
+            {{ searchQuery ? 'Tidak ada mata kuliah yang sesuai dengan pencarian.' : 'Belum ada mata kuliah yang diinputkan.' }}
+          </p>
         </div>
 
         <!-- Mata Kuliah List -->
-        <div v-else class="overflow-y-auto max-h-[calc(100vh-300px)] pr-2">
+        <div v-else class="overflow-y-auto max-h-[calc(100vh-400px)] pr-2">
           <ul class="space-y-4">
-            <li v-for="(mk, index) in mataKuliahList" :key="index" class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-              <div>
-                <p><strong>{{ mk.matkul_nama }}</strong><br>{{ mk.matkul_kode }}</p>
-                <p class="text-sm text-gray-600">
-                  <span class="font-bold">Kelas:</span> {{ mk.mata_kuliah_kelas.map(k => k.kelas_mk).join(", ") }}
-                </p>
-              </div>
-              <div class="flex space-x-4">
-                <button @click="editMataKuliah(index)" class="text-gray-600 hover:text-gray-900">
-                  <i class="fas fa-pencil-alt"></i>
-                </button>
-                <button @click="deleteMataKuliah(index)" class="text-red-600 hover:text-red-900">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
+            <li 
+              v-for="(mk, index) in filteredMataKuliahList" 
+              :key="index" 
+              class="group bg-gray-50 p-6 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+            >
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-bold text-lg text-gray-800 mb-1">{{ mk.matkul_nama }}</h3>
+                  <p class="text-blue-600 font-medium">{{ mk.matkul_kode }}</p>
+                  <div class="mt-2 flex flex-wrap gap-2">
+                    <span 
+                      v-for="kelas in mk.mata_kuliah_kelas" 
+                      :key="kelas.kelas_mk"
+                      class="px-3 py-1 bg-blue-100 text-blue-600 rounded-lg text-sm font-medium"
+                    >
+                      Kelas {{ kelas.kelas_mk }}
+                    </span>
+                  </div>
+                </div>
+                <div class="flex space-x-3">
+                  <button 
+                    @click="editMataKuliah(index)" 
+                    class="p-2 text-gray-400 hover:text-blue-600 transition-colors duration-300"
+                  >
+                    <i class="fas fa-pencil-alt"></i>
+                  </button>
+                  <button 
+                    @click="deleteMataKuliah(index)" 
+                    class="p-2 text-gray-400 hover:text-red-600 transition-colors duration-300"
+                  >
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
               </div>
             </li>
           </ul>
@@ -103,7 +167,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 
 const kode = ref("");
@@ -111,6 +175,19 @@ const nama = ref("");
 const kelasDipilih = ref([]);
 const mataKuliahList = ref([]);
 const editIndex = ref(null);
+const searchQuery = ref("");
+
+// Computed property for filtered mata kuliah list
+const filteredMataKuliahList = computed(() => {
+  if (!searchQuery.value) return mataKuliahList.value;
+  
+  const query = searchQuery.value.toLowerCase();
+  return mataKuliahList.value.filter(mk => 
+    mk.matkul_kode.toLowerCase().includes(query) ||
+    mk.matkul_nama.toLowerCase().includes(query) ||
+    mk.mata_kuliah_kelas.some(k => k.kelas_mk.toLowerCase().includes(query))
+  );
+});
 
 // Fetch Mata Kuliah Data from API
 const fetchMataKuliah = async () => {

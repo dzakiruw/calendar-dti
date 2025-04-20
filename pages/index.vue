@@ -1,80 +1,142 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white flex flex-col">
-    <!-- Welcome Message Section -->
-    <section class="w-full max-w-4xl mx-auto px-4 py-4 sm:py-6 flex-1 flex items-center">
-      <div class="w-full bg-white rounded-xl shadow-lg p-4 sm:p-6 transform transition-all duration-300 hover:shadow-xl">
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-2">
-          Selamat datang
-        </h1>
-        <h2 class="text-xl sm:text-2xl font-bold text-blue-600 text-center mb-2">
-          {{ userName }}
-        </h2>
-        <p class="text-sm sm:text-base text-gray-600 text-center mb-4">
-          Silahkan generate jadwalmu dengan mudah dan efisien
-        </p>
-        <div v-if="!isLoggedIn" class="flex justify-center">
-          <button 
-            @click="redirectToLogin"
-            class="px-4 sm:px-6 py-1.5 sm:py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-            <i class="fas fa-sign-in-alt mr-2"></i> Login
-          </button>
+  <div>
+    <!-- Login Page -->
+    <div v-if="!isLoggedIn" class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4">
+      <div class="w-full max-w-5xl flex flex-col md:flex-row items-start justify-between gap-8">
+        <!-- Left side - Welcome Content -->
+        <div class="flex flex-col items-center md:items-start md:w-1/2">
+          <img src="/logo-dti.png" alt="DTI Logo" class="w-20 h-20 mb-6 animate-pulse" />
+          <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 text-center md:text-left mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Selamat Datang!
+          </h1>
+          <p class="text-base sm:text-lg text-gray-600 text-center md:text-left mb-8 max-w-xl">
+            Sistem Penjadwalan Perkuliahan DTI yang membantu Anda mengatur jadwal dengan mudah dan efisien
+          </p>
         </div>
-      </div>
-    </section>
 
-    <!-- Tech Stack Section -->
-    <section class="w-full max-w-4xl mx-auto px-4 py-4 sm:py-6">
-      <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-        <h1 class="text-xl sm:text-2xl font-bold text-gray-800 flex items-center justify-center gap-2 mb-4">
-          <WrenchScrewdriverIcon class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
-          Tech Stack
-        </h1>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <a
-            v-for="tech in techStack"
-            :key="tech.name"
-            :href="tech.link"
-            target="_blank"
-            class="flex flex-col items-center p-2 sm:p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transform transition-all duration-300 hover:scale-105 hover:shadow-md"
-          >
-            <img :src="tech.logo" class="w-8 h-8 sm:w-12 sm:h-12 object-contain mb-2" :alt="tech.name + ' Logo'" />
-            <p class="text-xs sm:text-sm font-medium text-gray-700">{{ tech.name }}</p>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Team Members Section -->
-    <section class="w-full max-w-4xl mx-auto px-4 py-4 sm:py-6">
-      <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-        <h1 class="text-xl sm:text-2xl font-bold text-gray-800 flex items-center justify-center gap-2 mb-4">
-          <i class="fas fa-users text-blue-600"></i>
-          Team Members
-        </h1>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <a
-            v-for="member in teamMembers"
-            :key="member.name"
-            :href="member.linkedin"
-            target="_blank"
-            class="flex flex-col items-center p-2 sm:p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transform transition-all duration-300 hover:scale-105 hover:shadow-md"
-          >
-            <div class="relative mb-2">
-              <img 
-                :src="member.avatar" 
-                class="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-white shadow-md object-cover"
-              />
-              <div class="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-1">
-                <i class="fab fa-linkedin-in text-xs"></i>
+        <!-- Right side - Login Form -->
+        <div class="md:w-1/2 w-full max-w-md">
+          <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 w-full border border-gray-100">
+            <h2 class="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Login</h2>
+            <form @submit.prevent="login" class="w-full">
+              <div class="mb-5">
+                <label class="block text-gray-700 font-semibold mb-2">Username</label>
+                <input
+                  v-model="username"
+                  type="text"
+                  class="w-full p-3 border rounded-lg"
+                  placeholder="Enter username"
+                  required
+                />
               </div>
-            </div>
-            <h2 class="text-xs sm:text-sm font-semibold text-gray-800 mb-0.5 text-center">{{ member.name }}</h2>
-            <p class="text-xs text-gray-600">{{ member.nrp }}</p>
-            <p class="text-xs text-blue-600 font-medium">Developer</p>
-          </a>
+              <div class="mb-5">
+                <label class="block text-gray-700 font-semibold mb-2">Password</label>
+                <input
+                  v-model="password"
+                  type="password"
+                  class="w-full p-3 border rounded-lg"
+                  placeholder="Enter password"
+                  required
+                />
+              </div>
+              <p v-if="errorMessage" class="text-red-600 text-sm mb-4">{{ errorMessage }}</p>
+              <button
+                type="submit"
+                class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg w-full hover:from-blue-700 hover:to-indigo-700 transform transition-all duration-300"
+              >
+                Login
+              </button>
+            </form>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+
+    <!-- Content Page -->
+    <div v-else class="bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      <!-- Features Section -->
+      <section class="w-full py-16">
+        <div class="max-w-5xl mx-auto px-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
+              <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4">
+                <i class="fas fa-calendar-check text-blue-600 text-xl"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">Penjadwalan Otomatis</h3>
+              <p class="text-gray-600">Generate jadwal kuliah secara otomatis dengan mempertimbangkan berbagai constraint.</p>
+            </div>
+            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
+              <div class="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-lg mb-4">
+                <i class="fas fa-users-cog text-indigo-600 text-xl"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">Manajemen Data</h3>
+              <p class="text-gray-600">Kelola data mata kuliah, dosen, dan ruang kelas dengan mudah dan terstruktur.</p>
+            </div>
+            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
+              <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4">
+                <i class="fas fa-clock text-blue-600 text-xl"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">Fleksibel</h3>
+              <p class="text-gray-600">Atur jadwal yang dihindari dan preferensi waktu mengajar dosen dengan fleksibel.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tech Stack Section -->
+      <section class="w-full bg-white/50 py-16">
+        <div class="max-w-5xl mx-auto px-4">
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center justify-center gap-3 mb-12">
+            <WrenchScrewdriverIcon class="w-8 h-8 text-blue-600" />
+            <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Tech Stack</span>
+          </h2>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-8">
+            <a
+              v-for="tech in techStack"
+              :key="tech.name"
+              :href="tech.link"
+              target="_blank"
+              class="group flex flex-col items-center p-6 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105"
+            >
+              <img :src="tech.logo" class="w-16 h-16 object-contain mb-4 group-hover:animate-bounce" :alt="tech.name + ' Logo'" />
+              <p class="text-sm font-semibold text-gray-700 group-hover:text-blue-600">{{ tech.name }}</p>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Team Members Section -->
+      <section class="w-full py-16">
+        <div class="max-w-5xl mx-auto px-4">
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center justify-center gap-3 mb-12">
+            <i class="fas fa-users text-blue-600"></i>
+            <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Team Members</span>
+          </h2>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-8">
+            <a
+              v-for="member in teamMembers"
+              :key="member.name"
+              :href="member.linkedin"
+              target="_blank"
+              class="group flex flex-col items-center p-6 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105"
+            >
+              <div class="relative mb-4">
+                <img 
+                  :src="member.avatar" 
+                  class="w-20 h-20 rounded-full border-4 border-white shadow-lg object-cover group-hover:border-blue-100"
+                />
+                <div class="absolute -bottom-2 -right-2 bg-blue-600 text-white rounded-full w-8 h-8 shadow-lg group-hover:bg-indigo-600 flex items-center justify-center">
+                  <i class="fab fa-linkedin-in text-sm"></i>
+                </div>
+              </div>
+              <h3 class="text-sm font-bold text-gray-800 mb-1 text-center group-hover:text-blue-600">{{ member.name }}</h3>
+              <p class="text-xs text-gray-500">{{ member.nrp }}</p>
+              <p class="text-xs font-medium text-blue-600 group-hover:text-indigo-600">Developer</p>
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
 </template>
 
@@ -82,6 +144,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from 'vue-router'
 import { WrenchScrewdriverIcon } from "@heroicons/vue/24/solid";
+import axios from 'axios';
 
 // Tech Stack List
 const techStack = ref([
@@ -125,6 +188,11 @@ const isLoggedIn = ref(false);
 const userName = ref("User");
 const router = useRouter();
 
+// Add these for login functionality
+const username = ref('');
+const password = ref('');
+const errorMessage = ref('');
+
 // On component mount, check for logged-in user
 onMounted(() => {
   const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -148,8 +216,29 @@ onMounted(() => {
   });
 });
 
-// Redirect to login page
-const redirectToLogin = () => {
-  router.push('/login');
+// Handle login
+const login = async () => {
+  try {
+    const response = await axios.post("http://10.15.41.68:3000/auth/login", {
+      username: username.value,
+      password: password.value,
+    });
+
+    if (response.data.accessToken) {
+      const user = {
+        username: username.value,
+        accessToken: response.data.accessToken,
+        id: response.data.id,
+      };
+
+      localStorage.setItem('user', JSON.stringify(user));
+      router.push('/');
+      window.dispatchEvent(new Event('storage'));
+    } else {
+      errorMessage.value = 'Invalid username or password.';
+    }
+  } catch (error) {
+    errorMessage.value = error.response ? error.response.data : 'An error occurred. Please try again.';
+  }
 };
 </script>
