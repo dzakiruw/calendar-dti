@@ -276,7 +276,7 @@ const mataKuliahList = ref([])
 const dosenList = ref([])  
 const matchingList = ref([])  
 const selectedMataKuliah = ref(null)
-const selectedMataKuliahType = ref("")
+const selectedMataKuliahType = ref("DEPARTEMEN")
 const selectedKelas = ref(null)
 const selectedSemesters = ref([])
 const selectedDosen = ref(null)
@@ -377,7 +377,7 @@ onMounted(() => {
 
 const resetForm = () => {
   selectedMataKuliah.value = null
-  selectedMataKuliahType.value = ""
+  selectedMataKuliahType.value = "DEPARTEMEN"
   selectedKelas.value = null
   selectedDosen.value = null
   selectedSemesters.value = []

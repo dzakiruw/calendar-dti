@@ -456,7 +456,8 @@ const submitDosen = async () => {
 
 // Update edit function to show confirmation
 const editDosen = (index) => {
-  selectedIndex.value = index;
+  const dosen = filteredDosenList.value[index];
+  selectedIndex.value = dosenList.value.findIndex(d => d.dosen_kode === dosen.dosen_kode);
   showEditConfirm.value = true;
 };
 
@@ -488,7 +489,8 @@ const confirmEdit = () => {
 
 // Update delete function to show confirmation
 const deleteDosen = (index) => {
-  selectedIndex.value = index;
+  const dosen = filteredDosenList.value[index];
+  selectedIndex.value = dosenList.value.findIndex(d => d.dosen_kode === dosen.dosen_kode);
   showDeleteConfirm.value = true;
 };
 

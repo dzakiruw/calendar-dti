@@ -315,7 +315,8 @@ const submitMataKuliah = async () => {
 
 // Edit Mata Kuliah
 const editMataKuliah = (index) => {
-  selectedIndex.value = index;
+  const mk = filteredMataKuliahList.value[index];
+  selectedIndex.value = mataKuliahList.value.findIndex(m => m.matkul_kode === mk.matkul_kode);
   showEditConfirm.value = true;
 };
 
@@ -338,7 +339,8 @@ const cancelEdit = () => {
 
 // Delete Mata Kuliah
 const deleteMataKuliah = (index) => {
-  selectedIndex.value = index;
+  const mk = filteredMataKuliahList.value[index];
+  selectedIndex.value = mataKuliahList.value.findIndex(m => m.matkul_kode === mk.matkul_kode);
   showDeleteConfirm.value = true;
 };
 

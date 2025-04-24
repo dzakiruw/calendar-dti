@@ -296,7 +296,8 @@ const submitForm = async () => {
 
 // Update edit function to show confirmation
 const editRuangKelas = (index) => {
-  selectedIndex.value = index;
+  const ruang = filteredRuangKelasList.value[index];
+  selectedIndex.value = ruangKelasList.value.findIndex(r => r.ruangan_kode === ruang.ruangan_kode);
   showEditConfirm.value = true;
 };
 
@@ -318,7 +319,8 @@ const cancelEdit = () => {
 
 // Update delete function to show confirmation
 const deleteRuangKelas = (index) => {
-  selectedIndex.value = index;
+  const ruang = filteredRuangKelasList.value[index];
+  selectedIndex.value = ruangKelasList.value.findIndex(r => r.ruangan_kode === ruang.ruangan_kode);
   showDeleteConfirm.value = true;
 };
 

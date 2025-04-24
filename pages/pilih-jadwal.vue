@@ -157,6 +157,7 @@
                 <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 sticky left-0 bg-gray-50">Hari</th>
                 <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 sticky left-[140px] bg-gray-50">Sesi</th>
                 <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Kelas</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Semester</th>
                 <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Dosen</th>
                 <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Ruangan</th>
               </tr>
@@ -167,6 +168,12 @@
                 <td class="px-6 py-4 text-sm text-gray-700 sticky left-0 bg-white">{{ row.hari }}</td>
                 <td class="px-6 py-4 text-sm text-gray-700 sticky left-[140px] bg-white">{{ row.sesi }}</td>
                 <td class="px-6 py-4 text-sm text-gray-700">{{ row.kelas }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700">
+                  <span v-for="(sem, idx) in row.semester" :key="idx" 
+                        class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
+                    Semester {{ sem }}
+                  </span>
+                </td>
                 <td class="px-6 py-4 text-sm text-gray-700">{{ row.dosen }}</td>
                 <td class="px-6 py-4 text-sm text-gray-700">{{ row.ruangan }}</td>
               </tr>
@@ -357,7 +364,8 @@ const generateJadwal = async () => {
         ruangan_kode: room.ruangan_kode,
         matkul_kode: matkulKelas.matkul_kode,
         matkul_nama: matkul.matkul_nama,
-        kelas: course.mata_kuliah_kelas?.nama_kelas
+        kelas: course.mata_kuliah_kelas?.nama_kelas,
+        semester: course.mk_kelas_sem
       });
 
       return true;
@@ -466,7 +474,8 @@ const generateJadwal = async () => {
             matkul: classInfo.matkul_nama,
             dosen: classInfo.dosen_kode,
             ruangan: classInfo.ruangan_kode,
-            kelas: classInfo.kelas
+            kelas: classInfo.kelas,
+            semester: classInfo.semester
           });
         }
       }
@@ -515,8 +524,8 @@ const exportExcel = () => {
       };
     }
     
-    // Format the output as "Kelas - Dosen"
-    groupedData[key].classes[item.ruangan] = `${item.kelas} - ${item.dosen}`;
+    // Format the output as "Kelas - Dosen (Semester X, Y)"
+    groupedData[key].classes[item.ruangan] = `${item.kelas} - ${item.dosen} (Semester ${item.semester.join(', ')})`;
   });
   
   // Add data rows

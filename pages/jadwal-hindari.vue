@@ -499,7 +499,8 @@ const resetForm = () => {
 
 // Update edit function to show confirmation
 const editJadwalHindari = (index) => {
-  selectedIndex.value = index;
+  const jadwal = filteredJadwalHindariList.value[index];
+  selectedIndex.value = jadwalList.value.findIndex(j => j.id_hindari === jadwal.id_hindari);
   showEditConfirm.value = true;
 };
 
@@ -527,7 +528,8 @@ const confirmEdit = () => {
 
 // Update delete function to show confirmation
 const deleteJadwalHindari = (index) => {
-  selectedIndex.value = index;
+  const jadwal = filteredJadwalHindariList.value[index];
+  selectedIndex.value = jadwalList.value.findIndex(j => j.id_hindari === jadwal.id_hindari);
   showDeleteConfirm.value = true;
 };
 
