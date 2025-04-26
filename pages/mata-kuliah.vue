@@ -122,7 +122,7 @@
         </div>
 
         <!-- Mata Kuliah List -->
-        <div v-else class="overflow-y-auto max-h-[calc(100vh-400px)] pr-2">
+        <div v-else class="overflow-y-auto pr-2" style="height: 300px;">
           <ul class="space-y-4">
             <li 
               v-for="(mk, index) in filteredMataKuliahList" 

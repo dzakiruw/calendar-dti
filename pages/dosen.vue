@@ -11,7 +11,7 @@
     </div>
 
     <!-- Dosen Form and List Container -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 gap-8">
       <!-- Dosen Form -->
       <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
         <form @submit.prevent="submitDosen" class="space-y-6">
@@ -117,7 +117,7 @@
 
       <!-- Daftar Dosen -->
       <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
-        <div class="h-[calc(100vh-200px)] flex flex-col">
+        <div>
           <div class="flex items-center justify-between mb-6">
             <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               <i class="fas fa-list-ul mr-2"></i> Daftar Dosen
@@ -147,7 +147,7 @@
           </div>
 
           <!-- Dosen List -->
-          <div v-else class="flex-1 overflow-y-auto pr-2">
+          <div v-else class="overflow-y-auto pr-2" style="height: 550px;">
             <ul class="space-y-4">
               <li 
                 v-for="(dosen, index) in filteredDosenList" 

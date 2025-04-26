@@ -167,7 +167,7 @@
         </div>
 
         <!-- Jadwal Hindari List -->
-        <div v-else class="flex-1 overflow-y-auto pr-2">
+        <div v-else class="overflow-y-auto pr-2" style="height: 600px;">
           <ul class="space-y-4">
             <li 
               v-for="(jadwal, index) in filteredJadwalHindariList" 

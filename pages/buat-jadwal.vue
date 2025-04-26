@@ -148,7 +148,7 @@
         </div>
 
         <!-- Matching List -->
-        <div v-else class="h-[460px] overflow-y-auto">
+        <div v-else class="h-[460px] overflow-y-auto" style="height: 550px;">
           <div class="space-y-4 pr-2">
             <div v-for="(classes, dosenName) in groupedMatchingList" :key="dosenName" class="mb-4 last:mb-0">
               <h3 class="text-lg font-semibold mb-2 text-gray-700 sticky top-0 bg-white/90 backdrop-blur-sm py-2 z-10">
@@ -162,26 +162,26 @@
                 >
                   <div class="flex justify-between items-start">
                     <div class="space-y-2">
-                      <p class="text-sm">
-                        <span class="font-semibold text-gray-700">Kelas:</span>
-                        <span class="text-gray-600">{{ matching.mata_kuliah_kelas.nama_kelas }}</span>
-                      </p>
-                      <p class="text-sm">
-                        <span class="font-semibold text-gray-700">Kode MK:</span>
-                        <span class="text-gray-600">{{ matching.mata_kuliah_kelas.matkul_kode }}</span>
-                      </p>
-                      <div class="flex flex-wrap gap-2">
-                        <span 
-                          v-for="semester in matching.mk_kelas_sem" 
-                          :key="semester"
-                          class="px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-sm font-medium"
-                        >
-                          Semester {{ semester }}
+                      <div class="space-y-2">
+                        <span class="inline-flex items-center px-3 py-1 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 rounded-lg text-base font-bold shadow-sm border border-blue-200">
+                          {{ matching.mata_kuliah_kelas.nama_kelas }}
+                        </span>
+                        <span class="inline-flex items-center px-3 py-1 bg-gradient-to-r from-indigo-100 to-indigo-200 text-indigo-700 rounded-lg text-base font-bold shadow-sm border border-indigo-200">
+                          {{ matching.mata_kuliah_kelas.matkul_kode }}
+                        </span>
+                        <div class="flex flex-wrap gap-2">
+                          <span 
+                            v-for="semester in matching.mk_kelas_sem" 
+                            :key="semester"
+                            class="px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-sm font-medium"
+                          >
+                            Semester {{ semester }}
+                          </span>
+                        </div>
+                        <span class="inline-flex items-center px-3 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-sm font-medium">
+                          {{ matching.matkul_tipe }}
                         </span>
                       </div>
-                      <span class="inline-flex items-center px-3 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-sm font-medium">
-                        {{ matching.matkul_tipe }}
-                      </span>
                     </div>
                     <div class="flex space-x-3">
                       <button 

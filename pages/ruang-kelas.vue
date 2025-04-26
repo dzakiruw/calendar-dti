@@ -99,7 +99,7 @@
           </div>
 
           <!-- Ruang Kelas List -->
-          <div v-else class="overflow-y-auto pr-2" style="height: 400px;">
+          <div v-else class="overflow-y-auto pr-2" style="height: 250px;">
             <ul class="space-y-4">
               <li 
                 v-for="(ruang, index) in filteredRuangKelasList" 

@@ -23,8 +23,8 @@
                 class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300">
               <p class="font-semibold text-gray-800">{{ mk.matkul_nama }}</p>
               <p class="text-sm text-gray-600">{{ mk.matkul_kode }}</p>
-            </li>
-          </ul>
+          </li>
+        </ul>
         </div>
       </div>
 
@@ -48,8 +48,8 @@
                   {{ dosen.dosen_prioritas === 'PRIORITAS' ? 'Prioritas' : 'Non Prioritas' }}
                 </span>
               </div>
-            </li>
-          </ul>
+          </li>
+        </ul>
         </div>
       </div>
 
@@ -66,8 +66,8 @@
               <span class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium mt-1">
                 Kapasitas: {{ ruang.ruangan_kapasitas }}
               </span>
-            </li>
-          </ul>
+          </li>
+        </ul>
         </div>
       </div>
 
@@ -93,8 +93,8 @@
                   </span>
                 </div>
               </div>
-            </li>
-          </ul>
+          </li>
+        </ul>
         </div>
       </div>
 
@@ -102,14 +102,14 @@
       <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100">
         <h2 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4">
           <i class="fas fa-list-ul mr-3"></i> Daftar Matching
-        </h2>
+      </h2>
         <div class="h-[200px] overflow-y-auto pr-2">
           <!-- Empty State -->
           <div v-if="matchingList.length === 0" 
                class="flex flex-col items-center justify-center h-full text-gray-500">
             <i class="fas fa-clipboard-list text-4xl mb-2"></i>
             <p>Belum ada data matching.</p>
-          </div>
+      </div>
 
           <!-- Matching List -->
           <ul v-else class="space-y-3">
@@ -117,10 +117,10 @@
                 class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300">
               <p class="font-semibold text-gray-800">{{ match.kelas.nama_kelas }}</p>
               <p class="text-sm text-gray-600 mt-1">{{ match.dosen.dosen_nama }}</p>
-            </li>
-          </ul>
+  </li>
+</ul>
         </div>
-      </div>
+    </div>
     </div>
 
     <!-- Tombol Aksi -->
@@ -160,8 +160,8 @@
                 <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Semester</th>
                 <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Dosen</th>
                 <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Ruangan</th>
-              </tr>
-            </thead>
+          </tr>
+        </thead>
             <tbody class="divide-y divide-gray-100">
               <tr v-for="(row, index) in jadwalGenerated" :key="index"
                   class="hover:bg-blue-50 transition-colors duration-200">
@@ -176,9 +176,9 @@
                 </td>
                 <td class="px-6 py-4 text-sm text-gray-700">{{ row.dosen }}</td>
                 <td class="px-6 py-4 text-sm text-gray-700">{{ row.ruangan }}</td>
-              </tr>
-            </tbody>
-          </table>
+          </tr>
+        </tbody>
+      </table>
         </div>
       </div>
     </div>
@@ -276,217 +276,246 @@ onMounted(() => {
 // Function to generate jadwal
 const generateJadwal = async () => {
   try {
-    console.log('Starting schedule generation...');
+    console.log('Starting enhanced backtracking...');
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-    if (!token) {
-      throw new Error('User is not authenticated');
-    }
+    if (!token) throw new Error('User is not authenticated');
 
-    // Fetch all necessary data
-    console.log('Fetching data from API...');
-    const [mataKuliahResponse, dosenResponse, ruanganResponse, jadwalHindariResponse, mkDosenResponse] = await Promise.all([
-      axios.get('http://10.15.41.68:3000/mata_kuliah', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }),
-      axios.get('http://10.15.41.68:3000/dosen', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }),
-      axios.get('http://10.15.41.68:3000/ruangan', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }),
-      axios.get('http://10.15.41.68:3000/jadwal_hindari', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }),
-      axios.get('http://10.15.41.68:3000/mk_dosen', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
+    // Fetch data
+    const [mataKuliahRes, dosenRes, ruanganRes, jadwalHindariRes, mkDosenRes] = await Promise.all([
+      axios.get('http://10.15.41.68:3000/mata_kuliah', { headers: { Authorization: `Bearer ${token}` } }),
+      axios.get('http://10.15.41.68:3000/dosen', { headers: { Authorization: `Bearer ${token}` } }),
+      axios.get('http://10.15.41.68:3000/ruangan', { headers: { Authorization: `Bearer ${token}` } }),
+      axios.get('http://10.15.41.68:3000/jadwal_hindari', { headers: { Authorization: `Bearer ${token}` } }),
+      axios.get('http://10.15.41.68:3000/mk_dosen', { headers: { Authorization: `Bearer ${token}` } })
     ]);
 
-    const mataKuliah = mataKuliahResponse.data;
-    const dosen = dosenResponse.data;
-    const ruangan = ruanganResponse.data;
-    const jadwalHindari = jadwalHindariResponse.data;
-    const mkDosen = mkDosenResponse.data;
-
-    // Initialize schedule matrix and lecturer availability tracker
-    const schedule = Array(5).fill().map(() => 
-      Array(3).fill().map(() => [])
+    const courses = mkDosenRes.data.reduce((acc, current) => {
+      // Ensure mk_kelas_sem exists and is an array
+      if (!current.mk_kelas_sem || !Array.isArray(current.mk_kelas_sem)) return acc;
+      
+      const existing = acc.find(c => 
+        c.id_mk_kelas === current.id_mk_kelas && 
+        JSON.stringify(c.mk_kelas_sem) === JSON.stringify(current.mk_kelas_sem)
+      );
+      
+      if (existing) {
+        if (!existing.secondary_lecturers.includes(current.dosen_kode)) {
+          existing.secondary_lecturers.push(current.dosen_kode);
+        }
+      } else {
+        acc.push({
+          ...current,
+          id: `${current.id_mk_kelas}-${JSON.stringify(current.mk_kelas_sem)}`,
+          kelas: current.mata_kuliah_kelas?.nama_kelas,
+          matkul_nama: mataKuliahRes.data.find(mk => 
+            mk.matkul_kode === current.mata_kuliah_kelas?.matkul_kode)?.matkul_nama,
+          primary_lecturer: current.dosen_kode,
+          secondary_lecturers: [],
+          priority: current.dosen_kode === 'KG' ? 0 : // bisa ganti jadi current.matkul_tipe === 'SKPB' kalo perlu
+                  (current.matkul_tipe === 'DEPARTEMEN' ? 1 : 
+                  (current.matkul_tipe === 'PENGAYAAN' ? 2 : 3))
+        });
+      }
+      return acc;
+    }, []).sort((a, b) => a.priority - b.priority);
+    
+    // Get all unique semester values from mkDosenRes.data (flattening the arrays)
+    const activeSemesters = new Set(
+      courses.flatMap(course => course.mk_kelas_sem)
     );
-    const lecturerSchedule = {}; // Track lecturer availability
 
-    // Helper function to check if time slot is available
-    const isTimeSlotAvailable = (day, session) => {
-      return !jadwalHindari.some(jh => 
-        jh.hindari_hari === hariList[day] && 
-        jh.hindari_sesi === sesiList[session]
-      );
-    };
+    // Create blocked slots only for the active semesters
+    const blockedSlots = new Set(
+      jadwalHindariRes.data
+        .filter(jh => {
+          if (!jh.hindari_sem || !Array.isArray(jh.hindari_sem)) return false;
+          return jh.hindari_sem.some(sem => activeSemesters.has(sem));
+        })
+        .map(jh => `${jh.hindari_hari}|${jh.hindari_sesi}`)
+    );
 
-    // Helper function to check if lecturer is available
-    const isLecturerAvailable = (lecturerCode, day, session) => {
-      const lecturer = dosen.find(d => d.dosen_kode === lecturerCode);
-      if (!lecturer || !lecturer.jadwal_dosen) return false;
+    console.log(`Processing ${courses.length} unique course sections`);
+
+    const lecturers = dosenRes.data.reduce((acc, d) => {
+      const availableSlots = d.jadwal_dosen
+        .map(j => `${j.dosen_sedia_hari}|${j.dosen_sedia_sesi}`)
+        .filter(slot => !blockedSlots.has(slot));
+
+      acc[d.dosen_kode] = {
+        nama: d.dosen_nama,
+        availableSlots,
+        totalSlots: d.jadwal_dosen.length,
+        availableCount: availableSlots.length
+      };
+      return acc;
+    }, {});
+
+    const rooms = ruanganRes.data.map(r => r.ruangan_kode);
+
+    const schedule = [];
+    const bestSolution = { schedule: [], score: -Infinity };
+    const lecturerBookings = {};
+    const roomBookings = {};
+    let nodesVisited = 0;
+    const MAX_NODES = 10000;
+
+    hariList.forEach(day => {
+      sesiList.forEach(session => {
+        roomBookings[`${day}|${session}`] = new Set();
+      });
+    });
+
+    // scoring
+    function evaluateSchedule(currentSchedule) {
+      let score = currentSchedule.length * 1000; // Base score per scheduled course
       
-      // Check if lecturer is already scheduled for this time slot
-      const key = `${lecturerCode}|${day}|${session}`;
-      if (lecturerSchedule[key]) return false;
+      currentSchedule.forEach(entry => {
+        // Priority bonus
+        score += (3 - entry.priority) * 100;
+        
+        // Team teaching bonus
+        if (entry.secondary_lecturers.length > 0) score += 200;
+        
+        // earlier = better
+        const dayValue = hariList.indexOf(entry.hari);
+        const sessionValue = sesiList.indexOf(entry.sesi);
+        score += (100 - (dayValue * 10 + sessionValue * 3));
+      });
+      return score;
+    }
+
+    // backtracking
+    function backtrack(coursesToSchedule, index, currentSchedule) {
+      nodesVisited++;
+      if (nodesVisited > MAX_NODES) return false;
       
-      return lecturer.jadwal_dosen.some(jd => 
-        jd.dosen_sedia_hari === hariList[day] && 
-        jd.dosen_sedia_sesi === sesiList[session]
-      );
-    };
+      if (index >= coursesToSchedule.length) {
+        const currentScore = evaluateSchedule(currentSchedule);
+        if (currentScore > bestSolution.score) {
+          bestSolution.schedule = [...currentSchedule];
+          bestSolution.score = currentScore;
+          // console.log(`New best score: ${currentScore} (${currentSchedule.length} courses)`);
+        }
+        return currentSchedule.length === coursesToSchedule.length;
+      }
 
-    // Helper function to check if room is available
-    const isRoomAvailable = (roomCode, day, session) => {
-      return !schedule[day][session].some(s => s.ruangan_kode === roomCode);
-    };
+      const course = coursesToSchedule[index];
+      const allLecturers = [course.primary_lecturer, ...course.secondary_lecturers];
 
-    // Helper function to schedule a course
-    const scheduleCourse = (course, day, session, room) => {
-      const matkul = mataKuliah.find(mk => 
-        mk.mata_kuliah_kelas.some(mkk => mkk.nama_kelas === course.mata_kuliah_kelas?.nama_kelas)
-      );
-      if (!matkul) return false;
-
-      const matkulKelas = matkul.mata_kuliah_kelas.find(mkk => 
-        mkk.nama_kelas === course.mata_kuliah_kelas?.nama_kelas
-      );
-      if (!matkulKelas) return false;
-
-      // Mark lecturer as scheduled for this time slot
-      const lecturerKey = `${course.dosen_kode}|${day}|${session}`;
-      lecturerSchedule[lecturerKey] = true;
-
-      schedule[day][session].push({
-        nama_kelas: course.mata_kuliah_kelas?.nama_kelas,
-        dosen_kode: course.dosen_kode,
-        ruangan_kode: room.ruangan_kode,
-        matkul_kode: matkulKelas.matkul_kode,
-        matkul_nama: matkul.matkul_nama,
-        kelas: course.mata_kuliah_kelas?.nama_kelas,
-        semester: course.mk_kelas_sem
+      // Get all possible slots from all lecturers, excluding blocked slots
+      let possibleSlots = [];
+      allLecturers.forEach(lect => {
+        lecturers[lect]?.availableSlots.forEach(slot => {
+          // Only consider non-blocked slots
+          if (!blockedSlots.has(slot)) {
+            const [day, session] = slot.split('|');
+            possibleSlots.push({ day, session });
+          }
+        });
       });
 
-      return true;
-    };
+      const uniqueSlots = Array.from(new Set(possibleSlots.map(s => `${s.day}|${s.session}`)))
+        .map(s => {
+          const [day, session] = s.split('|');
+          return { day, session };
+        })
+        .sort((a, b) => {
+          // Prefer earlier days and sessions
+          const dayDiff = hariList.indexOf(a.day) - hariList.indexOf(b.day);
+          if (dayDiff !== 0) return dayDiff;
+          return sesiList.indexOf(a.session) - sesiList.indexOf(b.session);
+        });
 
-    // Schedule SKBP courses first
-    console.log('Scheduling SKBP courses...');
-    const skbpCourses = mkDosen.filter(md => md.matkul_tipe === 'SKBP');
-    for (const course of skbpCourses) {
-      let scheduled = false;
-      for (let day = 0; day < 5; day++) {
-        for (let session = 0; session < 3; session++) {
-          if (isTimeSlotAvailable(day, session) && 
-              isLecturerAvailable(course.dosen_kode, day, session)) {
-            const availableRoom = ruangan.find(room => 
-              isRoomAvailable(room.ruangan_kode, day, session)
-            );
-            
-            if (availableRoom) {
-              scheduled = scheduleCourse(course, day, session, availableRoom);
-              if (scheduled) break;
-            }
-          }
-          if (scheduled) break;
+      let slotSet = new Set();
+      allLecturers.forEach(lect => {
+        lecturers[lect]?.availableSlots.forEach(slot => {
+          slotSet.add(slot);
+        });
+      });
+
+      for (const { slot, day, session } of possibleSlots) {
+        const slotKey = `${day}|${session}`;
+        if (blockedSlots.has(slotKey)) continue;
+
+        const availableRoom = rooms.find(r => !roomBookings[slotKey].has(r));
+        if (!availableRoom) continue;
+
+        // team teaching
+        const availableLecturers = allLecturers.filter(lecturer =>
+          !lecturerBookings[`${lecturer}|${day}|${session}`]
+        );
+        if (availableLecturers.length === 0) continue;
+
+        const newEntry = {
+          hari: day,
+          sesi: session,
+          matkul: course.matkul_nama,
+          dosen: availableLecturers.join(' & '),
+          secondary_lecturers: availableLecturers.slice(1),
+          ruangan: availableRoom,
+          kelas: course.kelas,
+          matkul_tipe: course.matkul_tipe,
+          priority: course.priority
+        };
+
+        currentSchedule.push(newEntry);
+
+        // tanda ruang kelas dan sesi dosen sudah diisi
+        availableLecturers.forEach(lecturer => {
+          lecturerBookings[`${lecturer}|${day}|${session}`] = true;
+        });
+        roomBookings[slotKey].add(availableRoom);
+
+        if (backtrack(coursesToSchedule, index + 1, currentSchedule)) {
+          return true;
         }
-        if (scheduled) break;
+
+        // Backtrack
+        currentSchedule.pop();
+        availableLecturers.forEach(lecturer => {
+          delete lecturerBookings[`${lecturer}|${day}|${session}`];
+        });
+        roomBookings[slotKey].delete(availableRoom);
       }
+      
+      // skip matkul kalau gagal
+      return backtrack(coursesToSchedule, index + 1, currentSchedule);
     }
 
-    // Schedule enrichment courses (prioritize Friday sessions 2/3)
-    console.log('Scheduling enrichment courses...');
-    const enrichmentCourses = mkDosen.filter(md => md.matkul_tipe === 'PENGAYAAN');
+    console.log('Starting backtracking...');
+    const startTime = Date.now();
+    const foundCompleteSolution = backtrack(courses, 0, []);
+    const endTime = Date.now();
+
+    console.log('Backtracking results:', {
+      executionTime: `${(endTime - startTime)/1000}s`,
+      nodesVisited,
+      bestScore: bestSolution.score,
+      coursesScheduled: bestSolution.schedule.length,
+      totalCourses: courses.length,
+      solutionComplete: foundCompleteSolution
+    });
     
-    // Try Friday sessions 2/3 first
-    for (const course of enrichmentCourses) {
-      let scheduled = false;
-      for (let session = 1; session < 3; session++) {
-        if (isTimeSlotAvailable(4, session) && 
-            isLecturerAvailable(course.dosen_kode, 4, session)) {
-          const availableRoom = ruangan.find(room => 
-            isRoomAvailable(room.ruangan_kode, 4, session)
-          );
-          
-          if (availableRoom) {
-            scheduled = scheduleCourse(course, 4, session, availableRoom);
-            if (scheduled) break;
-          }
-        }
-      }
+    const scheduledIds = new Set(bestSolution.schedule.map(s => `${s.kelas}-${s.matkul}`));
+    const unscheduledCourses = courses.filter(c => 
+      !scheduledIds.has(`${c.kelas}-${c.matkul_nama}`)
+    );
 
-      // If not scheduled on Friday, try other days
-      if (!scheduled) {
-        for (let day = 0; day < 5; day++) {
-          for (let session = 0; session < 3; session++) {
-            if (isTimeSlotAvailable(day, session) && 
-                isLecturerAvailable(course.dosen_kode, day, session)) {
-              const availableRoom = ruangan.find(room => 
-                isRoomAvailable(room.ruangan_kode, day, session)
-              );
-              
-              if (availableRoom) {
-                scheduled = scheduleCourse(course, day, session, availableRoom);
-                if (scheduled) break;
-              }
-            }
-            if (scheduled) break;
-          }
-          if (scheduled) break;
-        }
-      }
-    }
+    console.warn(`Total Unscheduled Courses: ${unscheduledCourses.length}`);
 
-    // Schedule regular courses
-    console.log('Scheduling regular courses...');
-    const regularCourses = mkDosen.filter(md => md.matkul_tipe === 'DEPARTEMEN');
-    for (const course of regularCourses) {
-      let scheduled = false;
-      for (let day = 0; day < 5; day++) {
-        for (let session = 0; session < 3; session++) {
-          if (isTimeSlotAvailable(day, session) && 
-              isLecturerAvailable(course.dosen_kode, day, session)) {
-            const availableRoom = ruangan.find(room => 
-              isRoomAvailable(room.ruangan_kode, day, session)
-            );
-            
-            if (availableRoom) {
-              scheduled = scheduleCourse(course, day, session, availableRoom);
-              if (scheduled) break;
-            }
-          }
-          if (scheduled) break;
-        }
-        if (scheduled) break;
-      }
-    }
+    unscheduledCourses.forEach(c => {
+      console.warn(`Could not schedule: "${c.matkul_nama}" (${c.kelas}) [${c.primary_lecturer}${c.secondary_lecturers.length ? ' + ' + c.secondary_lecturers.join(', ') : ''}]`);
+    });
 
-    // Convert schedule to flat array for display
-    const flatSchedule = [];
-    for (let day = 0; day < 5; day++) {
-      for (let session = 0; session < 3; session++) {
-        const classes = schedule[day][session];
-        for (const classInfo of classes) {
-          flatSchedule.push({
-            hari: hariList[day],
-            sesi: sesiList[session],
-            matkul: classInfo.matkul_nama,
-            dosen: classInfo.dosen_kode,
-            ruangan: classInfo.ruangan_kode,
-            kelas: classInfo.kelas,
-            semester: classInfo.semester
-          });
-        }
-      }
-    }
+    // Handle results
+    jadwalGenerated.value = bestSolution.schedule;
 
-    // Update the generated schedule
-    jadwalGenerated.value = flatSchedule;
-    console.log('Schedule generation completed');
+    return bestSolution.schedule;
+
   } catch (error) {
-    console.error('Error generating schedule:', error);
-    alert('Terjadi kesalahan saat membuat jadwal. Silakan coba lagi.');
+    console.error('Scheduling error:', error);
+    alert(`Error: ${error.message}`);
+    return null;
   }
 };
 
@@ -525,7 +554,7 @@ const exportExcel = () => {
     }
     
     // Format the output as "Kelas - Dosen (Semester X, Y)"
-    groupedData[key].classes[item.ruangan] = `${item.kelas} - ${item.dosen} (Semester ${item.semester.join(', ')})`;
+    groupedData[key].classes[item.ruangan] = `${item.kelas} - ${item.dosen} (Semester ${(item.semester || item.mk_kelas_sem || ['-']).join(', ')})`;
   });
   
   // Add data rows
