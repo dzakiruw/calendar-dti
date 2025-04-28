@@ -142,6 +142,15 @@
       >
         <i class="fas fa-file-excel mr-2"></i> Export ke Excel
       </button>
+
+      <button
+        @click="saveGeneratedJadwal"
+        class="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 px-6 rounded-xl
+              hover:from-purple-700 hover:to-purple-800 transform hover:scale-105 transition-all duration-300
+              focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 shadow-lg"
+      >
+        <i class="fas fa-database mr-2"></i> Simpan ke Database
+      </button>
     </div>
 
     <!-- Hasil Jadwal -->
@@ -636,4 +645,46 @@ const getClassesForTimeSlot = (hari, sesi) => {
     kelas => kelas.hari === hari && kelas.sesi === sesi
   );
 };
+
+// Helper untuk mempersiapkan data sebelum disimpan
+const prepareJadwalForSaving = () => {
+  return jadwalGenerated.value.map(item => ({
+    id_mk_kelas: item.id_mk_kelas,     // Pastikan ini sudah tersedia
+    dosen_kode: item.dosen_kode,       // Pastikan ini tersedia
+    nama_kelas: item.kelas,            // kelas
+    matkul_kode: item.matkul_kode,     // kode mata kuliah
+    ruangan_kode: item.ruangan,        // ruangan
+    jadwal_hari: item.hari,            // hari
+    jadwal_sesi: item.sesi             // sesi
+  }));
+};
+
+// Fungsi untuk menyimpan hasil generate ke backend
+const saveGeneratedJadwal = async () => {
+  try {
+    if (!jadwalGenerated.value.length) {
+      alert('Tidak ada jadwal untuk disimpan.');
+      return;
+    }
+
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) throw new Error('User is not authenticated');
+
+    const jadwalData = prepareJadwalForSaving();
+
+    const response = await axios.post('http://10.15.41.68:3000/jadwal/simpan', {
+      jadwal: jadwalData
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    alert('✅ Jadwal berhasil disimpan ke database!');
+    console.log('Response:', response.data);
+
+  } catch (error) {
+    console.error('❌ Gagal menyimpan jadwal:', error);
+    alert(`Error saat menyimpan: ${error.message}`);
+  }
+};
+
 </script>
