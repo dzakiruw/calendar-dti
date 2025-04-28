@@ -456,17 +456,16 @@ const generateJadwal = async () => {
         if (availableLecturers.length === 0) continue;
 
         const newEntry = {
-  hari: day,
-  sesi: session,
-  matkul: course.matkul_nama,
-  dosen: availableLecturers.join(' & '),
-  secondary_lecturers: availableLecturers.slice(1),
-  ruangan: availableRoom,
-  kelas: course.kelas,
-  matkul_tipe: course.matkul_tipe,
-  priority: course.priority,
-  mk_kelas_sem: course.mk_kelas_sem 
-};
+          hari: day,
+          sesi: session,
+          matkul: course.matkul_nama,
+          dosen: availableLecturers.join(' & '),
+          secondary_lecturers: availableLecturers.slice(1),
+          ruangan: availableRoom,
+          kelas: course.kelas,
+          matkul_tipe: course.matkul_tipe,
+          priority: course.priority
+        };
 
         currentSchedule.push(newEntry);
 
