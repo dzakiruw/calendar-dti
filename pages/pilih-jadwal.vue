@@ -135,12 +135,13 @@
       </button>
 
       <button
-        @click="exportExcel"
+        @click="exportSelectedToExcel"
+        :disabled="!selectedJadwalIds.length"
         class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
                hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow-lg"
       >
-        <i class="fas fa-file-excel mr-2"></i> Export ke Excel
+        <i class="fas fa-file-excel mr-2"></i> Export ke Excel ({{ selectedJadwalIds.length }})
       </button>
 
       <button
@@ -154,48 +155,104 @@
     </div>
 
     <!-- Hasil Jadwal -->
-    <div v-if="jadwalGenerated.length" class="max-w-7xl mx-auto">
+    <div v-if="generatedJadwalGroups.length" class="max-w-7xl mx-auto mt-10">
       <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4">
-        <i class="fas fa-calendar-alt mr-3"></i> Hasil Jadwal
+        <i class="fas fa-cogs mr-3"></i> Daftar Hasil Generate Jadwal
       </h2>
-      <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead>
-              <tr class="bg-gray-50 border-b border-gray-100">
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 sticky left-0 bg-gray-50">Hari</th>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 sticky left-[140px] bg-gray-50">Sesi</th>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Kelas</th>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Semester</th>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Dosen</th>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Ruangan</th>
-          </tr>
-        </thead>
-            <tbody class="divide-y divide-gray-100">
-              <tr v-for="(row, index) in jadwalGenerated" :key="index"
-                  class="hover:bg-blue-50 transition-colors duration-200">
-                <td class="px-6 py-4 text-sm text-gray-700 sticky left-0 bg-white">{{ row.hari }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700 sticky left-[140px] bg-white">{{ row.sesi }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700">{{ row.kelas }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700">
-                  <span v-for="(sem, idx) in row.semester" :key="idx" 
-                        class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
-                    Semester {{ sem }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-700">{{ row.dosen }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700">{{ row.ruangan }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div v-for="(group, idx) in generatedJadwalGroups" :key="idx" class="border p-4 mb-4 rounded-xl">
+        <div class="flex justify-between items-center mb-2">
+          <span class="font-semibold">Hasil Generate #{{ idx+1 }} ({{ group.length }} jadwal)</span>
+          <button @click="selectGeneratedGroup(idx)" :class="selectedGeneratedGroupIndex === idx ? 'bg-blue-600 text-white px-3 py-1 rounded' : 'bg-gray-200 px-3 py-1 rounded'">
+            Pilih
+          </button>
         </div>
+        <div v-if="selectedGeneratedGroupIndex === idx">
+          <div class="overflow-x-auto">
+            <table class="w-full mb-2">
+              <thead>
+                <tr class="bg-gray-50 border-b border-gray-100">
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Hari</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Sesi</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Kelas</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Semester</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Dosen</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Ruangan</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr v-for="(row, i) in group" :key="i">
+                  <td class="px-6 py-4 text-sm text-gray-700">{{ row.hari }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-700">{{ row.sesi }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-700">{{ row.kelas }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-700">
+                    <span v-for="(sem, idx) in row.semester" :key="idx" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
+                      Semester {{ sem }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-700">{{ row.dosen }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-700">{{ row.ruangan }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="flex gap-2">
+            <button @click="exportSelectedGeneratedGroup" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Export ke Excel</button>
+            <button @click="saveSelectedGeneratedGroup" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">Simpan ke Database</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jadwal Tersimpan -->
+    <div v-if="jadwalTersimpan.length" class="max-w-7xl mx-auto mt-10">
+      <h2 class="text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent flex items-center mb-4">
+        <i class="fas fa-database mr-3"></i> Jadwal Tersimpan di Database
+      </h2>
+      <div class="mb-2">
+        <button @click="exportSelectedToExcel" :disabled="!selectedJadwalIds.length" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50">
+          Export ke Excel ({{ selectedJadwalIds.length }})
+        </button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-50 border-b border-gray-100">
+              <th class="px-2 py-4"><input type="checkbox" :checked="allSelected" @change="toggleSelectAll"></th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Hari</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Sesi</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Kelas</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Semester</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Ruangan</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr v-for="row in jadwalTersimpan" :key="row.id_jadwal">
+              <td class="px-2 py-4 text-center">
+                <input type="checkbox" :value="row.id_jadwal" v-model="selectedJadwalIds">
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-700">{{ row.jadwal_hari }}</td>
+              <td class="px-6 py-4 text-sm text-gray-700">{{ row.jadwal_sesi }}</td>
+              <td class="px-6 py-4 text-sm text-gray-700">{{ row.mata_kuliah_kelas?.nama_kelas || '-' }}</td>
+              <td class="px-6 py-4 text-sm text-gray-700">
+                <span v-for="(smt, idx) in row.jadwal_smt" :key="idx" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
+                  Semester {{ smt }}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-700">{{ row.ruangan?.ruangan_kode || row.ruangan_kode }}</td>
+              <td class="px-6 py-4 text-sm text-gray-700">
+                <button @click="deleteJadwal(row.id_jadwal)" class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Hapus</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
 import axios from 'axios'
@@ -211,6 +268,43 @@ const ruangKelasList = ref([]);
 const jadwalHindari = ref([]);
 const matchingList = ref([]);
 const jadwalGenerated = ref([]);
+const jadwalTersimpan = ref([]);
+const selectedJadwalIds = ref([]);
+const generatedJadwalGroups = ref([]); // Array of array hasil generate
+const selectedGeneratedGroupIndex = ref(null);
+
+const allSelected = computed(() => selectedJadwalIds.value.length === jadwalTersimpan.value.length && jadwalTersimpan.value.length > 0);
+
+function toggleSelectAll() {
+  if (allSelected.value) {
+    selectedJadwalIds.value = [];
+  } else {
+    selectedJadwalIds.value = jadwalTersimpan.value.map(j => j.id_jadwal);
+  }
+}
+
+function toggleSelectJadwal(id) {
+  if (selectedJadwalIds.value.includes(id)) {
+    selectedJadwalIds.value = selectedJadwalIds.value.filter(jid => jid !== id);
+  } else {
+    selectedJadwalIds.value.push(id);
+  }
+}
+
+async function deleteJadwal(id) {
+  if (!confirm('Yakin ingin menghapus jadwal ini?')) return;
+  const token = getToken();
+  await axios.delete(`http://10.15.41.68:3000/jadwal/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  await fetchJadwalTersimpan();
+  selectedJadwalIds.value = selectedJadwalIds.value.filter(jid => jid !== id);
+}
+
+function exportSelectedToExcel() {
+  const selected = jadwalTersimpan.value.filter(j => selectedJadwalIds.value.includes(j.id_jadwal));
+  exportExcel(selected);
+}
 
 // Fetch Data function
 const getToken = () => {
@@ -277,9 +371,23 @@ const fetchMatchingData = async () => {
   }
 };
 
+const fetchJadwalTersimpan = async () => {
+  try {
+    const token = getToken();
+    if (!token) throw new Error('User is not authenticated');
+    const response = await axios.get('http://10.15.41.68:3000/jadwal', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    jadwalTersimpan.value = response.data;
+  } catch (error) {
+    console.error('Gagal mengambil jadwal tersimpan:', error);
+  }
+};
+
 onMounted(() => {
   fetchData();
   fetchMatchingData();
+  fetchJadwalTersimpan();
 })
 
 // Function to generate jadwal
@@ -518,7 +626,11 @@ const generateJadwal = async () => {
 
     // Handle results
     jadwalGenerated.value = bestSolution.schedule;
-
+    // Tambahkan hasil generate ke grup
+    if (bestSolution.schedule && bestSolution.schedule.length > 0) {
+      generatedJadwalGroups.value.push(JSON.parse(JSON.stringify(bestSolution.schedule)));
+      selectedGeneratedGroupIndex.value = generatedJadwalGroups.value.length - 1;
+    }
     return bestSolution.schedule;
 
   } catch (error) {
@@ -529,12 +641,11 @@ const generateJadwal = async () => {
 };
 
 // Function to export jadwal to Excel
-const exportExcel = () => {
+const exportExcel = (data = jadwalGenerated.value) => {
   // Get unique rooms and sort them
-  const uniqueRooms = [...new Set(jadwalGenerated.value.map(item => item.ruangan))].sort();
-  
+  const uniqueRooms = [...new Set(data.map(item => item.ruangan?.ruangan_kode || item.ruangan_kode))].sort();
   // Get unique time slots (hari + sesi combinations) and sort them
-  const uniqueTimeSlots = [...new Set(jadwalGenerated.value.map(item => `${item.hari}|${item.sesi}`))].sort((a, b) => {
+  const uniqueTimeSlots = [...new Set(data.map(item => `${item.jadwal_hari || item.hari}|${item.jadwal_sesi || item.sesi}`))].sort((a, b) => {
     const [hariA, sesiA] = a.split('|');
     const [hariB, sesiB] = b.split('|');
     const hariOrder = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT'];
@@ -542,47 +653,36 @@ const exportExcel = () => {
     return hariOrder.indexOf(hariA) - hariOrder.indexOf(hariB) || 
            sesiOrder.indexOf(sesiA) - sesiOrder.indexOf(sesiB);
   });
-  
   // Create a matrix of data
   const matrixData = [];
-  
   // Add header row with room capacity
   const headerRow = ['Hari', 'Sesi', ...uniqueRooms];
   matrixData.push(headerRow);
-  
-  // Group data by hari and sesi
+  // Group data by hari dan sesi
   const groupedData = {};
-  jadwalGenerated.value.forEach(item => {
-    const key = `${item.hari}|${item.sesi}`;
+  data.forEach(item => {
+    const key = `${item.jadwal_hari || item.hari}|${item.jadwal_sesi || item.sesi}`;
     if (!groupedData[key]) {
       groupedData[key] = {
-        hari: item.hari,
-        sesi: item.sesi,
+        hari: item.jadwal_hari || item.hari,
+        sesi: item.jadwal_sesi || item.sesi,
         classes: {}
       };
     }
-    
-    // Format the output as "Kelas - Dosen (Semester X, Y)"
-    groupedData[key].classes[item.ruangan] = `${item.kelas} - ${item.dosen} (Semester ${(item.semester || item.mk_kelas_sem || ['-']).join(', ')})`;
+    groupedData[key].classes[item.ruangan?.ruangan_kode || item.ruangan_kode] = `${item.mata_kuliah_kelas?.nama_kelas || item.kelas || '-'} (Semester ${(item.jadwal_smt || item.semester || ['-']).join(', ')})`;
   });
-  
   // Add data rows
   uniqueTimeSlots.forEach(timeSlot => {
     const [hari, sesi] = timeSlot.split('|');
     const row = [hari, sesi];
-    
-    // Fill in class data for each room
     uniqueRooms.forEach(room => {
       const classData = groupedData[timeSlot]?.classes[room] || '';
       row.push(classData);
     });
-    
     matrixData.push(row);
   });
-  
   // Create worksheet
   const worksheet = XLSX.utils.aoa_to_sheet(matrixData);
-  
   // Set column widths
   const colWidths = [
     { wch: 15 }, // Hari
@@ -590,15 +690,12 @@ const exportExcel = () => {
     ...uniqueRooms.map(() => ({ wch: 50 })) // Room columns
   ];
   worksheet['!cols'] = colWidths;
-  
   // Add styling
   const range = XLSX.utils.decode_range(worksheet['!ref']);
   for (let R = range.s.r; R <= range.e.r; R++) {
     for (let C = range.s.c; C <= range.e.c; C++) {
       const cell_address = { c: C, r: R };
       const cell_ref = XLSX.utils.encode_cell(cell_address);
-      
-      // Style header row
       if (R === 0) {
         worksheet[cell_ref].s = {
           font: { bold: true, color: { rgb: "FFFFFF" } },
@@ -606,7 +703,6 @@ const exportExcel = () => {
           alignment: { wrapText: true, vertical: "center", horizontal: "center" }
         };
       } else {
-        // Style data rows
         worksheet[cell_ref].s = {
           alignment: { wrapText: true, vertical: "center" },
           border: {
@@ -616,23 +712,15 @@ const exportExcel = () => {
             right: { style: 'thin' }
           }
         };
-        
-        // Alternate row colors
         if (R % 2 === 0) {
           worksheet[cell_ref].s.fill = { fgColor: { rgb: "F2F2F2" } };
         }
       }
     }
   }
-  
-  // Freeze header row and first two columns
   worksheet['!freeze'] = { xSplit: 2, ySplit: 1 };
-  
-  // Create workbook and save
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Jadwal');
-  
-  // Save the file
   const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
   const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
   saveAs(blob, 'jadwal.xlsx');
@@ -647,15 +735,26 @@ const getClassesForTimeSlot = (hari, sesi) => {
 
 // Helper untuk mempersiapkan data sebelum disimpan
 const prepareJadwalForSaving = () => {
-  return jadwalGenerated.value.map(item => ({
-    id_mk_kelas: item.id_mk_kelas,     // Pastikan ini sudah tersedia
-    dosen_kode: item.dosen_kode,       // Pastikan ini tersedia
-    nama_kelas: item.kelas,            // kelas
-    matkul_kode: item.matkul_kode,     // kode mata kuliah
-    ruangan_kode: item.ruangan,        // ruangan
-    jadwal_hari: item.hari,            // hari
-    jadwal_sesi: item.sesi             // sesi
-  }));
+  return jadwalGenerated.value.map(item => {
+    // Find the matching course from matchingList
+    const matchingCourse = matchingList.value.find(match => 
+      match.kelas.nama_kelas === item.kelas
+    );
+
+    if (!matchingCourse) {
+      console.warn(`No matching course found for ${item.kelas}`);
+      return null;
+    }
+
+    // Pastikan format data sesuai dengan model database
+    return {
+      id_mk_kelas: matchingCourse.kelas.id_mk_kelas,  // String
+      ruangan_kode: item.ruangan,                     // String
+      jadwal_hari: item.hari.toUpperCase(),           // Convert ke enum Hari (SENIN, SELASA, dll)
+      jadwal_sesi: item.sesi.toUpperCase(),           // Convert ke enum Sesi (SATU, DUA, TIGA)
+      jadwal_smt: matchingCourse.kelas.mk_kelas_sem || [1, 2]  // Array of Int
+    };
+  }).filter(item => item !== null);
 };
 
 // Fungsi untuk menyimpan hasil generate ke backend
@@ -685,5 +784,46 @@ const saveGeneratedJadwal = async () => {
     alert(`Error saat menyimpan: ${error.message}`);
   }
 };
+
+function selectGeneratedGroup(idx) {
+  selectedGeneratedGroupIndex.value = idx;
+}
+
+function exportSelectedGeneratedGroup() {
+  if (selectedGeneratedGroupIndex.value === null) return;
+  exportExcel(generatedJadwalGroups.value[selectedGeneratedGroupIndex.value]);
+}
+
+async function saveSelectedGeneratedGroup() {
+  if (selectedGeneratedGroupIndex.value === null) return;
+  const group = generatedJadwalGroups.value[selectedGeneratedGroupIndex.value];
+  if (!group.length) return alert('Tidak ada jadwal untuk disimpan.');
+  const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+  if (!token) throw new Error('User is not authenticated');
+  // Prepare data sesuai format simpan
+  const jadwalData = group.map(item => {
+    const matchingCourse = matchingList.value.find(match => match.kelas.nama_kelas === item.kelas);
+    if (!matchingCourse) return null;
+    return {
+      id_mk_kelas: matchingCourse.kelas.id_mk_kelas,
+      ruangan_kode: item.ruangan,
+      jadwal_hari: item.hari.toUpperCase(),
+      jadwal_sesi: item.sesi.toUpperCase(),
+      jadwal_smt: matchingCourse.kelas.mk_kelas_sem || [1, 2]
+    };
+  }).filter(item => item !== null);
+  try {
+    const response = await axios.post('http://10.15.41.68:3000/jadwal/simpan', {
+      jadwal: jadwalData
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    alert('✅ Jadwal berhasil disimpan ke database!');
+    fetchJadwalTersimpan();
+  } catch (error) {
+    console.error('❌ Gagal menyimpan jadwal:', error);
+    alert(`Error saat menyimpan: ${error.message}`);
+  }
+}
 
 </script>
