@@ -51,20 +51,22 @@
 import sidebar from '~/components/sidebar.vue'
 import { ref, computed, onMounted, provide } from 'vue'
 import axios from 'axios'
+import { jwtDecode } from 'jwt-decode'
 
 const user = ref({});
 const isSidebarOpen = ref(false);
 const isAuthChecked = ref(false);
 
-// Function to validate token
-const validateToken = async (token) => {
+// Function to validate token (frontend-safe)
+const validateToken = (token) => {
   try {
-    const response = await axios.get('http://10.15.41.68:3000/auth/validate', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    return response.data.valid;
+    const decoded = jwtDecode(token);
+    // Cek expiry (exp dalam detik)
+    if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+      return false; // Token expired
+    }
+    return true; // Token masih berlaku
   } catch (error) {
-    console.error('Token validation failed:', error);
     return false;
   }
 };
@@ -74,24 +76,20 @@ const checkAuthState = async () => {
   if (process.client) {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser?.accessToken) {
-      const isValid = await validateToken(storedUser.accessToken);
+      const isValid = validateToken(storedUser.accessToken);
       if (isValid) {
         updateAuthState(storedUser);
-        return true;
       } else {
         // Token is invalid, clear auth state
         localStorage.removeItem('user');
         localStorage.removeItem('profilePic');
         localStorage.removeItem('dropdowns');
         updateAuthState(null);
-        return false;
       }
     } else {
       updateAuthState(null);
-      return false;
     }
   }
-  return false;
 };
 
 // Computed property to check if user is authenticated
@@ -122,6 +120,7 @@ provide('authState', {
 
 // On component mount, check if the user is logged in
 onMounted(async () => {
+  // Check auth state immediately
   await checkAuthState();
 
   // Listen for storage events to handle auth state changes

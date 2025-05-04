@@ -201,50 +201,12 @@ const username = ref('');
 const password = ref('');
 const errorMessage = ref('');
 
-// Function to validate token
-const validateToken = async (token) => {
-  try {
-    const response = await axios.get('http://10.15.41.68:3000/auth/validate', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    return response.data.valid;
-  } catch (error) {
-    console.error('Token validation failed:', error);
-    return false;
-  }
-};
-
 // On component mount, check for logged-in user
-onMounted(async () => {
-  // Wait for layout to check auth state
-  if (!isAuthChecked.value) {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser?.accessToken) {
-      const isValid = await validateToken(storedUser.accessToken);
-      if (isValid) {
-        user.value = storedUser;
-        isLoggedIn.value = true;
-        userName.value = storedUser.username || "User";
-        // Update layout auth state
-        updateAuthState(storedUser);
-      } else {
-        // Token is invalid, clear auth state
-        localStorage.removeItem('user');
-        localStorage.removeItem('profilePic');
-        localStorage.removeItem('dropdowns');
-        user.value = {};
-        isLoggedIn.value = false;
-        userName.value = "User";
-        // Update layout auth state
-        updateAuthState(null);
-      }
-    }
-  } else {
-    // Use layout's auth state
-    user.value = layoutUser.value;
-    isLoggedIn.value = isAuthenticated.value;
-    userName.value = layoutUser.value?.username || "User";
-  }
+onMounted(() => {
+  // Use layout's auth state
+  user.value = layoutUser.value;
+  isLoggedIn.value = isAuthenticated.value;
+  userName.value = layoutUser.value?.username || "User";
 
   // Listen for auth state changes from layout
   window.addEventListener('auth-state-changed', (event) => {
