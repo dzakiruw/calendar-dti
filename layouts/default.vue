@@ -1,8 +1,13 @@
 <template>
   <div class="min-h-screen flex">
+    <!-- Loading state -->
+    <div v-if="!isAuthChecked" class="fixed inset-0 flex items-center justify-center bg-white z-50">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+    </div>
+
     <!-- Toggle Sidebar Button (Mobile) -->
     <button 
-      v-if="isAuthenticated" 
+      v-if="isAuthenticated && isAuthChecked" 
       @click="toggleSidebar"
       class="lg:hidden fixed top-4 left-4 z-20 p-2 rounded-md bg-white shadow-md hover:bg-gray-100"
     >
@@ -11,14 +16,14 @@
 
     <!-- Sidebar Overlay (Mobile) -->
     <div 
-      v-if="isAuthenticated && isSidebarOpen" 
+      v-if="isAuthenticated && isSidebarOpen && isAuthChecked" 
       @click="toggleSidebar"
       class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-10"
     ></div>
 
     <!-- Sidebar -->
     <div 
-      v-if="isAuthenticated" 
+      v-if="isAuthenticated && isAuthChecked" 
       :class="{
         'translate-x-0': isSidebarOpen,
         '-translate-x-full': !isSidebarOpen,
@@ -32,8 +37,8 @@
     <!-- Main Content -->
     <div 
       :class="{
-        'ml-0 lg:ml-64': isAuthenticated,
-        'ml-0': !isAuthenticated
+        'ml-0 lg:ml-64': isAuthenticated && isAuthChecked,
+        'ml-0': !isAuthenticated || !isAuthChecked
       }" 
       class="flex-1 min-h-screen bg-gray-50 transition-all duration-300 ease-in-out"
     >
@@ -45,9 +50,49 @@
 <script setup>
 import sidebar from '~/components/sidebar.vue'
 import { ref, computed, onMounted, provide } from 'vue'
+import axios from 'axios'
 
 const user = ref({});
 const isSidebarOpen = ref(false);
+const isAuthChecked = ref(false);
+
+// Function to validate token
+const validateToken = async (token) => {
+  try {
+    const response = await axios.get('http://10.15.41.68:3000/auth/validate', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data.valid;
+  } catch (error) {
+    console.error('Token validation failed:', error);
+    return false;
+  }
+};
+
+// Function to check and update auth state
+const checkAuthState = async () => {
+  if (process.client) {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser?.accessToken) {
+      const isValid = await validateToken(storedUser.accessToken);
+      if (isValid) {
+        updateAuthState(storedUser);
+        return true;
+      } else {
+        // Token is invalid, clear auth state
+        localStorage.removeItem('user');
+        localStorage.removeItem('profilePic');
+        localStorage.removeItem('dropdowns');
+        updateAuthState(null);
+        return false;
+      }
+    } else {
+      updateAuthState(null);
+      return false;
+    }
+  }
+  return false;
+};
 
 // Computed property to check if user is authenticated
 const isAuthenticated = computed(() => {
@@ -62,30 +107,36 @@ const toggleSidebar = () => {
 // Function to update authentication state
 const updateAuthState = (newUser) => {
   user.value = newUser || {};
+  isAuthChecked.value = true;
+  // Dispatch event to notify other components
+  window.dispatchEvent(new CustomEvent('auth-state-changed', { detail: newUser }));
 };
 
 // Provide the auth state and update function to child components
 provide('authState', {
   user,
   isAuthenticated,
-  updateAuthState
+  updateAuthState,
+  isAuthChecked
 });
 
 // On component mount, check if the user is logged in
-onMounted(() => {
-  if (process.client) { // Only run this in the browser (client-side)
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser && storedUser.accessToken) {
-      updateAuthState(storedUser);
-    } else {
-      updateAuthState(null);
-    }
+onMounted(async () => {
+  await checkAuthState();
 
-    // Listen for storage events to handle auth state changes
-    window.addEventListener('storage', () => {
-      const updatedUser = JSON.parse(localStorage.getItem('user'));
-      updateAuthState(updatedUser || null);
-    });
-  }
+  // Listen for storage events to handle auth state changes
+  window.addEventListener('storage', async () => {
+    await checkAuthState();
+  });
+
+  // Add route change listener to check auth state on navigation
+  window.addEventListener('popstate', async () => {
+    await checkAuthState();
+  });
+
+  // Listen for auth state changes from other components
+  window.addEventListener('auth-state-changed', (event) => {
+    user.value = event.detail || {};
+  });
 });
 </script>

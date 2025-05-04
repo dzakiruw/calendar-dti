@@ -1,7 +1,12 @@
 <template>
   <div>
+    <!-- Loading state -->
+    <div v-if="!isAuthChecked" class="fixed inset-0 flex items-center justify-center bg-white z-50">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+    </div>
+
     <!-- Login Page -->
-    <div v-if="!isLoggedIn" class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4">
+    <div v-else-if="!isLoggedIn" class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4">
       <div class="w-full max-w-5xl flex flex-col md:flex-row items-start justify-between gap-8">
         <!-- Left side - Welcome Content -->
         <div class="flex flex-col items-center md:items-start md:w-1/2">
@@ -141,10 +146,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, inject } from "vue";
 import { useRouter } from 'vue-router'
 import { WrenchScrewdriverIcon } from "@heroicons/vue/24/solid";
 import axios from 'axios';
+
+// Get auth state from layout
+const { user: layoutUser, isAuthenticated, updateAuthState, isAuthChecked } = inject('authState');
 
 // Tech Stack List
 const techStack = ref([
@@ -193,52 +201,94 @@ const username = ref('');
 const password = ref('');
 const errorMessage = ref('');
 
+// Function to validate token
+const validateToken = async (token) => {
+  try {
+    const response = await axios.get('http://10.15.41.68:3000/auth/validate', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data.valid;
+  } catch (error) {
+    console.error('Token validation failed:', error);
+    return false;
+  }
+};
+
 // On component mount, check for logged-in user
-onMounted(() => {
-  const storedUser = JSON.parse(localStorage.getItem('user'));
-  if (storedUser) {
-    user.value = storedUser;
-    isLoggedIn.value = true;
-    userName.value = storedUser.username || "User";
+onMounted(async () => {
+  // Wait for layout to check auth state
+  if (!isAuthChecked.value) {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser?.accessToken) {
+      const isValid = await validateToken(storedUser.accessToken);
+      if (isValid) {
+        user.value = storedUser;
+        isLoggedIn.value = true;
+        userName.value = storedUser.username || "User";
+        // Update layout auth state
+        updateAuthState(storedUser);
+      } else {
+        // Token is invalid, clear auth state
+        localStorage.removeItem('user');
+        localStorage.removeItem('profilePic');
+        localStorage.removeItem('dropdowns');
+        user.value = {};
+        isLoggedIn.value = false;
+        userName.value = "User";
+        // Update layout auth state
+        updateAuthState(null);
+      }
+    }
+  } else {
+    // Use layout's auth state
+    user.value = layoutUser.value;
+    isLoggedIn.value = isAuthenticated.value;
+    userName.value = layoutUser.value?.username || "User";
   }
 
-  window.addEventListener('storage', () => {
-    const updatedUser = JSON.parse(localStorage.getItem('user'));
-    if (updatedUser) {
-      user.value = updatedUser;
-      isLoggedIn.value = true;
-      userName.value = updatedUser.username || "User";
-    } else {
-      user.value = {};
-      isLoggedIn.value = false;
-      userName.value = "User";
-    }
+  // Listen for auth state changes from layout
+  window.addEventListener('auth-state-changed', (event) => {
+    const newUser = event.detail;
+    user.value = newUser || {};
+    isLoggedIn.value = !!newUser?.accessToken;
+    userName.value = newUser?.username || "User";
   });
 });
 
 // Handle login
 const login = async () => {
   try {
-    const response = await axios.post("http://10.15.41.68:3000/auth/login", {
+    errorMessage.value = '';
+    const response = await axios.post('http://10.15.41.68:3000/auth/login', {
       username: username.value,
-      password: password.value,
+      password: password.value
     });
 
     if (response.data.accessToken) {
-      const user = {
+      const userData = {
         username: username.value,
         accessToken: response.data.accessToken,
-        id: response.data.id,
+        role: response.data.role
       };
-
-      localStorage.setItem('user', JSON.stringify(user));
+      
+      localStorage.setItem('user', JSON.stringify(userData));
+      user.value = userData;
+      isLoggedIn.value = true;
+      userName.value = username.value;
+      
+      // Update layout auth state
+      updateAuthState(userData);
+      
+      // Clear form
+      username.value = '';
+      password.value = '';
+      
+      // Navigate to home page
       router.push('/');
-      window.dispatchEvent(new Event('storage'));
-    } else {
-      errorMessage.value = 'Invalid username or password.';
     }
   } catch (error) {
-    errorMessage.value = error.response ? error.response.data : 'An error occurred. Please try again.';
+    console.error('Login error:', error);
+    errorMessage.value = error.response?.data?.message || 'Login failed. Please try again.';
   }
 };
 </script>

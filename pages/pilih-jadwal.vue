@@ -135,22 +135,13 @@
       </button>
 
       <button
-        @click="exportSelectedToExcel"
-        :disabled="!selectedJadwalIds.length"
+        v-if="generatedJadwalGroups.length > 0"
+        @click="exportSelectedGeneratedGroup"
         class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
                hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow-lg"
       >
-        <i class="fas fa-file-excel mr-2"></i> Export ke Excel ({{ selectedJadwalIds.length }})
-      </button>
-
-      <button
-        @click="saveGeneratedJadwal"
-        class="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 px-6 rounded-xl
-              hover:from-purple-700 hover:to-purple-800 transform hover:scale-105 transition-all duration-300
-              focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 shadow-lg"
-      >
-        <i class="fas fa-database mr-2"></i> Simpan ke Database
+        <i class="fas fa-file-excel mr-2"></i> Export ke Excel
       </button>
     </div>
 
@@ -195,57 +186,7 @@
               </tbody>
             </table>
           </div>
-          <div class="flex gap-2">
-            <button @click="exportSelectedGeneratedGroup" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Export ke Excel</button>
-            <button @click="saveSelectedGeneratedGroup" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">Simpan ke Database</button>
-          </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Jadwal Tersimpan -->
-    <div v-if="jadwalTersimpan.length" class="max-w-7xl mx-auto mt-10">
-      <h2 class="text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent flex items-center mb-4">
-        <i class="fas fa-database mr-3"></i> Jadwal Tersimpan di Database
-      </h2>
-      <div class="mb-2">
-        <button @click="exportSelectedToExcel" :disabled="!selectedJadwalIds.length" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50">
-          Export ke Excel ({{ selectedJadwalIds.length }})
-        </button>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead>
-            <tr class="bg-gray-50 border-b border-gray-100">
-              <th class="px-2 py-4"><input type="checkbox" :checked="allSelected" @change="toggleSelectAll"></th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Hari</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Sesi</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Kelas</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Semester</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Ruangan</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100">
-            <tr v-for="row in jadwalTersimpan" :key="row.id_jadwal">
-              <td class="px-2 py-4 text-center">
-                <input type="checkbox" :value="row.id_jadwal" v-model="selectedJadwalIds">
-              </td>
-              <td class="px-6 py-4 text-sm text-gray-700">{{ row.jadwal_hari }}</td>
-              <td class="px-6 py-4 text-sm text-gray-700">{{ row.jadwal_sesi }}</td>
-              <td class="px-6 py-4 text-sm text-gray-700">{{ row.mata_kuliah_kelas?.nama_kelas || '-' }}</td>
-              <td class="px-6 py-4 text-sm text-gray-700">
-                <span v-for="(smt, idx) in row.jadwal_smt" :key="idx" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
-                  Semester {{ smt }}
-                </span>
-              </td>
-              <td class="px-6 py-4 text-sm text-gray-700">{{ row.ruangan?.ruangan_kode || row.ruangan_kode }}</td>
-              <td class="px-6 py-4 text-sm text-gray-700">
-                <button @click="deleteJadwal(row.id_jadwal)" class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Hapus</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
@@ -733,58 +674,6 @@ const getClassesForTimeSlot = (hari, sesi) => {
   );
 };
 
-// Helper untuk mempersiapkan data sebelum disimpan
-const prepareJadwalForSaving = () => {
-  return jadwalGenerated.value.map(item => {
-    // Find the matching course from matchingList
-    const matchingCourse = matchingList.value.find(match => 
-      match.kelas.nama_kelas === item.kelas
-    );
-
-    if (!matchingCourse) {
-      console.warn(`No matching course found for ${item.kelas}`);
-      return null;
-    }
-
-    // Pastikan format data sesuai dengan model database
-    return {
-      id_mk_kelas: matchingCourse.kelas.id_mk_kelas,  // String
-      ruangan_kode: item.ruangan,                     // String
-      jadwal_hari: item.hari.toUpperCase(),           // Convert ke enum Hari (SENIN, SELASA, dll)
-      jadwal_sesi: item.sesi.toUpperCase(),           // Convert ke enum Sesi (SATU, DUA, TIGA)
-      jadwal_smt: matchingCourse.kelas.mk_kelas_sem || [1, 2]  // Array of Int
-    };
-  }).filter(item => item !== null);
-};
-
-// Fungsi untuk menyimpan hasil generate ke backend
-const saveGeneratedJadwal = async () => {
-  try {
-    if (!jadwalGenerated.value.length) {
-      alert('Tidak ada jadwal untuk disimpan.');
-      return;
-    }
-
-    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-    if (!token) throw new Error('User is not authenticated');
-
-    const jadwalData = prepareJadwalForSaving();
-
-    const response = await axios.post('http://10.15.41.68:3000/jadwal/simpan', {
-      jadwal: jadwalData
-    }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    alert('✅ Jadwal berhasil disimpan ke database!');
-    console.log('Response:', response.data);
-
-  } catch (error) {
-    console.error('❌ Gagal menyimpan jadwal:', error);
-    alert(`Error saat menyimpan: ${error.message}`);
-  }
-};
-
 function selectGeneratedGroup(idx) {
   selectedGeneratedGroupIndex.value = idx;
 }
@@ -792,38 +681,6 @@ function selectGeneratedGroup(idx) {
 function exportSelectedGeneratedGroup() {
   if (selectedGeneratedGroupIndex.value === null) return;
   exportExcel(generatedJadwalGroups.value[selectedGeneratedGroupIndex.value]);
-}
-
-async function saveSelectedGeneratedGroup() {
-  if (selectedGeneratedGroupIndex.value === null) return;
-  const group = generatedJadwalGroups.value[selectedGeneratedGroupIndex.value];
-  if (!group.length) return alert('Tidak ada jadwal untuk disimpan.');
-  const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-  if (!token) throw new Error('User is not authenticated');
-  // Prepare data sesuai format simpan
-  const jadwalData = group.map(item => {
-    const matchingCourse = matchingList.value.find(match => match.kelas.nama_kelas === item.kelas);
-    if (!matchingCourse) return null;
-    return {
-      id_mk_kelas: matchingCourse.kelas.id_mk_kelas,
-      ruangan_kode: item.ruangan,
-      jadwal_hari: item.hari.toUpperCase(),
-      jadwal_sesi: item.sesi.toUpperCase(),
-      jadwal_smt: matchingCourse.kelas.mk_kelas_sem || [1, 2]
-    };
-  }).filter(item => item !== null);
-  try {
-    const response = await axios.post('http://10.15.41.68:3000/jadwal/simpan', {
-      jadwal: jadwalData
-    }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    alert('✅ Jadwal berhasil disimpan ke database!');
-    fetchJadwalTersimpan();
-  } catch (error) {
-    console.error('❌ Gagal menyimpan jadwal:', error);
-    alert(`Error saat menyimpan: ${error.message}`);
-  }
 }
 
 </script>

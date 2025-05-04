@@ -314,9 +314,8 @@ const handleLogout = () => {
   // Update auth state
   updateAuthState(null);
   
-  // Navigate to home page
-  router.push('/');
-
+  // Force a page reload to ensure clean state
+  window.location.href = '/';
 };
 
 // Toggle dropdowns
