@@ -318,7 +318,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
 import axios from 'axios';
 
 const hariList = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT'];
@@ -342,6 +342,8 @@ const showAlert = ref(false);
 const alertMessage = ref('');
 const showSuccess = ref(false);
 const successMessage = ref('');
+
+let pollingInterval = null;
 
 // Computed property for filtered dosen list
 const filteredDosenList = computed(() => {
@@ -598,6 +600,11 @@ const resetForm = () => {
 // Fetch dosen data when component is mounted
 onMounted(() => {
   fetchDosen();
+  pollingInterval = setInterval(fetchDosen, 10000); // 10 detik
+});
+
+onUnmounted(() => {
+  if (pollingInterval) clearInterval(pollingInterval);
 });
 </script>
 

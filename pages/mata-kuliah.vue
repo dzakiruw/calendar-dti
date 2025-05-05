@@ -250,7 +250,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
 import axios from 'axios';
 
 const kode = ref("");
@@ -266,6 +266,7 @@ const showAlert = ref(false);
 const alertMessage = ref('');
 const showSuccess = ref(false);
 const successMessage = ref('');
+let pollingInterval = null;
 
 // Computed property for filtered mata kuliah list
 const filteredMataKuliahList = computed(() => {
@@ -443,5 +444,10 @@ const resetForm = () => {
 // Fetch mata kuliah data when component is mounted
 onMounted(() => {
   fetchMataKuliah();
+  pollingInterval = setInterval(fetchMataKuliah, 10000); // 10 detik
+});
+
+onUnmounted(() => {
+  if (pollingInterval) clearInterval(pollingInterval);
 });
 </script>

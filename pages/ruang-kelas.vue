@@ -226,7 +226,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, computed } from 'vue';
+import { ref, onMounted, nextTick, computed, onUnmounted } from 'vue';
 import axios from 'axios';
 
 // Reactive Variables
@@ -423,8 +423,14 @@ const resetForm = () => {
   };
 };
 
-// Fetch ruang kelas data when component is mounted
+let pollingInterval = null;
+
 onMounted(() => {
   fetchRuangKelas();
+  pollingInterval = setInterval(fetchRuangKelas, 10000); // 10 detik
+});
+
+onUnmounted(() => {
+  if (pollingInterval) clearInterval(pollingInterval);
 });
 </script>
