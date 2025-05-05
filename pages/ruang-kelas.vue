@@ -291,6 +291,12 @@ const fetchRuangKelas = async () => {
 
 // Submit Form (Add or Update)
 const submitForm = async () => {
+  form.value.kodeRuangan = form.value.kodeRuangan.trim();
+  if (!form.value.kodeRuangan) {
+    alertMessage.value = 'Kode ruangan tidak boleh kosong atau hanya spasi.';
+    showAlert.value = true;
+    return;
+  }
   const newRuangKelas = {
     ruangan_kode: form.value.kodeRuangan,
     ruangan_kapasitas: form.value.kapasitasRuangan,

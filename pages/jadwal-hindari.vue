@@ -308,7 +308,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, onUnmounted } from 'vue'
 import axios from 'axios'
 
 // Form data
@@ -385,6 +385,8 @@ const formatSesi = (sesi) => {
   // Menampilkan nilai sesi langsung tanpa perubahan
   return sesi || '';
 }
+
+const pollingInterval = ref(null);
 
 const fetchJadwal = async () => {
   try {
@@ -611,6 +613,11 @@ const showSuccessAlert = (message) => {
 };
 
 onMounted(() => {
-  fetchJadwal()
-})
+  fetchJadwal();
+  pollingInterval.value = setInterval(fetchJadwal, 10000); // 10 detik
+});
+
+onUnmounted(() => {
+  if (pollingInterval.value) clearInterval(pollingInterval.value);
+});
 </script>

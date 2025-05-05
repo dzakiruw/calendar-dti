@@ -423,6 +423,13 @@ const showSuccessAlert = (message) => {
 // Submit Dosen (Add or Update)
 const submitDosen = async () => {
   try {
+    // Trim kode
+    kode.value = kode.value.trim();
+    if (!kode.value) {
+      alertMessage.value = 'Kode dosen tidak boleh kosong atau hanya spasi.';
+      showAlert.value = true;
+      return;
+    }
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) {
       throw new Error('User is not authenticated');

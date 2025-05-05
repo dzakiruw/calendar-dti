@@ -309,6 +309,12 @@ const showSuccessAlert = (message) => {
 
 // Submit Mata Kuliah (Add or Update)
 const submitMataKuliah = async () => {
+  kode.value = kode.value.trim();
+  if (!kode.value) {
+    alertMessage.value = 'Kode mata kuliah tidak boleh kosong atau hanya spasi.';
+    showAlert.value = true;
+    return;
+  }
   const newMataKuliah = {
     matkul_kode: kode.value,
     matkul_nama: nama.value,
