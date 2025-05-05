@@ -152,10 +152,8 @@
       </h2>
       <div v-for="(group, idx) in generatedJadwalGroups" :key="idx" class="border p-4 mb-4 rounded-xl">
         <div class="flex justify-between items-center mb-2">
-          <span class="font-semibold">Hasil Generate #{{ idx+1 }} ({{ group.length }} jadwal)</span>
-          <button @click="selectGeneratedGroup(idx)" :class="selectedGeneratedGroupIndex === idx ? 'bg-blue-600 text-white px-3 py-1 rounded' : 'bg-gray-200 px-3 py-1 rounded'">
-            Pilih
-          </button>
+          <span class="font-semibold">Hasil Generate  ({{ group.length }} jadwal)</span>
+          
         </div>
         <div v-if="selectedGeneratedGroupIndex === idx">
           <div class="overflow-x-auto">

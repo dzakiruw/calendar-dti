@@ -196,7 +196,7 @@
                  ]">
               <i class="fas fa-edit" :class="route.path === '/buat-jadwal' ? 'text-indigo-700' : 'text-blue-600'"></i>
             </div>
-            <span class="ml-3 text-sm font-medium" :class="route.path === '/buat-jadwal' ? 'text-indigo-700' : 'group-hover:text-blue-600'">Buat Jadwal</span>
+            <span class="ml-3 text-sm font-medium" :class="route.path === '/buat-jadwal' ? 'text-indigo-700' : 'group-hover:text-blue-600'">Jadwal Matching</span>
           </NuxtLink>
           <NuxtLink to="/pilih-jadwal" 
             class="flex items-center px-4 py-2 rounded-xl transition-all duration-300 group"
@@ -215,7 +215,7 @@
                  ]">
               <i class="fas fa-list" :class="route.path === '/pilih-jadwal' ? 'text-indigo-700' : 'text-blue-600'"></i>
             </div>
-            <span class="ml-3 text-sm font-medium" :class="route.path === '/pilih-jadwal' ? 'text-indigo-700' : 'group-hover:text-blue-600'">Pilih Jadwal</span>
+            <span class="ml-3 text-sm font-medium" :class="route.path === '/pilih-jadwal' ? 'text-indigo-700' : 'group-hover:text-blue-600'">Generate Jadwal</span>
           </NuxtLink>
         </div>
       </div>
