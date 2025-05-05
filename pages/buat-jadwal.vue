@@ -265,6 +265,17 @@
         </div>
       </div>
     </div>
+
+    <!-- Alert Popup -->
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
+      <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300">
+        <div class="mb-4 text-red-600 text-2xl"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="mb-4 text-gray-800 font-semibold">{{ alertMessage }}</div>
+        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+          Tutup
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -289,6 +300,16 @@ const showDeleteConfirm = ref(false);
 const showEditConfirm = ref(false);
 const selectedIndex = ref(null);
 
+// Add alert state
+const showAlert = ref(false);
+const alertMessage = ref('');
+
+// Function to show alert
+const showErrorAlert = (msg) => {
+  alertMessage.value = msg;
+  showAlert.value = true;
+};
+
 // Fetch Data Mata Kuliah
 const fetchMataKuliah = async () => {
   try {
@@ -304,7 +325,7 @@ const fetchMataKuliah = async () => {
     });
     mataKuliahList.value = response.data;
   } catch (error) {
-    console.error('Gagal mengambil data mata kuliah', error);
+    showErrorAlert('Gagal mengambil data mata kuliah: ' + (error.response?.data?.error || error.message || 'Terjadi kesalahan.'));
   }
 }
 
@@ -323,7 +344,7 @@ const fetchDosen = async () => {
     });
     dosenList.value = response.data || [];
   } catch (error) {
-    console.error('Gagal mengambil data dosen', error);
+    showErrorAlert('Gagal mengambil data dosen: ' + (error.response?.data?.error || error.message || 'Terjadi kesalahan.'));
     dosenList.value = [];
   }
 }
@@ -349,10 +370,7 @@ const fetchMatchingData = async () => {
     // Update the matchingList with the response data
     matchingList.value = response.data;
   } catch (error) {
-    console.error('Gagal mengambil data matching', error);
-    if (error.response) {
-      console.error('Error response:', error.response.data);
-    }
+    showErrorAlert('Gagal mengambil data matching: ' + (error.response?.data?.error || error.message || 'Terjadi kesalahan.'));
   }
 }
 
@@ -418,7 +436,7 @@ const editMatching = (index) => {
 // Submit Matching or Update if Edit Mode is Active
 const submitMatching = async () => {
   if (!selectedMataKuliah.value || !selectedDosen.value || !selectedKelas.value) {
-    console.error("Form is incomplete, cannot submit.");
+    showErrorAlert('Form belum lengkap, tidak dapat submit.');
     return;
   }
 
@@ -488,10 +506,7 @@ const submitMatching = async () => {
     resetForm();
     editIndex.value = null;
   } catch (error) {
-    console.error('Error submitting matching:', error);
-    if (error.response) {
-      console.error('Error response:', error.response.data);
-    }
+    showErrorAlert('Gagal submit matching: ' + (error.response?.data?.error || error.message || 'Terjadi kesalahan.'));
   } finally {
     isSubmitting.value = false;
   }
@@ -517,7 +532,7 @@ const deleteMatching = async (index) => {
     // Remove the deleted matching from the list
     matchingList.value.splice(index, 1);
   } catch (error) {
-    console.error('Error deleting matching:', error);
+    showErrorAlert('Gagal menghapus matching: ' + (error.response?.data?.error || error.message || 'Terjadi kesalahan.'));
   }
 }
 
@@ -642,8 +657,7 @@ const confirmDelete = async () => {
     
     showDeleteConfirm.value = false;
   } catch (error) {
-    console.error('Error deleting jadwal:', error);
-    alert('Gagal menghapus data jadwal');
+    showErrorAlert('Gagal menghapus data jadwal: ' + (error.response?.data?.error || error.message || 'Terjadi kesalahan.'));
   }
 };
 </script>

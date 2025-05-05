@@ -1,5 +1,30 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
+    <!-- Alert Popup -->
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
+      <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300">
+        <div class="mb-4 text-red-600 text-2xl"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="mb-4 text-gray-800 font-semibold">{{ alertMessage }}</div>
+        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+          Tutup
+        </button>
+      </div>
+    </div>
+
+    <!-- Success Alert -->
+    <div v-if="showSuccess" class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50">
+      <div class="flex items-center">
+        <div class="py-1">
+          <i class="fas fa-check-circle text-xl mr-3"></i>
+        </div>
+        <div>
+          <p class="font-semibold">{{ successMessage }}</p>
+        </div>
+        <button @click="showSuccess = false" class="ml-4 text-green-700 hover:text-green-900">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
     <!-- Title -->
     <div class="mb-8 w-full flex justify-center">
       <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transform hover:scale-105 transition-all duration-300">
@@ -325,6 +350,12 @@ const showDeleteConfirm = ref(false);
 const showEditConfirm = ref(false);
 const selectedIndex = ref(null);
 
+// Add alert state
+const showAlert = ref(false);
+const alertMessage = ref('');
+const showSuccess = ref(false);
+const successMessage = ref('');
+
 // Computed property for filtered jadwal hindari list
 const filteredJadwalHindariList = computed(() => {
   if (!searchQuery.value) return jadwalList.value;
@@ -354,7 +385,6 @@ const formatSesi = (sesi) => {
   // Menampilkan nilai sesi langsung tanpa perubahan
   return sesi || '';
 }
-
 
 const fetchJadwal = async () => {
   try {
@@ -418,14 +448,21 @@ const submitForm = async () => {
 
     resetForm();
     editIndex.value = null;
+    showSuccessAlert('Data jadwal hindari berhasil diperbarui!');
   } catch (error) {
     console.error('Error in submitForm:', error);
-    if (error.response) {
-      console.error('Error response:', error.response.data);
+    let msg = 'Gagal mengupdate data: ';
+    if (error.response && error.response.data && error.response.data.error) {
+      msg += error.response.data.error;
+    } else if (error.message) {
+      msg += error.message;
+    } else {
+      msg += 'Terjadi kesalahan.';
     }
+    alertMessage.value = msg;
+    showAlert.value = true;
   }
 };
-
 
 const fetchJadwalList = async () => {
   try {
@@ -446,8 +483,6 @@ const fetchJadwalList = async () => {
     console.error('Gagal mengambil data jadwal hindari', error);
   }
 };
-
-
 
 const editJadwal = (index) => {
   const jadwal = jadwalList.value[index]
@@ -550,10 +585,29 @@ const confirmDelete = async () => {
 
     jadwalList.value.splice(selectedIndex.value, 1);
     showDeleteConfirm.value = false;
+    showSuccessAlert('Data jadwal hindari berhasil dihapus!');
   } catch (error) {
     console.error('Error deleting jadwal hindari:', error);
-    alert('Gagal menghapus data jadwal hindari');
+    let msg = 'Gagal menghapus data jadwal hindari: ';
+    if (error.response && error.response.data && error.response.data.error) {
+      msg += error.response.data.error;
+    } else if (error.message) {
+      msg += error.message;
+    } else {
+      msg += 'Terjadi kesalahan.';
+    }
+    alertMessage.value = msg;
+    showAlert.value = true;
   }
+};
+
+// Function to show success message
+const showSuccessAlert = (message) => {
+  successMessage.value = message;
+  showSuccess.value = true;
+  setTimeout(() => {
+    showSuccess.value = false;
+  }, 3000); // Hide after 3 seconds
 };
 
 onMounted(() => {

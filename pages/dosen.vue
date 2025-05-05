@@ -1,5 +1,30 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
+    <!-- Alert Popup -->
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
+      <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300">
+        <div class="mb-4 text-red-600 text-2xl"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="mb-4 text-gray-800 font-semibold">{{ alertMessage }}</div>
+        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+          Tutup
+        </button>
+      </div>
+    </div>
+
+    <!-- Success Alert -->
+    <div v-if="showSuccess" class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50">
+      <div class="flex items-center">
+        <div class="py-1">
+          <i class="fas fa-check-circle text-xl mr-3"></i>
+        </div>
+        <div>
+          <p class="font-semibold">{{ successMessage }}</p>
+        </div>
+        <button @click="showSuccess = false" class="ml-4 text-green-700 hover:text-green-900">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
     <!-- Title -->
     <div class="mb-8 w-full flex justify-center">
       <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transform hover:scale-105 transition-all duration-300">
@@ -312,6 +337,12 @@ const showDeleteConfirm = ref(false);
 const showEditConfirm = ref(false);
 const selectedIndex = ref(null);
 
+// Add alert state
+const showAlert = ref(false);
+const alertMessage = ref('');
+const showSuccess = ref(false);
+const successMessage = ref('');
+
 // Computed property for filtered dosen list
 const filteredDosenList = computed(() => {
   if (!searchQuery.value) return dosenList.value;
@@ -380,6 +411,15 @@ const fetchDosen = async () => {
   }
 };
 
+// Function to show success message
+const showSuccessAlert = (message) => {
+  successMessage.value = message;
+  showSuccess.value = true;
+  setTimeout(() => {
+    showSuccess.value = false;
+  }, 3000); // Hide after 3 seconds
+};
+
 // Submit Dosen (Add or Update)
 const submitDosen = async () => {
   try {
@@ -423,6 +463,7 @@ const submitDosen = async () => {
       resetForm();
       editIndex.value = null;
       showEditConfirm.value = false;
+      showSuccessAlert('Data dosen berhasil diperbarui!');
     } else {
       // Add New Dosen
       const newDosen = {
@@ -442,15 +483,20 @@ const submitDosen = async () => {
       // Fetch updated dosen list
       await fetchDosen();
       resetForm();
+      showSuccessAlert('Data dosen berhasil ditambahkan!');
     }
   } catch (error) {
     console.error('Gagal mengirim data dosen', error);
-    if (error.response) {
-      console.error('Error response:', error.response.data);
-      alert('Gagal mengupdate data: ' + (error.response.data.error || error.message));
+    let msg = 'Gagal mengupdate data: ';
+    if (error.response && error.response.data && error.response.data.error) {
+      msg += error.response.data.error;
+    } else if (error.message) {
+      msg += error.message;
     } else {
-      alert('Gagal mengupdate data: ' + error.message);
+      msg += 'Terjadi kesalahan.';
     }
+    alertMessage.value = msg;
+    showAlert.value = true;
   }
 };
 
@@ -511,9 +557,19 @@ const confirmDelete = async () => {
 
     dosenList.value.splice(selectedIndex.value, 1);
     showDeleteConfirm.value = false;
+    showSuccessAlert('Data dosen berhasil dihapus!');
   } catch (error) {
     console.error('Error deleting dosen:', error);
-    alert('Gagal menghapus data dosen');
+    let msg = 'Gagal menghapus data dosen: ';
+    if (error.response && error.response.data && error.response.data.error) {
+      msg += error.response.data.error;
+    } else if (error.message) {
+      msg += error.message;
+    } else {
+      msg += 'Terjadi kesalahan.';
+    }
+    alertMessage.value = msg;
+    showAlert.value = true;
   }
 };
 
