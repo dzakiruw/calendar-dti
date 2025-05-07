@@ -123,7 +123,7 @@ onMounted(async () => {
   // Check auth state immediately
   await checkAuthState();
 
-  // Listen for storage events to handle auth state changes
+    // Listen for storage events to handle auth state changes
   window.addEventListener('storage', async () => {
     await checkAuthState();
   });
@@ -136,6 +136,6 @@ onMounted(async () => {
   // Listen for auth state changes from other components
   window.addEventListener('auth-state-changed', (event) => {
     user.value = event.detail || {};
-  });
+    });
 });
 </script>
