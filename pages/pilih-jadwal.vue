@@ -186,7 +186,7 @@
                      Semester {{ sem }}
                    </span>
                  </td>
-                 <td class="px-6 py-4 text-sm text-gray-700">{{ row.dosen }}</td>
+                 <td class="px-6 py-4 text-sm text-gray-700">{{ row.dosen?.dosen_kode || row.dosen }}</td>
                  <td class="px-6 py-4 text-sm text-gray-700">{{ row.ruangan }}</td>
            </tr>
          </tbody>
@@ -216,6 +216,11 @@
  const jadwalGenerated = ref([]);
  const showSuccess = ref(false);
  const successMessage = ref('');
+ const isGenerating = ref(false);
+ const alertMessage = ref('');
+ const showAlert = ref(false);
+ const selectedSemesters = ref([]);
+ const selectAllSemesters = ref(false);
  
  // Fetch Data function
  const getToken = () => {
@@ -290,258 +295,124 @@
  // Function to generate jadwal
  const generateJadwal = async () => {
    try {
-     console.log('Starting enhanced backtracking...');
+     isGenerating.value = true;
      const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
-     if (!token) throw new Error('User is not authenticated');
- 
-     // Fetch data
-     const [mataKuliahRes, dosenRes, ruanganRes, jadwalHindariRes, mkDosenRes] = await Promise.all([
-       axios.get('http://10.15.41.68:3000/mata_kuliah', { headers: { Authorization: `Bearer ${token}` } }),
-       axios.get('http://10.15.41.68:3000/dosen', { headers: { Authorization: `Bearer ${token}` } }),
-       axios.get('http://10.15.41.68:3000/ruangan', { headers: { Authorization: `Bearer ${token}` } }),
-       axios.get('http://10.15.41.68:3000/jadwal_hindari', { headers: { Authorization: `Bearer ${token}` } }),
-       axios.get('http://10.15.41.68:3000/mk_dosen', { headers: { Authorization: `Bearer ${token}` } })
+     if (!token) {
+       throw new Error('User is not authenticated');
+     }
+
+     // Fetch all data
+     const [mkDosenResponse, ruanganResponse, jadwalHindariResponse] = await Promise.all([
+       axios.get('http://10.15.41.68:3000/mk_dosen', {
+         headers: { 'Authorization': `Bearer ${token}` },
+       }),
+       axios.get('http://10.15.41.68:3000/ruangan', {
+         headers: { 'Authorization': `Bearer ${token}` },
+       }),
+       axios.get('http://10.15.41.68:3000/jadwal_hindari', {
+         headers: { 'Authorization': `Bearer ${token}` },
+       }),
      ]);
- 
-     const courses = mkDosenRes.data.reduce((acc, current) => {
-       // Ensure mk_kelas_sem exists and is an array
-       if (!current.mk_kelas_sem || !Array.isArray(current.mk_kelas_sem)) return acc;
-       
-       const existing = acc.find(c => 
-         c.id_mk_kelas === current.id_mk_kelas && 
-         JSON.stringify(c.mk_kelas_sem) === JSON.stringify(current.mk_kelas_sem)
-       );
-       
-       if (existing) {
-         if (!existing.secondary_lecturers.includes(current.dosen_kode)) {
-           existing.secondary_lecturers.push(current.dosen_kode);
-         }
-       } else {
-         acc.push({
-           ...current,
-           id: `${current.id_mk_kelas}-${JSON.stringify(current.mk_kelas_sem)}`,
-           kelas: current.mata_kuliah_kelas?.nama_kelas,
-           matkul_nama: mataKuliahRes.data.find(mk => 
-             mk.matkul_kode === current.mata_kuliah_kelas?.matkul_kode)?.matkul_nama,
-           primary_lecturer: current.dosen_kode,
-           secondary_lecturers: [],
-           priority: current.dosen_kode === 'KG' ? 0 : // bisa ganti jadi current.matkul_tipe === 'SKPB' kalo perlu
-                   (current.matkul_tipe === 'DEPARTEMEN' ? 1 : 
-                   (current.matkul_tipe === 'PENGAYAAN' ? 2 : 3))
+
+     const mkDosen = mkDosenResponse.data;
+     const ruangan = ruanganResponse.data;
+     const jadwalHindariData = jadwalHindariResponse.data;
+
+     // Buat blockedSlots: Set(hari|sesi|semester)
+     const blockedSlots = new Set();
+     jadwalHindariData.forEach(jh => {
+       if (Array.isArray(jh.hindari_smt)) {
+         jh.hindari_smt.forEach(sem => {
+           blockedSlots.add(`${jh.hindari_hari}|${jh.hindari_sesi}|${sem}`);
          });
        }
-       return acc;
-     }, []).sort((a, b) => a.priority - b.priority);
-     
-     // Get all unique semester values from mkDosenRes.data (flattening the arrays)
-     const activeSemesters = new Set(
-       courses.flatMap(course => course.mk_kelas_sem)
-     );
- 
-     // Create blocked slots only for the active semesters
-     const blockedSlots = new Set(
-       jadwalHindariRes.data
-         .filter(jh => {
-           if (!jh.hindari_sem || !Array.isArray(jh.hindari_sem)) return false;
-           return jh.hindari_sem.some(sem => activeSemesters.has(sem));
-         })
-         .map(jh => `${jh.hindari_hari}|${jh.hindari_sesi}`)
-     );
- 
-     console.log(`Processing ${courses.length} unique course sections`);
- 
-     const lecturers = dosenRes.data.reduce((acc, d) => {
-       const availableSlots = d.jadwal_dosen
-         .map(j => `${j.dosen_sedia_hari}|${j.dosen_sedia_sesi}`)
-         .filter(slot => !blockedSlots.has(slot));
- 
-       acc[d.dosen_kode] = {
-         nama: d.dosen_nama,
-         availableSlots,
-         totalSlots: d.jadwal_dosen.length,
-         availableCount: availableSlots.length
-       };
-       return acc;
-     }, {});
- 
-     const rooms = ruanganRes.data.map(r => r.ruangan_kode);
- 
-     const schedule = [];
-     const bestSolution = { schedule: [], score: -Infinity };
-     const lecturerBookings = {};
-     const roomBookings = {};
-     let nodesVisited = 0;
-     const MAX_NODES = 10000;
- 
-     hariList.forEach(day => {
-       sesiList.forEach(session => {
-         roomBookings[`${day}|${session}`] = new Set();
-       });
      });
- 
-     // scoring
-     function evaluateSchedule(currentSchedule) {
-       let score = currentSchedule.length * 1000; // Base score per scheduled course
-       
-       currentSchedule.forEach(entry => {
-         // Priority bonus
-         score += (3 - entry.priority) * 100;
-         
-         // Team teaching bonus
-         if (entry.secondary_lecturers.length > 0) score += 200;
-         
-         // earlier = better
-         const dayValue = hariList.indexOf(entry.hari);
-         const sessionValue = sesiList.indexOf(entry.sesi);
-         score += (100 - (dayValue * 10 + sessionValue * 3));
-       });
-       return score;
-     }
- 
-     // backtracking
-     function backtrack(coursesToSchedule, index, currentSchedule) {
-       nodesVisited++;
-       if (nodesVisited > MAX_NODES) return false;
-       
-       if (index >= coursesToSchedule.length) {
-         const currentScore = evaluateSchedule(currentSchedule);
-         if (currentScore > bestSolution.score) {
-           bestSolution.schedule = [...currentSchedule];
-           bestSolution.score = currentScore;
-           // console.log(`New best score: ${currentScore} (${currentSchedule.length} courses)`);
-         }
-         return currentSchedule.length === coursesToSchedule.length;
-       }
- 
-       const course = coursesToSchedule[index];
-       const allLecturers = [course.primary_lecturer, ...course.secondary_lecturers];
- 
-       // Get all possible slots from all lecturers, excluding blocked slots
-       let possibleSlots = [];
-       allLecturers.forEach(lect => {
-         lecturers[lect]?.availableSlots.forEach(slot => {
-           // Only consider non-blocked slots
-           if (!blockedSlots.has(slot)) {
-             const [day, session] = slot.split('|');
-             possibleSlots.push({ day, session });
+
+     // Inisialisasi jadwal kosong
+     const jadwal = [];
+     const usedSlots = new Set();
+
+     // Fungsi untuk mengecek apakah slot waktu valid (tidak bertabrakan)
+     const isSlotValid = (hari, sesi, ruangan) => {
+       const slotKey = `${hari}-${sesi}-${ruangan}`;
+       return !usedSlots.has(slotKey);
+     };
+
+     // Urutkan jadwal berdasarkan prioritas dosen
+     const sortedJadwal = [...mkDosen].sort((a, b) => {
+       const prioritasA = a.dosen.dosen_prioritas === 'PRIORITAS' ? 1 : 0;
+       const prioritasB = b.dosen.dosen_prioritas === 'PRIORITAS' ? 1 : 0;
+       return prioritasB - prioritasA;
+     });
+
+     // Coba tempatkan setiap jadwal
+     for (const jadwalItem of sortedJadwal) {
+       let placed = false;
+       const semester = Array.isArray(jadwalItem.mk_kelas_sem) ? jadwalItem.mk_kelas_sem[0] : jadwalItem.mk_kelas_sem;
+
+       for (const hari of hariList) {
+         if (placed) break;
+         for (const sesi of sesiList) {
+           if (placed) break;
+
+           // Skip jika slot termasuk dalam jadwal hindari untuk semester tersebut
+           if (blockedSlots.has(`${hari}|${sesi}|${semester}`)) {
+             continue;
            }
-         });
-       });
- 
-       const uniqueSlots = Array.from(new Set(possibleSlots.map(s => `${s.day}|${s.session}`)))
-         .map(s => {
-           const [day, session] = s.split('|');
-           return { day, session };
-         })
-         .sort((a, b) => {
-           // Prefer earlier days and sessions
-           const dayDiff = hariList.indexOf(a.day) - hariList.indexOf(b.day);
-           if (dayDiff !== 0) return dayDiff;
-           return sesiList.indexOf(a.session) - sesiList.indexOf(b.session);
-         });
- 
-       let slotSet = new Set();
-       allLecturers.forEach(lect => {
-         lecturers[lect]?.availableSlots.forEach(slot => {
-           slotSet.add(slot);
-         });
-       });
- 
-       for (const { slot, day, session } of possibleSlots) {
-         const slotKey = `${day}|${session}`;
-         if (blockedSlots.has(slotKey)) continue;
- 
-         const availableRoom = rooms.find(r => !roomBookings[slotKey].has(r));
-         if (!availableRoom) continue;
- 
-         // team teaching
-         const availableLecturers = allLecturers.filter(lecturer =>
-           !lecturerBookings[`${lecturer}|${day}|${session}`]
-         );
-         if (availableLecturers.length === 0) continue;
- 
-         const newEntry = {
-   hari: day,
-   sesi: session,
-   matkul: course.matkul_nama,
-   dosen: availableLecturers.join(' & '),
-   secondary_lecturers: availableLecturers.slice(1),
-   ruangan: availableRoom,
-   kelas: course.kelas,
-   matkul_tipe: course.matkul_tipe,
-   priority: course.priority,
-   mk_kelas_sem: course.mk_kelas_sem 
- };
- 
-         currentSchedule.push(newEntry);
- 
-         // tanda ruang kelas dan sesi dosen sudah diisi
-         availableLecturers.forEach(lecturer => {
-           lecturerBookings[`${lecturer}|${day}|${session}`] = true;
-         });
-         roomBookings[slotKey].add(availableRoom);
- 
-         if (backtrack(coursesToSchedule, index + 1, currentSchedule)) {
-           return true;
+
+           for (const ruang of ruangan) {
+             if (placed) break;
+             if (isSlotValid(hari, sesi, ruang.ruangan_kode)) {
+               jadwal.push({
+                 id_mk_kelas_dosen: jadwalItem.id_mk_kelas_dosen,
+                 mata_kuliah_kelas: jadwalItem.mata_kuliah_kelas,
+                 dosen: jadwalItem.dosen,
+                 mk_kelas_sem: jadwalItem.mk_kelas_sem,
+                 matkul_tipe: jadwalItem.matkul_tipe,
+                 hari,
+                 sesi,
+                 ruangan: ruang.ruangan_kode,
+                 ruangan_kapasitas: ruang.ruangan_kapasitas
+               });
+               usedSlots.add(`${hari}-${sesi}-${ruang.ruangan_kode}`);
+               placed = true;
+             }
+           }
          }
- 
-         // Backtrack
-         currentSchedule.pop();
-         availableLecturers.forEach(lecturer => {
-           delete lecturerBookings[`${lecturer}|${day}|${session}`];
-         });
-         roomBookings[slotKey].delete(availableRoom);
        }
-       
-       // skip matkul kalau gagal
-       return backtrack(coursesToSchedule, index + 1, currentSchedule);
+       if (!placed) {
+         jadwal.push({
+           ...jadwalItem,
+           hari: null,
+           sesi: null,
+           ruangan: null,
+           ruangan_kapasitas: null,
+           status: 'unplaced'
+         });
+       }
      }
- 
-     console.log('Starting backtracking...');
-     const startTime = Date.now();
-     const foundCompleteSolution = backtrack(courses, 0, []);
-     const endTime = Date.now();
- 
-     console.log('Backtracking results:', {
-       executionTime: `${(endTime - startTime)/1000}s`,
-       nodesVisited,
-       bestScore: bestSolution.score,
-       coursesScheduled: bestSolution.schedule.length,
-       totalCourses: courses.length,
-       solutionComplete: foundCompleteSolution
-     });
-     
-     const scheduledIds = new Set(bestSolution.schedule.map(s => `${s.kelas}-${s.matkul}`));
-     const unscheduledCourses = courses.filter(c => 
-       !scheduledIds.has(`${c.kelas}-${c.matkul_nama}`)
-     );
- 
-     console.warn(`Total Unscheduled Courses: ${unscheduledCourses.length}`);
- 
-     unscheduledCourses.forEach(c => {
-       console.warn(`Could not schedule: "${c.matkul_nama}" (${c.kelas}) [${c.primary_lecturer}${c.secondary_lecturers.length ? ' + ' + c.secondary_lecturers.join(', ') : ''}]`);
-     });
- 
-     // Handle results
-     jadwalGenerated.value = bestSolution.schedule;
-     if (bestSolution.schedule && bestSolution.schedule.length > 0) {
-       showSuccessAlert('Jadwal berhasil tergenerate!');
-     }
-     return bestSolution.schedule;
- 
+     jadwalGenerated.value = jadwal;
+     showSuccessAlert('Jadwal berhasil tergenerate!');
    } catch (error) {
-     console.error('Scheduling error:', error);
-     alert(`Error: ${error.message}`);
-     return null;
+     console.error('Error generating schedule:', error);
+     let msg = 'Gagal generate jadwal: ';
+     if (error.response?.data?.error) {
+       msg += error.response.data.error;
+     } else if (error.message) {
+       msg += error.message;
+     } else {
+       msg += 'Terjadi kesalahan.';
+     }
+     alertMessage.value = msg;
+     showAlert.value = true;
+   } finally {
+     isGenerating.value = false;
    }
  };
  
  // Function to export jadwal to Excel
  const exportExcel = () => {
-   // Get unique rooms and sort them
    const uniqueRooms = [...new Set(jadwalGenerated.value.map(item => item.ruangan))].sort();
-   
-   // Get unique time slots (hari + sesi combinations) and sort them
    const uniqueTimeSlots = [...new Set(jadwalGenerated.value.map(item => `${item.hari}|${item.sesi}`))].sort((a, b) => {
      const [hariA, sesiA] = a.split('|');
      const [hariB, sesiB] = b.split('|');
@@ -550,15 +421,9 @@
      return hariOrder.indexOf(hariA) - hariOrder.indexOf(hariB) || 
             sesiOrder.indexOf(sesiA) - sesiOrder.indexOf(sesiB);
    });
-   
-   // Create a matrix of data
    const matrixData = [];
-   
-   // Add header row with room capacity
    const headerRow = ['Hari', 'Sesi', ...uniqueRooms];
    matrixData.push(headerRow);
-   
-   // Group data by hari and sesi
    const groupedData = {};
    jadwalGenerated.value.forEach(item => {
      const key = `${item.hari}|${item.sesi}`;
@@ -569,82 +434,30 @@
          classes: {}
        };
      }
-     
-     // Format the output as "Kelas - Dosen (Semester X, Y)"
-     groupedData[key].classes[item.ruangan] = `${item.kelas} - ${item.dosen} (Semester ${(item.semester || item.mk_kelas_sem || ['-']).join(', ')})`;
+     groupedData[key].classes[item.ruangan] = `${item.kelas || item.mata_kuliah_kelas?.nama_kelas || '-'} - ${item.dosen?.dosen_kode || item.dosen || '-'} (Semester ${(item.semester || item.mk_kelas_sem || ['-']).join(', ')})`;
    });
-   
-   // Add data rows
    uniqueTimeSlots.forEach(timeSlot => {
      const [hari, sesi] = timeSlot.split('|');
      const row = [hari, sesi];
-     
-     // Fill in class data for each room
      uniqueRooms.forEach(room => {
        const classData = groupedData[timeSlot]?.classes[room] || '';
        row.push(classData);
      });
-     
      matrixData.push(row);
    });
-   
-   // Create worksheet
    const worksheet = XLSX.utils.aoa_to_sheet(matrixData);
-   
-   // Set column widths
    const colWidths = [
-     { wch: 15 }, // Hari
-     { wch: 15 }, // Sesi
-     ...uniqueRooms.map(() => ({ wch: 50 })) // Room columns
+     { wch: 15 },
+     { wch: 15 },
+     ...uniqueRooms.map(() => ({ wch: 50 }))
    ];
    worksheet['!cols'] = colWidths;
-   
-   // Add styling
-   const range = XLSX.utils.decode_range(worksheet['!ref']);
-   for (let R = range.s.r; R <= range.e.r; R++) {
-     for (let C = range.s.c; C <= range.e.c; C++) {
-       const cell_address = { c: C, r: R };
-       const cell_ref = XLSX.utils.encode_cell(cell_address);
-       
-       // Style header row
-       if (R === 0) {
-         worksheet[cell_ref].s = {
-           font: { bold: true, color: { rgb: "FFFFFF" } },
-           fill: { fgColor: { rgb: "4F81BD" } },
-           alignment: { wrapText: true, vertical: "center", horizontal: "center" }
-         };
-       } else {
-         // Style data rows
-         worksheet[cell_ref].s = {
-           alignment: { wrapText: true, vertical: "center" },
-           border: {
-             top: { style: 'thin' },
-             bottom: { style: 'thin' },
-             left: { style: 'thin' },
-             right: { style: 'thin' }
-           }
-         };
-         
-         // Alternate row colors
-         if (R % 2 === 0) {
-           worksheet[cell_ref].s.fill = { fgColor: { rgb: "F2F2F2" } };
-         }
-       }
-     }
-   }
-   
-   // Freeze header row and first two columns
-   worksheet['!freeze'] = { xSplit: 2, ySplit: 1 };
-   
-   // Create workbook and save
    const workbook = XLSX.utils.book_new();
    XLSX.utils.book_append_sheet(workbook, worksheet, 'Jadwal');
-   
-   // Save the file
    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
    saveAs(blob, 'jadwal.xlsx');
- }
+ };
  
  // Add this helper function to get classes for a specific time slot
  const getClassesForTimeSlot = (hari, sesi) => {
@@ -659,5 +472,14 @@
    setTimeout(() => {
      showSuccess.value = false;
    }, 3000);
+ };
+ 
+ // Fungsi untuk toggle select all semester
+ const toggleSelectAll = () => {
+   if (selectAllSemesters.value) {
+     selectedSemesters.value = Array.from({ length: 8 }, (_, i) => i + 1);
+   } else {
+     selectedSemesters.value = [];
+   }
  };
  </script>
