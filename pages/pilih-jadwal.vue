@@ -105,6 +105,11 @@
                      Sesi {{ hindari.hindari_sesi }}
                    </span>
                  </div>
+                 <div class="flex flex-wrap gap-1 mt-1">
+                   <span v-for="sem in hindari.hindari_smt" :key="sem" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium">
+                     Semester {{ sem }}
+                   </span>
+                 </div>
                </div>
            </li>
          </ul>
@@ -146,15 +151,6 @@
        >
          <i class="fas fa-cogs mr-2"></i> Generate Jadwal
        </button>
- 
-       <button
-         @click="exportExcel"
-         class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
-                hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
-                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow-lg"
-       >
-         <i class="fas fa-file-excel mr-2"></i> Export ke Excel
-       </button>
      </div>
  
      <!-- Hasil Jadwal -->
@@ -162,6 +158,16 @@
        <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4">
          <i class="fas fa-calendar-alt mr-3"></i> Hasil Jadwal
        </h2>
+       <div class="flex justify-end mb-4">
+         <button
+           @click="exportExcel"
+           class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-6 rounded-xl
+                  hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow-lg"
+         >
+           <i class="fas fa-file-excel mr-2"></i> Export ke Excel
+         </button>
+       </div>
        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
          <div class="overflow-x-auto">
            <table class="w-full">
@@ -412,44 +418,44 @@
  
  // Function to export jadwal to Excel
  const exportExcel = () => {
+   // Ambil semua kombinasi hari, sesi, dan ruangan
    const uniqueRooms = [...new Set(jadwalGenerated.value.map(item => item.ruangan))].sort();
-   const uniqueTimeSlots = [...new Set(jadwalGenerated.value.map(item => `${item.hari}|${item.sesi}`))].sort((a, b) => {
-     const [hariA, sesiA] = a.split('|');
-     const [hariB, sesiB] = b.split('|');
-     const hariOrder = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT'];
-     const sesiOrder = ['SATU', 'DUA', 'TIGA'];
-     return hariOrder.indexOf(hariA) - hariOrder.indexOf(hariB) || 
-            sesiOrder.indexOf(sesiA) - sesiOrder.indexOf(sesiB);
+   const allRooms = uniqueRooms.length ? uniqueRooms : ruangKelasList.value.map(r => r.ruangan_kode).sort();
+   const allTimeSlots = [];
+   hariList.forEach(hari => {
+     sesiList.forEach(sesi => {
+       allTimeSlots.push(`${hari}|${sesi}`);
+     });
    });
+
    const matrixData = [];
-   const headerRow = ['Hari', 'Sesi', ...uniqueRooms];
+   const headerRow = ['Hari', 'Sesi', ...allRooms];
    matrixData.push(headerRow);
+
+   // Group data by hari, sesi, ruangan
    const groupedData = {};
    jadwalGenerated.value.forEach(item => {
      const key = `${item.hari}|${item.sesi}`;
-     if (!groupedData[key]) {
-       groupedData[key] = {
-         hari: item.hari,
-         sesi: item.sesi,
-         classes: {}
-       };
-     }
-     groupedData[key].classes[item.ruangan] = `${item.kelas || item.mata_kuliah_kelas?.nama_kelas || '-'} - ${item.dosen?.dosen_kode || item.dosen || '-'} (Semester ${(item.semester || item.mk_kelas_sem || ['-']).join(', ')})`;
+     if (!groupedData[key]) groupedData[key] = {};
+     groupedData[key][item.ruangan] = `${item.kelas || item.mata_kuliah_kelas?.nama_kelas || '-'} - ${item.dosen?.dosen_kode || item.dosen || '-'} (Semester ${(item.semester || item.mk_kelas_sem || ['-']).join(', ')})`;
    });
-   uniqueTimeSlots.forEach(timeSlot => {
+
+   // Tambahkan semua kombinasi hari, sesi, ruangan ke matrixData
+   allTimeSlots.forEach(timeSlot => {
      const [hari, sesi] = timeSlot.split('|');
      const row = [hari, sesi];
-     uniqueRooms.forEach(room => {
-       const classData = groupedData[timeSlot]?.classes[room] || '';
+     allRooms.forEach(room => {
+       const classData = groupedData[timeSlot]?.[room] || '';
        row.push(classData);
      });
      matrixData.push(row);
    });
+
    const worksheet = XLSX.utils.aoa_to_sheet(matrixData);
    const colWidths = [
      { wch: 15 },
      { wch: 15 },
-     ...uniqueRooms.map(() => ({ wch: 50 }))
+     ...allRooms.map(() => ({ wch: 50 }))
    ];
    worksheet['!cols'] = colWidths;
    const workbook = XLSX.utils.book_new();

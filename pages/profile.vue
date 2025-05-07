@@ -86,7 +86,7 @@ onMounted(() => {
 
 const handleImageError = (e) => {
   e.target.src = '/avatar.svg';
-  console.log('Loading default avatar');
+  // console.log('Loading default avatar');
 };
 
 const handleFileUpload = (event) => {

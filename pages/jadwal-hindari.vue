@@ -402,9 +402,6 @@ const fetchJadwal = async () => {
       },
     });
     
-    // Log the response to verify the data structure
-    console.log('Jadwal Hindari Response:', response.data);
-    
     // Update the jadwalList with the response data
     jadwalList.value = response.data;
   } catch (error) {
@@ -479,7 +476,6 @@ const fetchJadwalList = async () => {
       },
     });
 
-    console.log(response.data); // Log response to verify data
     jadwalList.value = response.data; // Ensure jadwalList is updated correctly
   } catch (error) {
     console.error('Gagal mengambil data jadwal hindari', error);

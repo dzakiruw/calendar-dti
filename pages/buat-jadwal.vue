@@ -364,9 +364,6 @@ const fetchMatchingData = async () => {
       },
     });
     
-    // Log the response to verify the data structure
-    console.log('Matching Data Response:', response.data);
-    
     // Update the matchingList with the response data
     matchingList.value = response.data;
   } catch (error) {
@@ -456,7 +453,6 @@ const submitMatching = async () => {
     if (editIndex.value !== null) {
       // Update the existing data
       const match = matchingList.value[editIndex.value];
-      console.log("Updating match:", match);
       
       const updateData = {
         id_mk_kelas: selectedKelas.value.id_mk_kelas,
@@ -464,8 +460,6 @@ const submitMatching = async () => {
         mk_kelas_sem: selectedSemesters.value,
         matkul_tipe: selectedMataKuliahType.value
       };
-      
-      console.log("Update data being sent:", updateData);
       
       const response = await axios.put(
         `http://10.15.41.68:3000/mk_dosen/${match.id_mk_kelas_dosen}`, 
@@ -479,9 +473,6 @@ const submitMatching = async () => {
           ...match,
           ...response.data.data
         };
-        console.log("Update successful:", response.data);
-      } else {
-        console.error("Update failed:", response);
       }
     } else {
       // Create new data
@@ -497,9 +488,6 @@ const submitMatching = async () => {
       if (response.status === 200 || response.status === 201) {
         // Add the new matching to the list
         matchingList.value.push(response.data.data);
-        console.log("Create successful:", response.data);
-      } else {
-        console.error("Create failed:", response);
       }
     }
 
@@ -580,13 +568,11 @@ const editJadwal = (jadwal) => {
 // Confirm edit function
 const confirmEdit = () => {
   const jadwal = selectedIndex.value;
-  console.log("Selected jadwal for edit:", jadwal);
   
   // Find mata kuliah based on matkul_kode from jadwal
   const matkul = mataKuliahList.value.find(mk => 
     mk.matkul_kode === jadwal.mata_kuliah_kelas.matkul_kode
   );
-  console.log("Found matkul:", matkul);
   
   if (matkul) {
     selectedMataKuliah.value = matkul;
@@ -595,7 +581,6 @@ const confirmEdit = () => {
     const kelas = matkul.mata_kuliah_kelas.find(
       k => k.id_mk_kelas === jadwal.mata_kuliah_kelas.id_mk_kelas
     );
-    console.log("Found kelas:", kelas);
     selectedKelas.value = kelas;
   }
   
@@ -606,7 +591,6 @@ const confirmEdit = () => {
   const dosen = dosenList.value.find(
     d => d.dosen_kode === jadwal.dosen_kode
   );
-  console.log("Found dosen:", dosen);
   selectedDosen.value = dosen;
   
   // Set semester values - ensure it's a new array
@@ -636,7 +620,6 @@ const confirmDelete = async () => {
     }
 
     const jadwal = selectedIndex.value;
-    console.log("Deleting jadwal:", jadwal);
 
     const response = await axios.delete(`http://10.15.41.68:3000/mk_dosen/${jadwal.id_mk_kelas_dosen}`, {
       headers: {
@@ -652,7 +635,6 @@ const confirmDelete = async () => {
       if (deleteIndex > -1) {
         matchingList.value.splice(deleteIndex, 1);
       }
-      console.log("Delete successful");
     }
     
     showDeleteConfirm.value = false;
