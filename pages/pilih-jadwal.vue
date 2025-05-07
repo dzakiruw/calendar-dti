@@ -358,19 +358,29 @@
      for (const jadwalItem of sortedJadwal) {
        let placed = false;
        const semester = Array.isArray(jadwalItem.mk_kelas_sem) ? jadwalItem.mk_kelas_sem[0] : jadwalItem.mk_kelas_sem;
-       const dosenKode = jadwalItem.dosen?.dosen_kode || jadwalItem.dosen;
-       // Cari data dosen lengkap dari dosenList
-       const dosenObj = dosenList.value.find(d => d.dosen_kode === dosenKode);
-       // Ambil array ketersediaan dosen
-       const availableSlots = dosenObj?.jadwal_dosen?.map(j => `${j.dosen_sedia_hari}|${j.dosen_sedia_sesi}`) || [];
+       // Dukung team teaching: array dosen
+       let allLecturers = [];
+       if (Array.isArray(jadwalItem.dosen)) {
+         allLecturers = jadwalItem.dosen.map(d => d.dosen_kode || d);
+       } else if (jadwalItem.dosen?.dosen_kode) {
+         allLecturers = [jadwalItem.dosen.dosen_kode];
+       } else if (jadwalItem.dosen) {
+         allLecturers = [jadwalItem.dosen];
+       }
+       // Ambil array ketersediaan dosen untuk semua dosen
+       const allAvailableSlots = allLecturers.map(lect => {
+         const dosenObj = dosenList.value.find(d => d.dosen_kode === lect);
+         return dosenObj?.jadwal_dosen?.map(j => `${j.dosen_sedia_hari}|${j.dosen_sedia_sesi}`) || [];
+       });
 
        for (const hari of hariList) {
          if (placed) break;
          for (const sesi of sesiList) {
            if (placed) break;
 
-           // Cek apakah slot tersedia di jadwal dosen
-           if (availableSlots.length && !availableSlots.includes(`${hari}|${sesi}`)) {
+           // Semua dosen harus tersedia di slot ini
+           const slotKey = `${hari}|${sesi}`;
+           if (allAvailableSlots.some(slots => slots.length && !slots.includes(slotKey))) {
              continue;
            }
 
@@ -379,8 +389,8 @@
              continue;
            }
 
-           // Cek apakah dosen sudah mengajar di slot ini
-           if (dosenBookings.has(`${dosenKode}|${hari}|${sesi}`)) {
+           // Cek apakah ada dosen yang sudah mengajar di slot ini
+           if (allLecturers.some(lect => dosenBookings.has(`${lect}|${hari}|${sesi}`))) {
              continue;
            }
 
@@ -399,7 +409,7 @@
                  ruangan_kapasitas: ruang.ruangan_kapasitas
                });
                usedSlots.add(`${hari}-${sesi}-${ruang.ruangan_kode}`);
-               dosenBookings.add(`${dosenKode}|${hari}|${sesi}`);
+               allLecturers.forEach(lect => dosenBookings.add(`${lect}|${hari}|${sesi}`));
                placed = true;
              }
            }
