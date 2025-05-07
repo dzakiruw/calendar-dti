@@ -470,7 +470,45 @@ function scheduleWithBacktracking(classes, ruangan, hariList, sesiList, dosenLis
   return jadwal;
 }
 
-// Ganti generateJadwal agar menggunakan backtracking
+// Fungsi untuk shuffle array
+function shuffleArray(array) {
+  const arr = array.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// Fungsi iterative improvement (simulated annealing sederhana)
+function generateWithIterativeImprovement(classes, ruangan, hariList, sesiList, dosenList, jadwalHindariData, iterations = 30) {
+  let bestJadwal = null;
+  let minUnplaced = Infinity;
+  for (let iter = 0; iter < iterations; iter++) {
+    // Randomisasi urutan kelas dan hari
+    const shuffledClasses = shuffleArray(classes);
+    const shuffledHariList = shuffleArray(hariList);
+    // Gunakan backtracking dengan urutan acak
+    const jadwal = scheduleWithBacktracking(
+      shuffledClasses,
+      ruangan,
+      shuffledHariList,
+      sesiList,
+      dosenList,
+      jadwalHindariData
+    );
+    const unplacedCount = jadwal.filter(j => j.status === 'unplaced').length;
+    if (unplacedCount < minUnplaced) {
+      minUnplaced = unplacedCount;
+      bestJadwal = jadwal;
+      // Jika sudah optimal (0 unplaced), break
+      if (minUnplaced === 0) break;
+    }
+  }
+  return bestJadwal;
+}
+
+// Ganti generateJadwal agar menggunakan iterative improvement
 const generateJadwal = async () => {
   try {
      isGenerating.value = true;
@@ -503,8 +541,8 @@ const generateJadwal = async () => {
        return prioritasB - prioritasA;
      });
 
-     // Gunakan backtracking untuk penjadwalan
-     const jadwal = scheduleWithBacktracking(sortedJadwal, ruangan, hariList, sesiList, dosenList, jadwalHindariData);
+     // Gunakan iterative improvement untuk penjadwalan
+     const jadwal = generateWithIterativeImprovement(sortedJadwal, ruangan, hariList, sesiList, dosenList, jadwalHindariData, 40);
      jadwalGenerated.value = jadwal;
      showSuccessAlert('Jadwal berhasil tergenerate!');
   } catch (error) {
