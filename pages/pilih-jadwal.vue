@@ -108,8 +108,8 @@
                  <div class="flex flex-wrap gap-1 mt-1">
                    <span v-for="sem in hindari.hindari_smt" :key="sem" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium">
                      Semester {{ sem }}
-                   </span>
-                 </div>
+                  </span>
+                </div>
               </div>
           </li>
         </ul>
@@ -316,11 +316,164 @@ onMounted(() => {
   fetchMatchingData();
 })
 
-// Function to generate jadwal
+// Helper untuk ambil label kelas dari id_mk_kelas
+const getKelasLabel = (id_mk_kelas) => {
+  for (const mk of mataKuliahList.value) {
+    if (Array.isArray(mk.mata_kuliah_kelas)) {
+      for (const kelasObj of mk.mata_kuliah_kelas) {
+        if (kelasObj.id_mk_kelas === id_mk_kelas) {
+          return (kelasObj.kelas_mk + '').trim().toUpperCase();
+        }
+      }
+    }
+  }
+  return '-';
+};
+
+// Fungsi backtracking untuk penjadwalan
+function scheduleWithBacktracking(classes, ruangan, hariList, sesiList, dosenList, jadwalHindariData) {
+  const jadwal = [];
+  const semesterKelasBookings = new Set();
+  const dosenBookings = new Set();
+  const usedSlots = new Set();
+  // Buat blockedSlots: Set(hari|sesi|semester)
+  const blockedSlots = new Set();
+  jadwalHindariData.forEach(jh => {
+    if (Array.isArray(jh.hindari_smt)) {
+      jh.hindari_smt.forEach(sem => {
+        blockedSlots.add(`${jh.hindari_hari}|${jh.hindari_sesi}|${(sem + '').trim().toUpperCase()}`);
+      });
+    }
+  });
+
+  function backtrack(idx) {
+    if (idx === classes.length) return true; // selesai
+    const jadwalItem = classes[idx];
+    // Ambil label kelas dari id_mk_kelas
+    const kelasLabel = getKelasLabel(jadwalItem.id_mk_kelas);
+    // Ambil semester dari mk_kelas_sem (array, normalisasi string)
+    const semesters = Array.isArray(jadwalItem.mk_kelas_sem) ? jadwalItem.mk_kelas_sem.map(s => (s + '').trim().toUpperCase()) : [(jadwalItem.mk_kelas_sem + '').trim().toUpperCase()];
+    // Ambil kode matkul
+    const matkulKode = (jadwalItem.mata_kuliah_kelas?.matkul_kode || '').trim().toUpperCase();
+    // Dukung team teaching: array dosen
+    let allLecturers = [];
+    if (Array.isArray(jadwalItem.dosen)) {
+      allLecturers = jadwalItem.dosen.map(d => d.dosen_kode || d);
+    } else if (jadwalItem.dosen?.dosen_kode) {
+      allLecturers = [jadwalItem.dosen.dosen_kode];
+    } else if (jadwalItem.dosen) {
+      allLecturers = [jadwalItem.dosen];
+    }
+    // Coba semua slot
+    for (const hari of hariList) {
+      for (const sesi of sesiList) {
+        // Constraint: matkul_tipe PENGAYAAN hanya boleh di hari JUMAT sesi TIGA, selain pengayaan tidak boleh di Jumat sesi TIGA
+        if (
+          (jadwalItem.matkul_tipe === 'PENGAYAAN' && (hari !== 'JUMAT' || sesi !== 'TIGA')) ||
+          (jadwalItem.matkul_tipe !== 'PENGAYAAN' && hari === 'JUMAT' && sesi === 'TIGA')
+        ) {
+          continue;
+        }
+        // Constraint jadwal hindari
+        let blocked = false;
+        for (const sem of semesters) {
+          if (blockedSlots.has(`${hari}|${sesi}|${sem}`)) {
+            blocked = true;
+            break;
+          }
+        }
+        if (blocked) continue;
+        // Constraint kelas/semester/slot
+        let conflict = false;
+        for (const sem of semesters) {
+          if (semesterKelasBookings.has(`${sem}|${kelasLabel}|${hari}|${sesi}`)) {
+            conflict = true;
+            break;
+          }
+        }
+        if (conflict) continue;
+        // Cek kesediaan dosen di slot ini
+        const slotKey = `${hari}|${sesi}`;
+        const availableLecturers = allLecturers.filter(lect => {
+          const dosenObj = dosenList.value.find(d => d.dosen_kode === lect);
+          if (!dosenObj?.jadwal_dosen) return false;
+          return dosenObj.jadwal_dosen.some(j => 
+            j.dosen_sedia_hari === hari && j.dosen_sedia_sesi === sesi
+          );
+        });
+        if (availableLecturers.length === 0) continue;
+        // Cek dosen tidak double booking di slot ini
+        let dosenDoubleBooking = false;
+        for (const lect of allLecturers) {
+          if (dosenBookings.has(`${lect}|${hari}|${sesi}`)) {
+            dosenDoubleBooking = true;
+            break;
+          }
+        }
+        if (dosenDoubleBooking) continue;
+        // Coba semua ruangan
+        for (const ruang of ruangan) {
+          const slotRuangKey = `${hari}-${sesi}-${ruang.ruangan_kode}`;
+          if (usedSlots.has(slotRuangKey)) continue;
+          // Simpan state
+          jadwal.push({
+            id_mk_kelas_dosen: jadwalItem.id_mk_kelas_dosen,
+            id_mk_kelas: jadwalItem.id_mk_kelas,
+            mata_kuliah_kelas: jadwalItem.mata_kuliah_kelas,
+            matkul_kode: matkulKode,
+            dosen: jadwalItem.dosen,
+            mk_kelas_sem: jadwalItem.mk_kelas_sem,
+            matkul_tipe: jadwalItem.matkul_tipe,
+            hari,
+            sesi,
+            ruangan: ruang.ruangan_kode,
+            ruangan_kapasitas: ruang.ruangan_kapasitas,
+            kelas: kelasLabel,
+            semester: semesters
+          });
+          usedSlots.add(slotRuangKey);
+          allLecturers.forEach(lect => dosenBookings.add(`${lect}|${hari}|${sesi}`));
+          for (const sem of semesters) {
+            semesterKelasBookings.add(`${sem}|${kelasLabel}|${hari}|${sesi}`);
+          }
+          // Rekursi
+          if (backtrack(idx + 1)) return true;
+          // Undo
+          jadwal.pop();
+          usedSlots.delete(slotRuangKey);
+          allLecturers.forEach(lect => dosenBookings.delete(`${lect}|${hari}|${sesi}`));
+          for (const sem of semesters) {
+            semesterKelasBookings.delete(`${sem}|${kelasLabel}|${hari}|${sesi}`);
+          }
+        }
+      }
+    }
+    // Jika tidak ada slot valid, unplaced
+    jadwal.push({
+      ...jadwalItem,
+      hari: null,
+      sesi: null,
+      ruangan: null,
+      ruangan_kapasitas: null,
+      status: 'unplaced',
+      kelas: kelasLabel,
+      semester: semesters,
+      matkul_kode: matkulKode,
+      id_mk_kelas: jadwalItem.id_mk_kelas
+    });
+    if (backtrack(idx + 1)) return true;
+    jadwal.pop();
+    return false;
+  }
+
+  backtrack(0);
+  return jadwal;
+}
+
+// Ganti generateJadwal agar menggunakan backtracking
 const generateJadwal = async () => {
   try {
      isGenerating.value = true;
-     const semesterKelasBookings = new Set();
      const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
      if (!token) {
        throw new Error('User is not authenticated');
@@ -343,127 +496,15 @@ const generateJadwal = async () => {
      const ruangan = ruanganResponse.data;
      const jadwalHindariData = jadwalHindariResponse.data;
 
-     // Buat blockedSlots: Set(hari|sesi|semester)
-     const blockedSlots = new Set();
-     jadwalHindariData.forEach(jh => {
-       if (Array.isArray(jh.hindari_smt)) {
-         jh.hindari_smt.forEach(sem => {
-           blockedSlots.add(`${jh.hindari_hari}|${jh.hindari_sesi}|${sem}`);
-         });
-       }
-     });
-
-     // Inisialisasi jadwal kosong
-     const jadwal = [];
-     const usedSlots = new Set();
-
-     // Fungsi untuk mengecek apakah slot waktu valid (tidak bertabrakan)
-     const isSlotValid = (hari, sesi, ruangan) => {
-       const slotKey = `${hari}-${sesi}-${ruangan}`;
-       return !usedSlots.has(slotKey);
-     };
-
-     // Urutkan jadwal berdasarkan prioritas dosen
+     // Urutkan jadwal berdasarkan prioritas dosen (atau bisa diubah ke heuristik lain)
      const sortedJadwal = [...mkDosen].sort((a, b) => {
        const prioritasA = a.dosen.dosen_prioritas === 'PRIORITAS' ? 1 : 0;
        const prioritasB = b.dosen.dosen_prioritas === 'PRIORITAS' ? 1 : 0;
        return prioritasB - prioritasA;
      });
 
-     // Coba tempatkan setiap jadwal
-     for (const jadwalItem of sortedJadwal) {
-       let placed = false;
-       // Ambil label kelas dari mapping id_mk_kelas
-       const kelasLabel = idToLabelMap[jadwalItem.id_mk_kelas] || '-';
-       // Ambil semester dari mk_kelas_sem (array, normalisasi string)
-       const semesters = Array.isArray(jadwalItem.mk_kelas_sem) ? jadwalItem.mk_kelas_sem.map(s => (s + '').trim().toUpperCase()) : [(jadwalItem.mk_kelas_sem + '').trim().toUpperCase()];
-       // Dukung team teaching: array dosen
-       let allLecturers = [];
-       if (Array.isArray(jadwalItem.dosen)) {
-         allLecturers = jadwalItem.dosen.map(d => d.dosen_kode || d);
-       } else if (jadwalItem.dosen?.dosen_kode) {
-         allLecturers = [jadwalItem.dosen.dosen_kode];
-       } else if (jadwalItem.dosen) {
-         allLecturers = [jadwalItem.dosen];
-       }
-       // Ambil array ketersediaan dosen untuk semua dosen
-       const allAvailableSlots = allLecturers.map(lect => {
-         const dosenObj = dosenList.value.find(d => d.dosen_kode === lect);
-         return dosenObj?.jadwal_dosen?.map(j => `${j.dosen_sedia_hari}|${j.dosen_sedia_sesi}`) || [];
-       });
-
-       for (const hari of hariList) {
-         if (placed) break;
-         for (const sesi of sesiList) {
-           if (placed) break;
-
-           // Constraint: matkul_tipe PENGAYAAN hanya boleh di hari JUMAT sesi SATU/DUA
-           if (jadwalItem.matkul_tipe === 'PENGAYAAN' && (hari !== 'JUMAT' || (sesi !== 'SATU' && sesi !== 'DUA'))) {
-             continue;
-           }
-
-           // Constraint: pada satu waktu, untuk setiap semester, satu kelas (label) hanya boleh ada satu
-           let conflict = false;
-           for (const sem of semesters) {
-             if (semesterKelasBookings.has(`${sem}|${kelasLabel}|${hari}|${sesi}`)) {
-               conflict = true;
-               break;
-             }
-           }
-           if (conflict) continue;
-
-           // Semua dosen harus tersedia di slot ini
-           const slotKey = `${hari}|${sesi}`;
-           if (allAvailableSlots.some(slots => slots.length && !slots.includes(slotKey))) {
-             continue;
-           }
-
-           // Skip jika slot termasuk dalam jadwal hindari untuk semester tersebut
-           if (blockedSlots.has(`${hari}|${sesi}|${semesters[0]}`)) {
-             continue;
-           }
-
-           // Cek apakah ada dosen yang sudah mengajar di slot ini
-           if (allLecturers.some(lect => dosenBookings.has(`${lect}|${hari}|${sesi}`))) {
-             continue;
-           }
-
-           for (const ruang of ruangan) {
-             if (placed) break;
-             if (isSlotValid(hari, sesi, ruang.ruangan_kode)) {
-               jadwal.push({
-                 id_mk_kelas_dosen: jadwalItem.id_mk_kelas_dosen,
-                 mata_kuliah_kelas: jadwalItem.mata_kuliah_kelas,
-                 dosen: jadwalItem.dosen,
-                 mk_kelas_sem: jadwalItem.mk_kelas_sem,
-                 matkul_tipe: jadwalItem.matkul_tipe,
-                 hari,
-                 sesi,
-                 ruangan: ruang.ruangan_kode,
-                 ruangan_kapasitas: ruang.ruangan_kapasitas
-               });
-               usedSlots.add(`${hari}-${sesi}-${ruang.ruangan_kode}`);
-               allLecturers.forEach(lect => dosenBookings.add(`${lect}|${hari}|${sesi}`));
-               // Tambahkan semua semester ke semesterKelasBookings (pakai label kelas)
-               for (const sem of semesters) {
-                 semesterKelasBookings.add(`${sem}|${kelasLabel}|${hari}|${sesi}`);
-               }
-               placed = true;
-             }
-           }
-         }
-       }
-       if (!placed) {
-         jadwal.push({
-           ...jadwalItem,
-           hari: null,
-           sesi: null,
-           ruangan: null,
-           ruangan_kapasitas: null,
-           status: 'unplaced'
-         });
-       }
-     }
+     // Gunakan backtracking untuk penjadwalan
+     const jadwal = scheduleWithBacktracking(sortedJadwal, ruangan, hariList, sesiList, dosenList, jadwalHindariData);
      jadwalGenerated.value = jadwal;
      showSuccessAlert('Jadwal berhasil tergenerate!');
   } catch (error) {
@@ -484,6 +525,27 @@ const generateJadwal = async () => {
 };
 
 // Function to export jadwal to Excel
+const getTeamTeachingLecturers = (item) => {
+  // Ambil label kelas dari id_mk_kelas (bukan dari item.kelas saja)
+  const kelasLabel = getKelasLabel(item.id_mk_kelas);
+  const matkulKode = (item.matkul_kode || item.mata_kuliah_kelas?.matkul_kode || '').trim().toUpperCase();
+  const semesters = (item.semester || item.mk_kelas_sem || []).map(x => (x + '').trim().toUpperCase());
+  return dosenList.value
+    .filter(dosen => {
+      const teachesSame = dosen.mata_kuliah?.some(mk =>
+        (mk.matkul_kode || '').trim().toUpperCase() === matkulKode &&
+        (mk.kelas_mk || '').trim().toUpperCase() === kelasLabel &&
+        (mk.mk_kelas_sem || []).map(s => (s + '').trim().toUpperCase()).some(s => semesters.includes(s))
+      );
+      const available = dosen.jadwal_dosen?.some(j =>
+        j.dosen_sedia_hari === item.hari && j.dosen_sedia_sesi === item.sesi
+      );
+      return teachesSame && available;
+    })
+    .map(d => d.dosen_kode)
+    .join(', ');
+};
+
 const exportExcel = () => {
    // Ambil semua kombinasi hari, sesi, dan ruangan
   const uniqueRooms = [...new Set(jadwalGenerated.value.map(item => item.ruangan))].sort();
@@ -504,7 +566,7 @@ const exportExcel = () => {
   jadwalGenerated.value.forEach(item => {
     const key = `${item.hari}|${item.sesi}`;
      if (!groupedData[key]) groupedData[key] = {};
-     groupedData[key][item.ruangan] = `${item.kelas || item.mata_kuliah_kelas?.nama_kelas || '-'} - ${item.dosen?.dosen_kode || item.dosen || '-'} (Semester ${(item.semester || item.mk_kelas_sem || ['-']).join(', ')})`;
+     groupedData[key][item.ruangan] = item;
    });
 
    // Tambahkan semua kombinasi hari, sesi, ruangan ke matrixData
@@ -512,8 +574,14 @@ const exportExcel = () => {
     const [hari, sesi] = timeSlot.split('|');
     const row = [hari, sesi];
      allRooms.forEach(room => {
-       const classData = groupedData[timeSlot]?.[room] || '';
-      row.push(classData);
+       const item = groupedData[timeSlot]?.[room];
+       if (item) {
+         const dosenTeamTeaching = getTeamTeachingLecturers(item);
+         const namaMatkul = item.mata_kuliah_kelas?.nama_kelas || '-';
+         row.push(`${item.kelas || '-'} - ${namaMatkul} - ${dosenTeamTeaching || item.dosen?.dosen_kode || item.dosen || '-'} (Semester ${(item.semester || ['-']).join(', ')})`);
+       } else {
+         row.push('');
+       }
     });
     matrixData.push(row);
   });
@@ -524,13 +592,15 @@ const exportExcel = () => {
      matrixData.push([]); // baris kosong pemisah
      matrixData.push(['Kelas Unplaced', 'Mata Kuliah', 'Semester', 'Dosen', 'Alasan']);
      unplaced.forEach(item => {
+       const dosenTeamTeaching = getTeamTeachingLecturers(item);
+       const namaMatkul = item.mata_kuliah_kelas?.nama_kelas || '-';
        matrixData.push([
-         item.kelas || item.mata_kuliah_kelas?.nama_kelas || '-',
-         item.mata_kuliah_kelas?.matkul_kode || '-',
-         (item.semester || item.mk_kelas_sem || ['-']).join(', '),
-         Array.isArray(item.dosen)
+         item.kelas || '-',
+         namaMatkul,
+         (item.semester || ['-']).join(','),
+         dosenTeamTeaching || (Array.isArray(item.dosen)
            ? item.dosen.map(d => d.dosen_kode || d).join(', ')
-           : (item.dosen?.dosen_kode || item.dosen || '-'),
+           : (item.dosen?.dosen_kode || item.dosen || '-')),
          'Tidak ada slot tersedia'
        ]);
      });
@@ -573,4 +643,156 @@ const getClassesForTimeSlot = (hari, sesi) => {
      selectedSemesters.value = [];
    }
  };
+
+// Fungsi recursive multi-level swap (DFS)
+function tryPlaceWithSwap(jadwal, item, hari, sesi, ruang, ruangan, hariList, sesiList, dosenList, semesterKelasBookings, blockedSlots, visited = new Set()) {
+  // Cek constraint pengayaan
+  if (
+    (item.matkul_tipe === 'PENGAYAAN' && (hari !== 'JUMAT' || sesi !== 'TIGA')) ||
+    (item.matkul_tipe !== 'PENGAYAAN' && hari === 'JUMAT' && sesi === 'TIGA')
+  ) {
+    return false;
+  }
+  // Cek constraint jadwal hindari
+  const semesters = Array.isArray(item.mk_kelas_sem) ? item.mk_kelas_sem.map(s => (s + '').trim().toUpperCase()) : [(item.mk_kelas_sem + '').trim().toUpperCase()];
+  for (const sem of semesters) {
+    if (blockedSlots.has(`${hari}|${sesi}|${sem}`)) {
+      return false;
+    }
+  }
+  // Cek constraint kelas/semester/slot
+  const kelasLabel = getKelasLabel(item.id_mk_kelas);
+  for (const sem of semesters) {
+    if (semesterKelasBookings.has(`${sem}|${kelasLabel}|${hari}|${sesi}`)) {
+      return false;
+    }
+  }
+  // Cek dosen available
+  let allLecturers = [];
+  if (Array.isArray(item.dosen)) {
+    allLecturers = item.dosen.map(d => d.dosen_kode || d);
+  } else if (item.dosen?.dosen_kode) {
+    allLecturers = [item.dosen.dosen_kode];
+  } else if (item.dosen) {
+    allLecturers = [item.dosen];
+  }
+  const availableLecturers = allLecturers.filter(lect => {
+    const dosenObj = dosenList.value.find(d => d.dosen_kode === lect);
+    if (!dosenObj?.jadwal_dosen) return false;
+    return dosenObj.jadwal_dosen.some(j => 
+      j.dosen_sedia_hari === hari && j.dosen_sedia_sesi === sesi
+    );
+  });
+  if (availableLecturers.length === 0) return false;
+  // Cek dosen tidak double booking di slot ini
+  for (const lect of allLecturers) {
+    if (jadwal.some(j => j.hari === hari && j.sesi === sesi && j.ruangan === ruang.ruangan_kode && j.status !== 'unplaced' && (
+      (Array.isArray(j.dosen) && j.dosen.some(d => (d.dosen_kode || d) === lect)) ||
+      (!Array.isArray(j.dosen) && (j.dosen?.dosen_kode || j.dosen) === lect)
+    ))) {
+      return false;
+    }
+  }
+  // Cek visited agar tidak infinite loop
+  const visitKey = `${item.id_mk_kelas}|${hari}|${sesi}|${ruang.ruangan_kode}`;
+  if (visited.has(visitKey)) return false;
+  visited.add(visitKey);
+  // Cek apakah slot kosong
+  const existing = jadwal.find(j => j.hari === hari && j.sesi === sesi && j.ruangan === ruang.ruangan_kode && j.status !== 'unplaced');
+  if (!existing) {
+    // Slot kosong, langsung isi
+    // Simpan posisi lama
+    const oldState = { hari: item.hari, sesi: item.sesi, ruangan: item.ruangan, ruangan_kapasitas: item.ruangan_kapasitas, status: item.status };
+    item.hari = hari;
+    item.sesi = sesi;
+    item.ruangan = ruang.ruangan_kode;
+    item.ruangan_kapasitas = ruang.ruangan_kapasitas;
+    item.status = undefined;
+    for (const sem of semesters) {
+      semesterKelasBookings.add(`${sem}|${kelasLabel}|${hari}|${sesi}`);
+    }
+    return true;
+  } else {
+    // Slot terisi, coba swap rekursif
+    // Simpan posisi lama existing
+    const oldExisting = { hari: existing.hari, sesi: existing.sesi, ruangan: existing.ruangan, ruangan_kapasitas: existing.ruangan_kapasitas, status: existing.status };
+    for (const hari2 of hariList) {
+      for (const sesi2 of sesiList) {
+        for (const ruang2 of ruangan) {
+          if (hari2 === hari && sesi2 === sesi && ruang2.ruangan_kode === ruang.ruangan_kode) continue;
+          if (tryPlaceWithSwap(jadwal, existing, hari2, sesi2, ruang2, ruangan, hariList, sesiList, dosenList, semesterKelasBookings, blockedSlots, visited)) {
+            // Jika berhasil, masukkan item ke slot lama
+            const oldState = { hari: item.hari, sesi: item.sesi, ruangan: item.ruangan, ruangan_kapasitas: item.ruangan_kapasitas, status: item.status };
+            item.hari = hari;
+            item.sesi = sesi;
+            item.ruangan = ruang.ruangan_kode;
+            item.ruangan_kapasitas = ruang.ruangan_kapasitas;
+            item.status = undefined;
+            for (const sem of semesters) {
+              semesterKelasBookings.add(`${sem}|${kelasLabel}|${hari}|${sesi}`);
+            }
+            return true;
+          }
+        }
+      }
+    }
+    // Jika swap gagal, kembalikan existing ke posisi semula
+    existing.hari = oldExisting.hari;
+    existing.sesi = oldExisting.sesi;
+    existing.ruangan = oldExisting.ruangan;
+    existing.ruangan_kapasitas = oldExisting.ruangan_kapasitas;
+    existing.status = oldExisting.status;
+    return false;
+  }
+}
+
+// Setelah jadwal greedy selesai, lakukan reshuffle untuk kelas unplaced (pakai recursive swap)
+function reshuffleUnplacedClasses(jadwal, ruangan, hariList, sesiList, dosenList, semesterKelasBookings) {
+  // Ambil blockedSlots dari jadwalHindariData
+  const blockedSlots = new Set();
+  if (Array.isArray(jadwalHindari.value)) {
+    jadwalHindari.value.forEach(jh => {
+      if (Array.isArray(jh.hindari_smt)) {
+        jh.hindari_smt.forEach(sem => {
+          blockedSlots.add(`${jh.hindari_hari}|${jh.hindari_sesi}|${(sem + '').trim().toUpperCase()}`);
+        });
+      }
+    });
+  }
+  let changed = true;
+  while (changed) {
+    changed = false;
+    // Cari kelas unplaced
+    const unplaced = jadwal.filter(item => item.status === 'unplaced');
+    for (const unplacedItem of unplaced) {
+      let placed = false;
+      for (const hari of hariList) {
+        for (const sesi of sesiList) {
+          for (const ruang of ruangan) {
+            if (tryPlaceWithSwap(jadwal, unplacedItem, hari, sesi, ruang, ruangan, hariList, sesiList, dosenList, semesterKelasBookings, blockedSlots)) {
+              changed = true;
+              placed = true;
+              break;
+            }
+          }
+          if (placed) break;
+        }
+        if (placed) break;
+      }
+    }
+  }
+}
+
+// Setelah reshuffle, pastikan semua kelas yang tidak punya slot valid statusnya tetap 'unplaced'
+function ensureUnplacedStatus(jadwal) {
+  for (const item of jadwal) {
+    if (!item.hari || !item.sesi || !item.ruangan) {
+      item.status = 'unplaced';
+      item.hari = null;
+      item.sesi = null;
+      item.ruangan = null;
+      item.ruangan_kapasitas = null;
+    }
+  }
+}
 </script>
