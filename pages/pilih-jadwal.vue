@@ -228,6 +228,9 @@
  const selectedSemesters = ref([]);
  const selectAllSemesters = ref(false);
  
+ // Tambahkan set untuk booking dosen
+ const dosenBookings = new Set();
+ 
  // Fetch Data function
  const getToken = () => {
    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
@@ -355,14 +358,29 @@
      for (const jadwalItem of sortedJadwal) {
        let placed = false;
        const semester = Array.isArray(jadwalItem.mk_kelas_sem) ? jadwalItem.mk_kelas_sem[0] : jadwalItem.mk_kelas_sem;
+       const dosenKode = jadwalItem.dosen?.dosen_kode || jadwalItem.dosen;
+       // Cari data dosen lengkap dari dosenList
+       const dosenObj = dosenList.value.find(d => d.dosen_kode === dosenKode);
+       // Ambil array ketersediaan dosen
+       const availableSlots = dosenObj?.jadwal_dosen?.map(j => `${j.dosen_sedia_hari}|${j.dosen_sedia_sesi}`) || [];
 
        for (const hari of hariList) {
          if (placed) break;
          for (const sesi of sesiList) {
            if (placed) break;
 
+           // Cek apakah slot tersedia di jadwal dosen
+           if (availableSlots.length && !availableSlots.includes(`${hari}|${sesi}`)) {
+             continue;
+           }
+
            // Skip jika slot termasuk dalam jadwal hindari untuk semester tersebut
            if (blockedSlots.has(`${hari}|${sesi}|${semester}`)) {
+             continue;
+           }
+
+           // Cek apakah dosen sudah mengajar di slot ini
+           if (dosenBookings.has(`${dosenKode}|${hari}|${sesi}`)) {
              continue;
            }
 
@@ -381,6 +399,7 @@
                  ruangan_kapasitas: ruang.ruangan_kapasitas
                });
                usedSlots.add(`${hari}-${sesi}-${ruang.ruangan_kode}`);
+               dosenBookings.add(`${dosenKode}|${hari}|${sesi}`);
                placed = true;
              }
            }
