@@ -397,9 +397,22 @@ function scheduleWithBacktracking(classes, ruangan, hariList, sesiList, dosenLis
         const availableLecturers = allLecturers.filter(lect => {
           const dosenObj = dosenList.value.find(d => d.dosen_kode === lect);
           if (!dosenObj?.jadwal_dosen) return false;
-          return dosenObj.jadwal_dosen.some(j => 
+          
+          // Cek kesediaan dosen
+          const isAvailable = dosenObj.jadwal_dosen.some(j => 
             j.dosen_sedia_hari === hari && j.dosen_sedia_sesi === sesi
           );
+          
+          // Cek apakah dosen sudah mengajar mata kuliah yang sama di slot ini
+          const isTeachingSameSubject = jadwal.some(j => 
+            j.dosen && 
+            (Array.isArray(j.dosen) ? j.dosen.some(d => d.dosen_kode === lect) : j.dosen.dosen_kode === lect) &&
+            j.matkul_kode === matkulKode &&
+            j.hari === hari &&
+            j.sesi === sesi
+          );
+          
+          return isAvailable || isTeachingSameSubject;
         });
         if (availableLecturers.length === 0) continue;
         // Cek dosen tidak double booking di slot ini
@@ -508,6 +521,71 @@ function generateWithIterativeImprovement(classes, ruangan, hariList, sesiList, 
   return bestJadwal;
 }
 
+// Post-processing team teaching setelah jadwal tergenerate (hanya pakai mk_dosen & dosen)
+function enrichTeamTeaching(jadwal, mkDosen, dosenList) {
+  for (const slot of jadwal) {
+    if (!slot.hari || !slot.sesi || !slot.mata_kuliah_kelas) continue;
+    const namaKelas = slot.mata_kuliah_kelas.nama_kelas;
+    const semesterArr = Array.isArray(slot.semester) ? slot.semester : [slot.semester];
+    const hari = slot.hari;
+    const sesi = slot.sesi;
+    const matkulKode = slot.matkul_kode;
+    // Cari semua dosen yang memenuhi syarat team teaching dari mk_dosen
+    const teamDosen = mkDosen.filter(mkd => {
+      // Cek semester
+      const mkdSems = Array.isArray(mkd.mk_kelas_sem) ? mkd.mk_kelas_sem.map(s => (s + '').trim()) : [(mkd.mk_kelas_sem + '').trim()];
+      const semMatch = mkdSems.some(s => semesterArr.includes(s));
+      if (!semMatch) return false;
+      // Cek nama_kelas
+      if (!mkd.mata_kuliah_kelas || mkd.mata_kuliah_kelas.nama_kelas !== namaKelas) return false;
+      // Cek matkul_kode
+      if ((mkd.mata_kuliah_kelas?.matkul_kode || '').trim().toUpperCase() !== matkulKode) return false;
+      // Cek ketersediaan dosen di hari & sesi
+      const dosenObj = dosenList.find(d => d.dosen_kode === (mkd.dosen?.dosen_kode || mkd.dosen));
+      if (!dosenObj || !dosenObj.jadwal_dosen) return false;
+      const available = dosenObj.jadwal_dosen.some(jd => jd.dosen_sedia_hari === hari && jd.dosen_sedia_sesi === sesi);
+      return available;
+    }).map(mkd => mkd.dosen?.dosen_kode || mkd.dosen);
+    // Gabungkan dosen utama dan team teaching, hilangkan duplikat
+    let dosenUtama = [];
+    if (Array.isArray(slot.dosen)) {
+      dosenUtama = slot.dosen.map(d => d.dosen_kode || d);
+    } else if (slot.dosen?.dosen_kode) {
+      dosenUtama = [slot.dosen.dosen_kode];
+    } else if (slot.dosen) {
+      dosenUtama = [slot.dosen];
+    }
+    const allDosen = [...new Set([...dosenUtama, ...teamDosen])];
+    slot.dosen_team_teaching = allDosen;
+  }
+}
+
+// Update getTeamTeachingLecturers agar mengambil dari dosen_team_teaching
+const getTeamTeachingLecturers = (item) => {
+  if (item.dosen_team_teaching && item.dosen_team_teaching.length) {
+    return item.dosen_team_teaching.join(' - ');
+  }
+  // fallback lama
+  const matkulKode = (item.matkul_kode || item.mata_kuliah_kelas?.matkul_kode || '').trim().toUpperCase();
+  const hari = item.hari;
+  const sesi = item.sesi;
+  const dosenCodes = jadwalGenerated.value
+    .filter(j => j.matkul_kode === matkulKode && j.hari === hari && j.sesi === sesi)
+    .map(j => {
+      if (Array.isArray(j.dosen)) {
+        return j.dosen.map(d => d.dosen_kode || d).join(' - ');
+      } else if (j.dosen?.dosen_kode) {
+        return j.dosen.dosen_kode;
+      } else if (j.dosen) {
+        return j.dosen;
+      }
+      return '';
+    })
+    .join(' - ');
+  const uniqueDosen = [...new Set(dosenCodes.split(' - ').filter(Boolean))].join(' - ');
+  return uniqueDosen;
+};
+
 // Ganti generateJadwal agar menggunakan iterative improvement
 const generateJadwal = async () => {
   try {
@@ -518,7 +596,7 @@ const generateJadwal = async () => {
      }
 
      // Fetch all data
-     const [mkDosenResponse, ruanganResponse, jadwalHindariResponse] = await Promise.all([
+     const [mkDosenResponse, ruanganResponse, jadwalHindariResponse, dosenResponse] = await Promise.all([
        axios.get('http://10.15.41.68:3000/mk_dosen', {
          headers: { 'Authorization': `Bearer ${token}` },
        }),
@@ -528,11 +606,15 @@ const generateJadwal = async () => {
        axios.get('http://10.15.41.68:3000/jadwal_hindari', {
          headers: { 'Authorization': `Bearer ${token}` },
        }),
+       axios.get('http://10.15.41.68:3000/dosen', {
+         headers: { 'Authorization': `Bearer ${token}` },
+       }),
      ]);
 
      const mkDosen = mkDosenResponse.data;
      const ruangan = ruanganResponse.data;
      const jadwalHindariData = jadwalHindariResponse.data;
+     const dosenListData = dosenResponse.data;
 
      // Urutkan jadwal berdasarkan prioritas dosen (atau bisa diubah ke heuristik lain)
      const sortedJadwal = [...mkDosen].sort((a, b) => {
@@ -543,6 +625,8 @@ const generateJadwal = async () => {
 
      // Gunakan iterative improvement untuk penjadwalan
      const jadwal = generateWithIterativeImprovement(sortedJadwal, ruangan, hariList, sesiList, dosenList, jadwalHindariData, 40);
+     // Post-processing team teaching
+     enrichTeamTeaching(jadwal, mkDosen, dosenListData);
      jadwalGenerated.value = jadwal;
      showSuccessAlert('Jadwal berhasil tergenerate!');
   } catch (error) {
@@ -560,28 +644,6 @@ const generateJadwal = async () => {
    } finally {
      isGenerating.value = false;
   }
-};
-
-// Function to export jadwal to Excel
-const getTeamTeachingLecturers = (item) => {
-  // Ambil label kelas dari id_mk_kelas (bukan dari item.kelas saja)
-  const kelasLabel = getKelasLabel(item.id_mk_kelas);
-  const matkulKode = (item.matkul_kode || item.mata_kuliah_kelas?.matkul_kode || '').trim().toUpperCase();
-  const semesters = (item.semester || item.mk_kelas_sem || []).map(x => (x + '').trim().toUpperCase());
-  return dosenList.value
-    .filter(dosen => {
-      const teachesSame = dosen.mata_kuliah?.some(mk =>
-        (mk.matkul_kode || '').trim().toUpperCase() === matkulKode &&
-        (mk.kelas_mk || '').trim().toUpperCase() === kelasLabel &&
-        (mk.mk_kelas_sem || []).map(s => (s + '').trim().toUpperCase()).some(s => semesters.includes(s))
-      );
-      const available = dosen.jadwal_dosen?.some(j =>
-        j.dosen_sedia_hari === item.hari && j.dosen_sedia_sesi === item.sesi
-      );
-      return teachesSame && available;
-    })
-    .map(d => d.dosen_kode)
-    .join(', ');
 };
 
 const exportExcel = () => {
@@ -616,7 +678,7 @@ const exportExcel = () => {
        if (item) {
          const dosenTeamTeaching = getTeamTeachingLecturers(item);
          const namaMatkul = item.mata_kuliah_kelas?.nama_kelas || '-';
-         row.push(`${item.kelas || '-'} - ${namaMatkul} - ${dosenTeamTeaching || item.dosen?.dosen_kode || item.dosen || '-'} (Semester ${(item.semester || ['-']).join(', ')})`);
+         row.push(`${namaMatkul} - ${dosenTeamTeaching || item.dosen?.dosen_kode || item.dosen || '-'}` + (item.semester ? ` (Semester ${(item.semester || ['-']).join(', ')})` : ''));
        } else {
          row.push('');
        }
