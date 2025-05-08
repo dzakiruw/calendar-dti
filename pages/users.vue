@@ -80,9 +80,9 @@
             <input
               v-model="form.password"
               type="password"
-              required
+              :required="!isEditing"
               class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-              placeholder="Masukkan password"
+              :placeholder="isEditing ? 'Kosongkan jika tidak ingin mengubah password' : 'Masukkan password'"
             />
           </div>
 
