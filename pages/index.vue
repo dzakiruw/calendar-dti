@@ -1,31 +1,58 @@
 <template>
   <div>
     <!-- Loading state -->
-    <div v-if="!isAuthChecked" class="fixed inset-0 flex items-center justify-center bg-white z-50">
-      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+    <div
+      v-if="!isAuthChecked"
+      class="fixed inset-0 flex items-center justify-center bg-white z-50"
+    >
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"
+      ></div>
     </div>
 
     <!-- Login Page -->
-    <div v-else-if="!isLoggedIn" class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4">
-      <div class="w-full max-w-5xl flex flex-col md:flex-row items-start justify-between gap-8">
+    <div
+      v-else-if="!isLoggedIn"
+      class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4"
+    >
+      <div
+        class="w-full max-w-5xl flex flex-col md:flex-row items-start justify-between gap-8"
+      >
         <!-- Left side - Welcome Content -->
         <div class="flex flex-col items-center md:items-start md:w-1/2">
-          <img src="/logo-dti.png" alt="DTI Logo" class="w-20 h-20 mb-6 animate-pulse" />
-          <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 text-center md:text-left mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <img
+            src="/logo-dti.png"
+            alt="DTI Logo"
+            class="w-20 h-20 mb-6 animate-pulse"
+          />
+          <h1
+            class="text-3xl sm:text-4xl font-bold text-gray-800 text-center md:text-left mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
+          >
             Selamat Datang!
           </h1>
-          <p class="text-base sm:text-lg text-gray-600 text-center md:text-left mb-8 max-w-xl">
-            Sistem Penjadwalan Perkuliahan DTI yang membantu Anda mengatur jadwal dengan mudah dan efisien
+          <p
+            class="text-base sm:text-lg text-gray-600 text-center md:text-left mb-8 max-w-xl"
+          >
+            Sistem Penjadwalan Perkuliahan DTI yang membantu Anda mengatur
+            jadwal dengan mudah dan efisien
           </p>
         </div>
 
         <!-- Right side - Login Form -->
         <div class="md:w-1/2 w-full max-w-md">
-          <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 w-full border border-gray-100">
-            <h2 class="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Login</h2>
+          <div
+            class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 w-full border border-gray-100"
+          >
+            <h2
+              class="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
+            >
+              Login
+            </h2>
             <form @submit.prevent="login" class="w-full">
               <div class="mb-5">
-                <label class="block text-gray-700 font-semibold mb-2">Username</label>
+                <label class="block text-gray-700 font-semibold mb-2"
+                  >Username</label
+                >
                 <input
                   v-model="username"
                   type="text"
@@ -35,7 +62,9 @@
                 />
               </div>
               <div class="mb-5">
-                <label class="block text-gray-700 font-semibold mb-2">Password</label>
+                <label class="block text-gray-700 font-semibold mb-2"
+                  >Password</label
+                >
                 <input
                   v-model="password"
                   type="password"
@@ -44,7 +73,9 @@
                   required
                 />
               </div>
-              <p v-if="errorMessage" class="text-red-600 text-sm mb-4">{{ errorMessage }}</p>
+              <p v-if="errorMessage" class="text-red-600 text-sm mb-4">
+                {{ errorMessage }}
+              </p>
               <button
                 type="submit"
                 class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg w-full hover:from-blue-700 hover:to-indigo-700 transform transition-all duration-300"
@@ -63,26 +94,53 @@
       <section class="w-full py-16">
         <div class="max-w-5xl mx-auto px-4">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
-              <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4">
+            <div
+              class="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105"
+            >
+              <div
+                class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4"
+              >
                 <i class="fas fa-calendar-check text-blue-600 text-xl"></i>
               </div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">Penjadwalan Otomatis</h3>
-              <p class="text-gray-600">Generate jadwal kuliah secara otomatis dengan mempertimbangkan berbagai constraint.</p>
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                Penjadwalan Otomatis
+              </h3>
+              <p class="text-gray-600">
+                Generate jadwal kuliah secara otomatis dengan mempertimbangkan
+                berbagai constraint.
+              </p>
             </div>
-            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
-              <div class="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-lg mb-4">
+            <div
+              class="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105"
+            >
+              <div
+                class="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-lg mb-4"
+              >
                 <i class="fas fa-users-cog text-indigo-600 text-xl"></i>
               </div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">Manajemen Data</h3>
-              <p class="text-gray-600">Kelola data mata kuliah, dosen, dan ruang kelas dengan mudah dan terstruktur.</p>
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                Manajemen Data
+              </h3>
+              <p class="text-gray-600">
+                Kelola data mata kuliah, dosen, dan ruang kelas dengan mudah dan
+                terstruktur.
+              </p>
             </div>
-            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
-              <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4">
+            <div
+              class="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105"
+            >
+              <div
+                class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4"
+              >
                 <i class="fas fa-clock text-blue-600 text-xl"></i>
               </div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">Fleksibel</h3>
-              <p class="text-gray-600">Atur jadwal yang dihindari dan preferensi waktu mengajar dosen dengan fleksibel.</p>
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                Fleksibel
+              </h3>
+              <p class="text-gray-600">
+                Atur jadwal yang dihindari dan preferensi waktu mengajar dosen
+                dengan fleksibel.
+              </p>
             </div>
           </div>
         </div>
@@ -91,9 +149,14 @@
       <!-- Tech Stack Section -->
       <section class="w-full bg-white/50 py-16">
         <div class="max-w-5xl mx-auto px-4">
-          <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center justify-center gap-3 mb-12">
+          <h2
+            class="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center justify-center gap-3 mb-12"
+          >
             <WrenchScrewdriverIcon class="w-8 h-8 text-blue-600" />
-            <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Tech Stack</span>
+            <span
+              class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
+              >Tech Stack</span
+            >
           </h2>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-8">
             <a
@@ -103,8 +166,16 @@
               target="_blank"
               class="group flex flex-col items-center p-6 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105"
             >
-              <img :src="tech.logo" class="w-16 h-16 object-contain mb-4 group-hover:animate-bounce" :alt="tech.name + ' Logo'" />
-              <p class="text-sm font-semibold text-gray-700 group-hover:text-blue-600">{{ tech.name }}</p>
+              <img
+                :src="tech.logo"
+                class="w-16 h-16 object-contain mb-4 group-hover:animate-bounce"
+                :alt="tech.name + ' Logo'"
+              />
+              <p
+                class="text-sm font-semibold text-gray-700 group-hover:text-blue-600"
+              >
+                {{ tech.name }}
+              </p>
             </a>
           </div>
         </div>
@@ -113,9 +184,14 @@
       <!-- Team Members Section -->
       <section class="w-full py-16">
         <div class="max-w-5xl mx-auto px-4">
-          <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center justify-center gap-3 mb-12">
+          <h2
+            class="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center justify-center gap-3 mb-12"
+          >
             <i class="fas fa-users text-blue-600"></i>
-            <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Team Members</span>
+            <span
+              class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
+              >Team Members</span
+            >
           </h2>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-8">
             <a
@@ -126,17 +202,27 @@
               class="group flex flex-col items-center p-6 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105"
             >
               <div class="relative mb-4">
-                <img 
-                  :src="member.avatar" 
+                <img
+                  :src="member.avatar"
                   class="w-20 h-20 rounded-full border-4 border-white shadow-lg object-cover group-hover:border-blue-100"
                 />
-                <div class="absolute -bottom-2 -right-2 bg-blue-600 text-white rounded-full w-8 h-8 shadow-lg group-hover:bg-indigo-600 flex items-center justify-center">
+                <div
+                  class="absolute -bottom-2 -right-2 bg-blue-600 text-white rounded-full w-8 h-8 shadow-lg group-hover:bg-indigo-600 flex items-center justify-center"
+                >
                   <i class="fab fa-linkedin-in text-sm"></i>
                 </div>
               </div>
-              <h3 class="text-sm font-bold text-gray-800 mb-1 text-center group-hover:text-blue-600">{{ member.name }}</h3>
+              <h3
+                class="text-sm font-bold text-gray-800 mb-1 text-center group-hover:text-blue-600"
+              >
+                {{ member.name }}
+              </h3>
               <p class="text-xs text-gray-500">{{ member.nrp }}</p>
-              <p class="text-xs font-medium text-blue-600 group-hover:text-indigo-600">Developer</p>
+              <p
+                class="text-xs font-medium text-blue-600 group-hover:text-indigo-600"
+              >
+                Developer
+              </p>
             </a>
           </div>
         </div>
@@ -147,19 +233,32 @@
 
 <script setup>
 import { ref, onMounted, inject } from "vue";
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 import { WrenchScrewdriverIcon } from "@heroicons/vue/24/solid";
-import axios from 'axios';
+import axios from "axios";
 
 // Get auth state from layout
-const { user: layoutUser, isAuthenticated, updateAuthState, isAuthChecked } = inject('authState');
+const {
+  user: layoutUser,
+  isAuthenticated,
+  updateAuthState,
+  isAuthChecked,
+} = inject("authState");
 
 // Tech Stack List
 const techStack = ref([
   { name: "Nuxt.js", logo: "/logo-nuxtjs.svg", link: "https://nuxt.com" },
   { name: "Vue.js", logo: "/logo-vuejs.svg", link: "https://vuejs.org" },
-  { name: "Tailwind CSS", logo: "/logo-tailwindcss.svg", link: "https://tailwindcss.com" },
-  { name: "Express.js", logo: "/logo-expressjs.svg", link: "https://expressjs.com" },
+  {
+    name: "Tailwind CSS",
+    logo: "/logo-tailwindcss.svg",
+    link: "https://tailwindcss.com",
+  },
+  {
+    name: "Express.js",
+    logo: "/logo-expressjs.svg",
+    link: "https://expressjs.com",
+  },
 ]);
 
 // Team Members List
@@ -197,9 +296,9 @@ const userName = ref("User");
 const router = useRouter();
 
 // Add these for login functionality
-const username = ref('');
-const password = ref('');
-const errorMessage = ref('');
+const username = ref("");
+const password = ref("");
+const errorMessage = ref("");
 
 // On component mount, check for logged-in user
 onMounted(() => {
@@ -209,7 +308,7 @@ onMounted(() => {
   userName.value = layoutUser.value?.username || "User";
 
   // Listen for auth state changes from layout
-  window.addEventListener('auth-state-changed', (event) => {
+  window.addEventListener("auth-state-changed", (event) => {
     const newUser = event.detail;
     user.value = newUser || {};
     isLoggedIn.value = !!newUser?.accessToken;
@@ -220,37 +319,38 @@ onMounted(() => {
 // Handle login
 const login = async () => {
   try {
-    errorMessage.value = '';
-    const response = await axios.post('http://10.15.41.68:3000/auth/login', {
+    errorMessage.value = "";
+    const response = await axios.post("http://localhost:5000/auth/login", {
       username: username.value,
-      password: password.value
+      password: password.value,
     });
 
     if (response.data.accessToken) {
       const userData = {
         username: username.value,
         accessToken: response.data.accessToken,
-        role: response.data.role
+        role: response.data.role,
       };
 
-      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem("user", JSON.stringify(userData));
       user.value = userData;
       isLoggedIn.value = true;
       userName.value = username.value;
-      
+
       // Update layout auth state
       updateAuthState(userData);
-      
+
       // Clear form
-      username.value = '';
-      password.value = '';
-      
+      username.value = "";
+      password.value = "";
+
       // Navigate to home page
-      router.push('/');
+      router.push("/");
     }
   } catch (error) {
-    console.error('Login error:', error);
-    errorMessage.value = error.response?.data?.message || 'Login failed. Please try again.';
+    console.error("Login error:", error);
+    errorMessage.value =
+      error.response?.data?.message || "Login failed. Please try again.";
   }
 };
 </script>

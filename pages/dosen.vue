@@ -1,18 +1,33 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
+  <div
+    class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8"
+  >
     <!-- Alert Popup -->
-    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
-      <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300">
-        <div class="mb-4 text-red-600 text-2xl"><i class="fas fa-exclamation-circle"></i></div>
+    <div
+      v-if="showAlert"
+      class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30"
+    >
+      <div
+        class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300"
+      >
+        <div class="mb-4 text-red-600 text-2xl">
+          <i class="fas fa-exclamation-circle"></i>
+        </div>
         <div class="mb-4 text-gray-800 font-semibold">{{ alertMessage }}</div>
-        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+        <button
+          @click="showAlert = false"
+          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
+        >
           Tutup
         </button>
       </div>
     </div>
 
     <!-- Success Alert -->
-    <div v-if="showSuccess" class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50">
+    <div
+      v-if="showSuccess"
+      class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50"
+    >
       <div class="flex items-center">
         <div class="py-1">
           <i class="fas fa-check-circle text-xl mr-3"></i>
@@ -20,16 +35,27 @@
         <div>
           <p class="font-semibold">{{ successMessage }}</p>
         </div>
-        <button @click="showSuccess = false" class="ml-4 text-green-700 hover:text-green-900">
+        <button
+          @click="showSuccess = false"
+          class="ml-4 text-green-700 hover:text-green-900"
+        >
           <i class="fas fa-times"></i>
         </button>
       </div>
     </div>
     <!-- Title -->
     <div class="mb-8 w-full flex justify-center">
-      <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transform hover:scale-105 transition-all duration-300">
-        <img src="/input-dosen.png" alt="Dosen Icon" class="w-16 h-16 object-contain" />
-        <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+      <div
+        class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transform hover:scale-105 transition-all duration-300"
+      >
+        <img
+          src="/input-dosen.png"
+          alt="Dosen Icon"
+          class="w-16 h-16 object-contain"
+        />
+        <h1
+          class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
+        >
           Input Dosen
         </h1>
       </div>
@@ -38,73 +64,94 @@
     <!-- Dosen Form and List Container -->
     <div class="max-w-7xl mx-auto grid grid-cols-2 gap-8">
       <!-- Dosen Form -->
-      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+      <div
+        class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100"
+      >
         <form @submit.prevent="submitDosen" class="space-y-6">
           <div class="space-y-6">
             <div>
-              <label class="block text-gray-700 font-semibold mb-2">Kode Dosen</label>
+              <label class="block text-gray-700 font-semibold mb-2"
+                >Kode Dosen</label
+              >
               <div v-if="editIndex !== null">
                 <p class="text-lg font-bold text-blue-600">{{ kode }}</p>
               </div>
               <div v-else>
-                <input 
-                  type="text" 
-                  v-model="kode" 
-                  class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" 
-                  placeholder="AI" 
-                  required 
+                <input
+                  type="text"
+                  v-model="kode"
+                  class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  placeholder="AI"
+                  required
                 />
               </div>
             </div>
 
             <div>
-              <label class="block text-gray-700 font-semibold mb-2">Nama Dosen</label>
-              <input 
-                type="text" 
-                v-model="nama" 
-                class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" 
-                placeholder="Annisaa Sri Indrawanti, S.T., M.T." 
-                required 
+              <label class="block text-gray-700 font-semibold mb-2"
+                >Nama Dosen</label
+              >
+              <input
+                type="text"
+                v-model="nama"
+                class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                placeholder="Annisaa Sri Indrawanti, S.T., M.T."
+                required
               />
             </div>
 
-            <!-- Prioritas Selection -->
+            <!-- Prioritas Selection (Numeric Input) -->
             <div>
-              <label class="block text-gray-700 font-semibold mb-2">Prioritas</label>
-              <select 
-                v-model="prioritas" 
-                class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 cursor-pointer" 
+              <label class="block text-gray-700 font-semibold mb-2">
+                Prioritas (Semakin kecil, semakin prioritas)
+              </label>
+              <input
+                type="number"
+                v-model.number="prioritas"
+                min="1"
+                max="99"
+                class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                placeholder="Masukkan angka prioritas (contoh: 1)"
                 required
-              >
-                <option disabled value="">Pilih Prioritas</option>
-                <option value="PRIORITAS">Prioritas</option>
-                <option value="NON_PRIORITAS">Non Prioritas</option>
-              </select>
+              />
             </div>
 
             <!-- Ketersediaan Dosen -->
             <div>
-              <label class="block text-gray-700 font-semibold mb-4">Ketersediaan Dosen (Sesi)</label>
+              <label class="block text-gray-700 font-semibold mb-4"
+                >Ketersediaan Dosen (Sesi)</label
+              >
               <div class="overflow-hidden rounded-xl border border-gray-200">
                 <table class="w-full text-sm">
                   <thead class="bg-gradient-to-r from-blue-50 to-indigo-50">
                     <tr>
-                      <th class="border-b border-r border-gray-200 px-4 py-3">Sesi / Hari</th>
-                      <th v-for="hari in hariList" :key="hari" class="border-b border-r last:border-r-0 border-gray-200 px-4 py-3">
+                      <th class="border-b border-r border-gray-200 px-4 py-3">
+                        Sesi / Hari
+                      </th>
+                      <th
+                        v-for="hari in hariList"
+                        :key="hari"
+                        class="border-b border-r last:border-r-0 border-gray-200 px-4 py-3"
+                      >
                         {{ hari }}
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(row, sesiIndex) in sesiList" :key="sesiIndex">
-                      <td class="border-b border-r border-gray-200 px-4 py-3 font-semibold bg-gradient-to-r from-blue-50 to-indigo-50">
+                      <td
+                        class="border-b border-r border-gray-200 px-4 py-3 font-semibold bg-gradient-to-r from-blue-50 to-indigo-50"
+                      >
                         Sesi {{ sesiIndex + 1 }}
                       </td>
-                      <td v-for="(col, hariIndex) in hariList" :key="hariIndex" 
-                          class="border-b border-r last:border-r-0 last-row:border-b-0 border-gray-200 px-4 py-3 text-center">
-                        <input 
-                          type="checkbox" 
-                          v-model="ketersediaan[sesiIndex][hariIndex]" 
+                      <td
+                        v-for="(col, hariIndex) in hariList"
+                        :key="hariIndex"
+                        class="border-b border-r last:border-r-0 last-row:border-b-0 border-gray-200 px-4 py-3 text-center"
+                      >
+                        <input
+                          type="checkbox"
+                          v-model="ketersediaan[sesiIndex][hariIndex]"
                           class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all duration-300 cursor-pointer"
                         />
                       </td>
@@ -117,22 +164,18 @@
 
           <!-- Submit and Cancel Buttons -->
           <div class="flex gap-4 pt-4">
-            <button 
-              type="submit" 
-              class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
-                     hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            <button
+              type="submit"
+              class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
-              {{ editIndex !== null ? 'Update' : 'Submit' }}
+              {{ editIndex !== null ? "Update" : "Submit" }}
             </button>
 
-            <button 
+            <button
               v-if="editIndex !== null"
-              type="button" 
-              @click="cancelEdit" 
-              class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-6 rounded-xl
-                     hover:from-gray-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300
-                     focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+              type="button"
+              @click="cancelEdit"
+              class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-6 rounded-xl hover:from-gray-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
             >
               Cancel
             </button>
@@ -141,16 +184,22 @@
       </div>
 
       <!-- Daftar Dosen -->
-      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+      <div
+        class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100"
+      >
         <div>
           <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <h2
+              class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
+            >
               <i class="fas fa-list-ul mr-2"></i> Daftar Dosen
             </h2>
-            
+
             <!-- Search Input -->
             <div class="relative flex-1 max-w-xs ml-4">
-              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <i
+                class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              ></i>
               <input
                 type="text"
                 v-model="searchQuery"
@@ -161,60 +210,78 @@
           </div>
 
           <!-- Empty State -->
-          <div 
-            v-if="filteredDosenList.length === 0" 
+          <div
+            v-if="filteredDosenList.length === 0"
             class="flex-1 flex flex-col items-center justify-center text-gray-500"
           >
             <i class="fas fa-user-slash text-4xl mb-4"></i>
             <p class="text-center">
-              {{ searchQuery ? 'Tidak ditemukan dosen yang sesuai.' : 'Belum ada dosen yang diinputkan.' }}
+              {{
+                searchQuery
+                  ? "Tidak ditemukan dosen yang sesuai."
+                  : "Belum ada dosen yang diinputkan."
+              }}
             </p>
           </div>
 
           <!-- Dosen List -->
-          <div v-else class="overflow-y-auto pr-2" style="height: 550px;">
+          <div v-else class="overflow-y-auto pr-2" style="height: 550px">
             <ul class="space-y-4">
-              <li 
-                v-for="(dosen, index) in filteredDosenList" 
-                :key="index" 
+              <li
+                v-for="(dosen, index) in filteredDosenList"
+                :key="index"
                 class="group bg-gray-50 p-6 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
               >
                 <div class="flex justify-between items-start">
                   <div>
-                    <h3 class="font-bold text-lg text-gray-800 mb-1">{{ dosen.dosen_nama }}</h3>
-                    <p class="text-blue-600 font-medium mb-2">{{ dosen.dosen_kode }}</p>
-                    <span 
+                    <h3 class="font-bold text-lg text-gray-800 mb-1">
+                      {{ dosen.dosen_nama }}
+                    </h3>
+                    <p class="text-blue-600 font-medium mb-2">
+                      {{ dosen.dosen_kode }}
+                    </p>
+                    <span
                       :class="{
                         'px-3 py-1 rounded-lg text-sm font-medium inline-flex items-center gap-2': true,
-                        'bg-green-100 text-green-600': dosen.dosen_prioritas === 'PRIORITAS',
-                        'bg-red-100 text-red-600': dosen.dosen_prioritas === 'NON_PRIORITAS'
+                        'bg-green-100 text-green-600':
+                          dosen.dosen_prioritas <= 5,
+                        'bg-red-100 text-red-600': dosen.dosen_prioritas > 5,
                       }"
                     >
-                      <i :class="{
-                        'fas': true,
-                        'fa-star': dosen.dosen_prioritas === 'PRIORITAS',
-                        'fa-exclamation-circle': dosen.dosen_prioritas === 'NON_PRIORITAS'
-                      }"></i>
-                      {{ dosen.dosen_prioritas === 'PRIORITAS' ? 'Prioritas' : 'Non Prioritas' }}
+                      <i
+                        :class="{
+                          fas: true,
+                          'fa-star': dosen.dosen_prioritas <= 5,
+                          'fa-exclamation-circle': dosen.dosen_prioritas > 5,
+                        }"
+                      ></i>
+                      Prioritas: {{ dosen.dosen_prioritas }}
                     </span>
+
                     <div class="mt-4 space-y-2">
-                      <p class="text-sm font-semibold text-gray-600 flex items-center gap-2">
+                      <p
+                        class="text-sm font-semibold text-gray-600 flex items-center gap-2"
+                      >
                         <i class="fas fa-calendar-alt text-blue-500"></i>
                         Ketersediaan:
                       </p>
                       <ul class="space-y-2">
                         <li
-                          v-for="(result, sesiIndex) in getGroupedSessions(dosen.jadwal_dosen)"
+                          v-for="(result, sesiIndex) in getGroupedSessions(
+                            dosen.jadwal_dosen
+                          )"
                           :key="sesiIndex"
                           class="text-sm text-gray-600"
                         >
                           <div class="flex items-center gap-2">
-                            <span class="inline-flex items-center justify-center w-20 px-2 py-1 bg-blue-50 text-blue-600 rounded-lg font-medium">
+                            <span
+                              class="inline-flex items-center justify-center w-20 px-2 py-1 bg-blue-50 text-blue-600 rounded-lg font-medium"
+                            >
                               Sesi {{ result.sesi }}
                             </span>
                             <div class="flex flex-wrap gap-2">
-                              <span 
-                                v-for="hari in result.hari" 
+                              <span
+                                v-for="hari in result.hari"
                                 :key="hari"
                                 class="px-3 py-1 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg font-medium shadow-sm hover:shadow-md transition-all duration-300"
                               >
@@ -224,7 +291,9 @@
                           </div>
                         </li>
                         <li
-                          v-if="getGroupedSessions(dosen.jadwal_dosen).length === 0"
+                          v-if="
+                            getGroupedSessions(dosen.jadwal_dosen).length === 0
+                          "
                           class="text-sm italic text-gray-400 flex items-center gap-2"
                         >
                           <i class="fas fa-calendar-times text-gray-400"></i>
@@ -234,15 +303,15 @@
                     </div>
                   </div>
                   <div class="flex space-x-3">
-                    <button 
-                      @click="editDosen(index)" 
+                    <button
+                      @click="editDosen(index)"
                       class="p-2 text-gray-400 hover:text-blue-600 transition-colors duration-300"
                       title="Edit"
                     >
                       <i class="fas fa-pencil-alt"></i>
                     </button>
-                    <button 
-                      @click="deleteDosen(index)" 
+                    <button
+                      @click="deleteDosen(index)"
                       class="p-2 text-gray-400 hover:text-red-600 transition-colors duration-300"
                       title="Hapus"
                     >
@@ -258,10 +327,17 @@
     </div>
 
     <!-- Popup Konfirmasi Delete -->
-    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+    <div
+      v-if="showDeleteConfirm"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300"
+      >
         <div class="text-center">
-          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div
+            class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"
+          >
             <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
           </div>
           <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Hapus</h3>
@@ -269,14 +345,14 @@
             Apakah Anda yakin ingin menghapus data dosen ini?
           </p>
           <div class="flex justify-center space-x-4">
-            <button 
-              @click="confirmDelete" 
+            <button
+              @click="confirmDelete"
               class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-300"
             >
               Ya, Hapus
             </button>
-            <button 
-              @click="showDeleteConfirm = false" 
+            <button
+              @click="showDeleteConfirm = false"
               class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
             >
               Batal
@@ -287,10 +363,17 @@
     </div>
 
     <!-- Popup Konfirmasi Edit -->
-    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+    <div
+      v-if="showEditConfirm"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300"
+      >
         <div class="text-center">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div
+            class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4"
+          >
             <i class="fas fa-pencil-alt text-2xl text-blue-600"></i>
           </div>
           <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Edit</h3>
@@ -298,14 +381,14 @@
             Apakah Anda yakin ingin mengedit data dosen ini?
           </p>
           <div class="flex justify-center space-x-4">
-            <button 
-              @click="confirmEdit" 
+            <button
+              @click="confirmEdit"
               class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-300"
             >
               Ya, Edit
             </button>
-            <button 
-              @click="showEditConfirm = false" 
+            <button
+              @click="showEditConfirm = false"
               class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
             >
               Batal
@@ -318,11 +401,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, onUnmounted } from 'vue';
-import axios from 'axios';
+import { ref, onMounted, computed, onUnmounted } from "vue";
+import axios from "axios";
 
-const hariList = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT'];
-const sesiList = ['SATU', 'DUA', 'TIGA'];
+const hariList = ["SENIN", "SELASA", "RABU", "KAMIS", "JUMAT"];
+const sesiList = ["SATU", "DUA", "TIGA"];
 
 const kode = ref("");
 const nama = ref("");
@@ -339,28 +422,29 @@ const selectedIndex = ref(null);
 
 // Add alert state
 const showAlert = ref(false);
-const alertMessage = ref('');
+const alertMessage = ref("");
 const showSuccess = ref(false);
-const successMessage = ref('');
+const successMessage = ref("");
 
 let pollingInterval = null;
 
 // Computed property for filtered dosen list
 const filteredDosenList = computed(() => {
   if (!searchQuery.value) return dosenList.value;
-  
+
   const query = searchQuery.value.toLowerCase();
-  return dosenList.value.filter(dosen => 
-    dosen.dosen_nama.toLowerCase().includes(query) ||
-    dosen.dosen_kode.toLowerCase().includes(query) ||
-    dosen.dosen_prioritas.toLowerCase().includes(query)
+  return dosenList.value.filter(
+    (dosen) =>
+      dosen.dosen_nama.toLowerCase().includes(query) ||
+      dosen.dosen_kode.toLowerCase().includes(query) ||
+      dosen.dosen_prioritas.toLowerCase().includes(query)
   );
 });
 
 // Fungsi untuk mendapatkan sesi yang difilter dan mengelompokkan hari berdasarkan sesi
 const getGroupedSessions = (jadwalDosen) => {
   if (!Array.isArray(jadwalDosen)) {
-    console.warn('Invalid jadwal_dosen format:', jadwalDosen);
+    console.warn("Invalid jadwal_dosen format:", jadwalDosen);
     return [];
   }
 
@@ -385,7 +469,7 @@ const formatKetersediaan = (ketersediaan) => {
         if (available) {
           return {
             dosen_sedia_hari: hariList[hariIndex],
-            dosen_sedia_sesi: sesiList[sesiIndex]
+            dosen_sedia_sesi: sesiList[sesiIndex],
           };
         }
         return null;
@@ -397,19 +481,19 @@ const formatKetersediaan = (ketersediaan) => {
 // Fetch Dosen Data from API
 const fetchDosen = async () => {
   try {
-    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    const token = JSON.parse(localStorage.getItem("user"))?.accessToken;
     if (!token) {
-      throw new Error('User is not authenticated');
+      throw new Error("User is not authenticated");
     }
 
-    const response = await axios.get('http://10.15.41.68:3000/dosen', {
+    const response = await axios.get("http://localhost:5000/dosen", {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     dosenList.value = response.data;
   } catch (error) {
-    console.error('Gagal mengambil data dosen', error);
+    console.error("Gagal mengambil data dosen", error);
   }
 };
 
@@ -428,13 +512,13 @@ const submitDosen = async () => {
     // Trim kode
     kode.value = kode.value.trim();
     if (!kode.value) {
-      alertMessage.value = 'Kode dosen tidak boleh kosong atau hanya spasi.';
+      alertMessage.value = "Kode dosen tidak boleh kosong atau hanya spasi.";
       showAlert.value = true;
       return;
     }
-    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    const token = JSON.parse(localStorage.getItem("user"))?.accessToken;
     if (!token) {
-      throw new Error('User is not authenticated');
+      throw new Error("User is not authenticated");
     }
 
     // Format kesediaan
@@ -444,7 +528,7 @@ const submitDosen = async () => {
         if (available) {
           kesediaan.push({
             hari: hariList[hariIndex],
-            sesi: sesiList[sesiIndex]
+            sesi: sesiList[sesiIndex],
           });
         }
       });
@@ -456,53 +540,57 @@ const submitDosen = async () => {
         dosen_kode: kode.value,
         dosen_nama: nama.value,
         dosen_prioritas: prioritas.value,
-        kesediaan: kesediaan
+        kesediaan: kesediaan,
       };
 
       const dosenKode = dosenList.value[editIndex.value].dosen_kode;
-      await axios.patch(`http://10.15.41.68:3000/dosen/${dosenKode}`, updateData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-      });
+      await axios.patch(
+        `http://localhost:5000/dosen/${dosenKode}`,
+        updateData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       // After update, fetch the list again to ensure consistency
       await fetchDosen();
       resetForm();
       editIndex.value = null;
       showEditConfirm.value = false;
-      showSuccessAlert('Data dosen berhasil diperbarui!');
+      showSuccessAlert("Data dosen berhasil diperbarui!");
     } else {
       // Add New Dosen
       const newDosen = {
         dosen_kode: kode.value,
         dosen_nama: nama.value,
         dosen_prioritas: prioritas.value,
-        kesediaan: kesediaan
+        kesediaan: kesediaan,
       };
 
-      await axios.post('http://10.15.41.68:3000/dosen', newDosen, {
+      await axios.post("http://localhost:5000/dosen", newDosen, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
       // Fetch updated dosen list
       await fetchDosen();
       resetForm();
-      showSuccessAlert('Data dosen berhasil ditambahkan!');
+      showSuccessAlert("Data dosen berhasil ditambahkan!");
     }
   } catch (error) {
-    console.error('Gagal mengirim data dosen', error);
-    let msg = 'Gagal mengupdate data: ';
+    console.error("Gagal mengirim data dosen", error);
+    let msg = "Gagal mengupdate data: ";
     if (error.response && error.response.data && error.response.data.error) {
       msg += error.response.data.error;
     } else if (error.message) {
       msg += error.message;
     } else {
-      msg += 'Terjadi kesalahan.';
+      msg += "Terjadi kesalahan.";
     }
     alertMessage.value = msg;
     showAlert.value = true;
@@ -512,7 +600,9 @@ const submitDosen = async () => {
 // Update edit function to show confirmation
 const editDosen = (index) => {
   const dosen = filteredDosenList.value[index];
-  selectedIndex.value = dosenList.value.findIndex(d => d.dosen_kode === dosen.dosen_kode);
+  selectedIndex.value = dosenList.value.findIndex(
+    (d) => d.dosen_kode === dosen.dosen_kode
+  );
   showEditConfirm.value = true;
 };
 
@@ -523,13 +613,15 @@ const confirmEdit = () => {
   kode.value = dosen.dosen_kode;
   nama.value = dosen.dosen_nama;
   prioritas.value = dosen.dosen_prioritas;
-  
+
   // Reset ketersediaan array
-  ketersediaan.value = Array(sesiList.length).fill().map(() => Array(hariList.length).fill(false));
-  
+  ketersediaan.value = Array(sesiList.length)
+    .fill()
+    .map(() => Array(hariList.length).fill(false));
+
   // Set ketersediaan based on jadwal_dosen
   if (dosen.jadwal_dosen && Array.isArray(dosen.jadwal_dosen)) {
-    dosen.jadwal_dosen.forEach(jadwal => {
+    dosen.jadwal_dosen.forEach((jadwal) => {
       const sesiIndex = sesiList.indexOf(jadwal.dosen_sedia_sesi);
       const hariIndex = hariList.indexOf(jadwal.dosen_sedia_hari);
       if (sesiIndex >= 0 && hariIndex >= 0) {
@@ -537,7 +629,7 @@ const confirmEdit = () => {
       }
     });
   }
-  
+
   editIndex.value = index;
   showEditConfirm.value = false;
 };
@@ -545,37 +637,39 @@ const confirmEdit = () => {
 // Update delete function to show confirmation
 const deleteDosen = (index) => {
   const dosen = filteredDosenList.value[index];
-  selectedIndex.value = dosenList.value.findIndex(d => d.dosen_kode === dosen.dosen_kode);
+  selectedIndex.value = dosenList.value.findIndex(
+    (d) => d.dosen_kode === dosen.dosen_kode
+  );
   showDeleteConfirm.value = true;
 };
 
 // Confirm delete function
 const confirmDelete = async () => {
   try {
-    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    const token = JSON.parse(localStorage.getItem("user"))?.accessToken;
     if (!token) {
-      throw new Error('User is not authenticated');
+      throw new Error("User is not authenticated");
     }
 
     const dosen = dosenList.value[selectedIndex.value];
-    await axios.delete(`http://10.15.41.68:3000/dosen/${dosen.dosen_kode}`, {
+    await axios.delete(`http://localhost:5000/dosen/${dosen.dosen_kode}`, {
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     dosenList.value.splice(selectedIndex.value, 1);
     showDeleteConfirm.value = false;
-    showSuccessAlert('Data dosen berhasil dihapus!');
+    showSuccessAlert("Data dosen berhasil dihapus!");
   } catch (error) {
-    console.error('Error deleting dosen:', error);
-    let msg = 'Gagal menghapus data dosen: ';
+    console.error("Error deleting dosen:", error);
+    let msg = "Gagal menghapus data dosen: ";
     if (error.response && error.response.data && error.response.data.error) {
       msg += error.response.data.error;
     } else if (error.message) {
       msg += error.message;
     } else {
-      msg += 'Terjadi kesalahan.';
+      msg += "Terjadi kesalahan.";
     }
     alertMessage.value = msg;
     showAlert.value = true;
@@ -594,7 +688,9 @@ const resetForm = () => {
   kode.value = "";
   nama.value = "";
   prioritas.value = "";
-  ketersediaan.value = Array(sesiList.length).fill().map(() => Array(hariList.length).fill(false));
+  ketersediaan.value = Array(sesiList.length)
+    .fill()
+    .map(() => Array(hariList.length).fill(false));
 };
 
 // Fetch dosen data when component is mounted
