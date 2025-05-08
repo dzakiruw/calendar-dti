@@ -219,6 +219,31 @@
           </NuxtLink>
         </div>
       </div>
+
+      <!-- Users Management -->
+      <div class="mb-4">
+        <NuxtLink to="/users" 
+          class="flex items-center px-4 py-3 rounded-xl transition-all duration-300 group"
+          :class="[
+            route.path === '/users' 
+              ? 'bg-indigo-100 text-indigo-700 border-l-4 border-indigo-600' 
+              : 'text-gray-600 hover:bg-blue-50'
+          ]"
+          @click="handleClick"
+        >
+          <div class="flex items-center">
+            <div class="p-2 rounded-lg transition-colors duration-300"
+                 :class="[
+                   route.path === '/users'
+                     ? 'bg-indigo-200'
+                     : 'bg-blue-100 group-hover:bg-blue-200'
+                 ]">
+              <i class="fas fa-users" :class="route.path === '/users' ? 'text-indigo-700' : 'text-blue-600'"></i>
+            </div>
+            <span class="ml-3 font-medium" :class="route.path === '/users' ? 'text-indigo-700' : 'group-hover:text-blue-600'">Manajemen Pengguna</span>
+          </div>
+        </NuxtLink>
+      </div>
     </nav>
 
     <!-- Sidebar Footer -->
