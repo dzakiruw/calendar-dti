@@ -310,11 +310,24 @@ const handleSubmit = async () => {
       'Content-Type': 'application/json',
     };
 
+    // Prepare data for submission
+    const submitData = {
+      email: form.value.email,
+      name: form.value.name,
+      username: form.value.username,
+      role: form.value.role
+    };
+
+    // Only include password if it's not empty
+    if (form.value.password) {
+      submitData.password = form.value.password;
+    }
+
     if (isEditing.value) {
-      await axios.put(`http://10.15.41.68:3000/user/${editingId.value}`, form.value, { headers });
+      await axios.put(`http://10.15.41.68:3000/users/${editingId.value}`, submitData, { headers });
       showSuccessMessage('Pengguna berhasil diperbarui');
     } else {
-      await axios.post('http://10.15.41.68:3000/user', form.value, { headers });
+      await axios.post('http://10.15.41.68:3000/users', submitData, { headers });
       showSuccessMessage('Pengguna berhasil ditambahkan');
     }
     
@@ -330,7 +343,13 @@ const handleSubmit = async () => {
 const editUser = (user) => {
   isEditing.value = true;
   editingId.value = user.id;
-  form.value = { ...user };
+  form.value = {
+    email: user.email,
+    name: user.name,
+    username: user.username,
+    role: user.role,
+    password: '' // Reset password field
+  };
 }
 
 // Cancel editing
