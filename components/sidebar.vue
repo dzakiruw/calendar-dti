@@ -1,12 +1,12 @@
 <template>
   <div v-if="isAuthenticated" class="w-full h-full bg-white text-gray-900 flex flex-col">
     <!-- Sidebar Header -->
-    <div class="flex items-center px-6 py-6 bg-gradient-to-r from-blue-600 to-indigo-600">
+    <div class="flex flex-col px-6 py-6 bg-gradient-to-r from-blue-600 to-indigo-600">
       <div class="flex items-center space-x-3">
         <img :src="profilePic" alt="DTI Logo" class="w-10 h-10 rounded-lg shadow-lg transform hover:scale-110 transition-transform duration-300" />
-        <div>
-          <h1 class="text-lg font-bold text-white">Perkuliahan DTI</h1>
-          <p class="text-xs text-blue-100">Sistem Penjadwalan</p>
+        <div class="flex flex-col">
+          <h1 class="text-lg font-bold text-white leading-tight">Perkuliahan</h1>
+          <span class="text-sm text-blue-100 font-medium mt-1">{{ userName }}</span>
         </div>
       </div>
     </div>
@@ -283,6 +283,7 @@
 <script setup>
 import { ref, onMounted, inject, computed } from "vue";
 import { useRouter, useRoute } from 'vue-router'
+import axios from 'axios'
 
 const dropdowns = ref({
   kalender: false,
@@ -303,18 +304,24 @@ const updateProfilePic = () => {
   profilePic.value = localStorage.getItem('profilePic') || '/avatar.svg';
 };
 
-// Computed properties for active states
-const isKalenderActive = computed(() => {
-  return ['/mata-kuliah', '/dosen', '/ruang-kelas', '/jadwal-hindari'].includes(route.path);
-});
+// User name from API
+const userName = ref('');
 
-const isJadwalActive = computed(() => {
-  return ['/buat-jadwal', '/pilih-jadwal'].includes(route.path);
-});
-
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('storage', updateProfilePic);
   updateProfilePic();
+  // Fetch user name from API
+  try {
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (token) {
+      const res = await axios.get('http://10.15.41.68:3000/user/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      userName.value = res.data?.name || res.data?.username || '';
+    }
+  } catch (e) {
+    userName.value = user?.username || '';
+  }
   const storedDropdowns = JSON.parse(localStorage.getItem('dropdowns'));
   if (storedDropdowns) {
     dropdowns.value = storedDropdowns;
@@ -325,6 +332,15 @@ onMounted(() => {
   if (isJadwalActive.value) {
     dropdowns.value.jadwal = true;
   }
+});
+
+// Computed properties for active states
+const isKalenderActive = computed(() => {
+  return ['/mata-kuliah', '/dosen', '/ruang-kelas', '/jadwal-hindari'].includes(route.path);
+});
+
+const isJadwalActive = computed(() => {
+  return ['/buat-jadwal', '/pilih-jadwal'].includes(route.path);
 });
 
 // Handle link clicks on mobile

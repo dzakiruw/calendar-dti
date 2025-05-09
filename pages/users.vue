@@ -332,7 +332,7 @@ const handleSubmit = async () => {
     }
 
     if (isEditing.value) {
-      await axios.put(`http://10.15.41.68:3000/user/${editingId.value}`, submitData, { headers });
+      await axios.patch(`http://10.15.41.68:3000/user/${editingId.value}`, submitData, { headers });
       showSuccessMessage('Pengguna berhasil diperbarui');
     } else {
       await axios.post('http://10.15.41.68:3000/user', submitData, { headers });
