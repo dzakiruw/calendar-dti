@@ -241,7 +241,7 @@
       >
         <i class="fas fa-calendar-alt mr-3"></i> Hasil Jadwal
       </h2>
-      <div class="flex justify-end mb-4">
+      <div class="flex flex-col sm:flex-row justify-end mb-4 gap-2">
         <button
           @click="exportExcel"
           class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow-lg"
@@ -249,11 +249,9 @@
           <i class="fas fa-file-excel mr-2"></i> Export ke Excel
         </button>
       </div>
-      <div
-        class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
-      >
+      <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
-          <table class="w-full">
+          <table class="min-w-[700px] w-full">
             <thead>
               <tr class="bg-gray-50 border-b border-gray-100">
                 <th
@@ -292,20 +290,20 @@
               <tr
                 v-for="(row, index) in jadwalGenerated"
                 :key="index"
-                class="hover:bg-blue-50 transition-colors duration-200"
+                class="group hover:bg-blue-50 transition-colors duration-200"
               >
                 <td
-                  class="px-6 py-4 text-sm text-gray-700 sticky left-0 bg-white"
+                  class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50"
                 >
                   {{ row.hari }}
                 </td>
                 <td
-                  class="px-6 py-4 text-sm text-gray-700 sticky left-[140px] bg-white"
+                  class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50"
                 >
                   {{ row.sesi }}
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-700">{{ row.kelas }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700">
+                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">{{ row.kelas }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">
                   <span
                     v-for="(sem, idx) in row.semester || row.mk_kelas_sem || []"
                     :key="idx"
@@ -314,10 +312,10 @@
                     Semester {{ sem }}
                   </span>
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-700">
+                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">
                   {{ getTeamTeachingLecturers(row) }}
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-700">
+                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">
                   {{ row.ruangan }}
                 </td>
               </tr>

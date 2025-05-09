@@ -36,7 +36,7 @@
     </div>
 
     <!-- Dosen Form and List Container -->
-    <div class="max-w-7xl mx-auto grid grid-cols-2 gap-8">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
       <!-- Dosen Form -->
       <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
         <form @submit.prevent="submitDosen" class="space-y-6">
@@ -85,23 +85,23 @@
             <!-- Ketersediaan Dosen -->
             <div>
               <label class="block text-gray-700 font-semibold mb-4">Ketersediaan Dosen (Sesi)</label>
-              <div class="overflow-hidden rounded-xl border border-gray-200">
-                <table class="w-full text-sm">
+              <div class="overflow-x-auto rounded-xl border border-gray-200">
+                <table class="min-w-[600px] w-full text-sm">
                   <thead class="bg-gradient-to-r from-blue-50 to-indigo-50">
                     <tr>
-                      <th class="border-b border-r border-gray-200 px-4 py-3">Sesi / Hari</th>
-                      <th v-for="hari in hariList" :key="hari" class="border-b border-r last:border-r-0 border-gray-200 px-4 py-3">
+                      <th class="sticky left-0 z-10 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-r border-gray-200 px-2 py-2 md:px-4 md:py-3 text-xs md:text-sm">Sesi / Hari</th>
+                      <th v-for="hari in hariList" :key="hari" class="border-b border-r last:border-r-0 border-gray-200 px-2 py-2 md:px-4 md:py-3 text-xs md:text-sm">
                         {{ hari }}
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(row, sesiIndex) in sesiList" :key="sesiIndex">
-                      <td class="border-b border-r border-gray-200 px-4 py-3 font-semibold bg-gradient-to-r from-blue-50 to-indigo-50">
+                      <td class="sticky left-0 z-10 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-r border-gray-200 px-2 py-2 md:px-4 md:py-3 font-semibold text-xs md:text-sm">
                         Sesi {{ sesiIndex + 1 }}
                       </td>
                       <td v-for="(col, hariIndex) in hariList" :key="hariIndex" 
-                          class="border-b border-r last:border-r-0 last-row:border-b-0 border-gray-200 px-4 py-3 text-center">
+                          class="border-b border-r last:border-r-0 last-row:border-b-0 border-gray-200 px-2 py-2 md:px-4 md:py-3 text-center">
                         <input 
                           type="checkbox" 
                           v-model="ketersediaan[sesiIndex][hariIndex]" 
