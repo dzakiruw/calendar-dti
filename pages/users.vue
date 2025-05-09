@@ -239,7 +239,9 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const users = ref([])
 const isEditing = ref(false)
 const editingId = ref(null)
@@ -272,8 +274,14 @@ const filteredUsers = computed(() => {
   );
 });
 
-// Fetch users on component mount
+// Check user role on component mount
 onMounted(async () => {
+  const user = JSON.parse(localStorage.getItem('user'))
+  if (!user || user.role !== 'ADMINISTRATOR') {
+    showAlertMessage('Akses ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.')
+    router.push('/')
+    return
+  }
   await fetchUsers()
 })
 
@@ -324,10 +332,10 @@ const handleSubmit = async () => {
     }
 
     if (isEditing.value) {
-      await axios.put(`http://10.15.41.68:3000/users/${editingId.value}`, submitData, { headers });
+      await axios.put(`http://10.15.41.68:3000/user/${editingId.value}`, submitData, { headers });
       showSuccessMessage('Pengguna berhasil diperbarui');
     } else {
-      await axios.post('http://10.15.41.68:3000/users', submitData, { headers });
+      await axios.post('http://10.15.41.68:3000/user', submitData, { headers });
       showSuccessMessage('Pengguna berhasil ditambahkan');
     }
     

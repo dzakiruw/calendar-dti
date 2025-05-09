@@ -3,7 +3,7 @@
     <!-- Sidebar Header -->
     <div class="flex items-center px-6 py-6 bg-gradient-to-r from-blue-600 to-indigo-600">
       <div class="flex items-center space-x-3">
-        <img src="/logo-dti.png" alt="DTI Logo" class="w-10 h-10 rounded-lg shadow-lg transform hover:scale-110 transition-transform duration-300" />
+        <img :src="profilePic" alt="DTI Logo" class="w-10 h-10 rounded-lg shadow-lg transform hover:scale-110 transition-transform duration-300" />
         <div>
           <h1 class="text-lg font-bold text-white">Perkuliahan DTI</h1>
           <p class="text-xs text-blue-100">Sistem Penjadwalan</p>
@@ -221,7 +221,7 @@
       </div>
 
       <!-- Users Management -->
-      <div class="mb-4">
+      <div class="mb-4" v-if="user?.role === 'ADMINISTRATOR'">
         <NuxtLink to="/users" 
           class="flex items-center px-4 py-3 rounded-xl transition-all duration-300 group"
           :class="[
@@ -296,6 +296,13 @@ const emit = defineEmits(['closeSidebar']);
 // Inject auth state from layout
 const { user, isAuthenticated, updateAuthState } = inject('authState');
 
+// Profile picture logic
+const profilePic = ref(localStorage.getItem('profilePic') || '/avatar.svg');
+
+const updateProfilePic = () => {
+  profilePic.value = localStorage.getItem('profilePic') || '/avatar.svg';
+};
+
 // Computed properties for active states
 const isKalenderActive = computed(() => {
   return ['/mata-kuliah', '/dosen', '/ruang-kelas', '/jadwal-hindari'].includes(route.path);
@@ -305,14 +312,13 @@ const isJadwalActive = computed(() => {
   return ['/buat-jadwal', '/pilih-jadwal'].includes(route.path);
 });
 
-// Load dropdown states from localStorage and set based on active route
 onMounted(() => {
+  window.addEventListener('storage', updateProfilePic);
+  updateProfilePic();
   const storedDropdowns = JSON.parse(localStorage.getItem('dropdowns'));
   if (storedDropdowns) {
     dropdowns.value = storedDropdowns;
   }
-  
-  // Auto-open dropdowns based on active route
   if (isKalenderActive.value) {
     dropdowns.value.kalender = true;
   }

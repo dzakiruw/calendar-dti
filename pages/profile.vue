@@ -1,5 +1,30 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
+    <!-- Success Notification -->
+    <div v-if="showSuccess" class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50">
+      <div class="flex items-center">
+        <div class="py-1">
+          <i class="fas fa-check-circle text-xl mr-3"></i>
+        </div>
+        <div>
+          <p class="font-semibold">{{ successMessage }}</p>
+        </div>
+        <button @click="showSuccess = false" class="ml-4 text-green-700 hover:text-green-900">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Alert Confirmation Popup -->
+    <div v-if="showConfirmPopup" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
+      <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300">
+        <div class="mb-4 text-blue-600 text-2xl"><i class="fas fa-question-circle"></i></div>
+        <div class="mb-4 text-gray-800 font-semibold">Apakah Anda yakin ingin mengganti password?</div>
+        <div class="flex justify-center gap-4">
+          <button @click="onConfirmChangePassword" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">Ya</button>
+          <button @click="showConfirmPopup = false" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-300">Batal</button>
+        </div>
+      </div>
+    </div>
     <!-- Profile Card -->
     <div class="max-w-2xl mx-auto">
       <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -53,6 +78,27 @@
               <i class="fas fa-sign-out-alt mr-2"></i>
               Logout
             </button>
+            <!-- Change Password Confirmation Button -->
+            <button v-if="!showChangePasswordForm" @click="showConfirmPopup = true" class="mt-8 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Ubah Password</button>
+            <!-- Change Password Form -->
+            <form v-if="showChangePasswordForm" @submit.prevent="handleChangePassword" class="mt-8 max-w-lg w-full mx-auto text-left">
+              <h2 class="text-lg font-semibold mb-4 text-gray-800">Ubah Password</h2>
+              <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Password Lama</label>
+                <input v-model="oldPassword" type="password" required class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Masukkan password lama" />
+              </div>
+              <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Password Baru</label>
+                <input v-model="newPassword" type="password" required class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Masukkan password baru" />
+              </div>
+              <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Konfirmasi Password Baru</label>
+                <input v-model="confirmPassword" type="password" required class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Konfirmasi password baru" />
+              </div>
+              <div v-if="passwordError" class="mb-4 text-red-600">{{ passwordError }}</div>
+              <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Ubah Password</button>
+              <div v-if="passwordSuccess" class="mt-4 text-green-600">{{ passwordSuccess }}</div>
+            </form>
           </div>
         </div>
       </div>
@@ -63,6 +109,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const router = useRouter();
 const userData = ref(null);
@@ -96,6 +143,8 @@ const handleFileUpload = (event) => {
     reader.onload = (e) => {
       profilePicture.value = e.target.result;
       localStorage.setItem('profilePic', e.target.result);
+      // Trigger storage event so sidebar updates in real time
+      window.dispatchEvent(new Event('storage'));
     };
     reader.readAsDataURL(file);
   }
@@ -126,6 +175,63 @@ const updateAuthState = (user) => {
   // Also trigger storage event for components that listen to storage changes
   window.dispatchEvent(new Event('storage'));
 };
+
+// Change password state
+const oldPassword = ref('');
+const newPassword = ref('');
+const confirmPassword = ref('');
+const passwordError = ref('');
+const passwordSuccess = ref('');
+const showChangePasswordForm = ref(false);
+const showConfirmPopup = ref(false);
+const showSuccess = ref(false);
+const successMessage = ref('');
+
+const onConfirmChangePassword = () => {
+  showChangePasswordForm.value = true;
+  showConfirmPopup.value = false;
+};
+
+const handleChangePassword = async () => {
+  passwordError.value = '';
+  passwordSuccess.value = '';
+  if (newPassword.value !== confirmPassword.value) {
+    passwordError.value = 'Password baru dan konfirmasi tidak cocok.';
+    return;
+  }
+  if (newPassword.value.length < 6) {
+    passwordError.value = 'Password baru minimal 6 karakter.';
+    return;
+  }
+  try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = user?.accessToken;
+    if (!token) throw new Error('User not authenticated');
+    await axios.patch('http://10.15.41.68:3000/user/me', {
+      oldPassword: oldPassword.value,
+      newPassword: newPassword.value
+    }, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    // Reset form state and show notification
+    passwordSuccess.value = '';
+    oldPassword.value = '';
+    newPassword.value = '';
+    confirmPassword.value = '';
+    showChangePasswordForm.value = false;
+    showSuccessMessage('Password berhasil diubah!');
+  } catch (err) {
+    passwordError.value = err.response?.data?.message || 'Gagal mengubah password.';
+  }
+};
+
+function showSuccessMessage(msg) {
+  successMessage.value = msg;
+  showSuccess.value = true;
+  setTimeout(() => {
+    showSuccess.value = false;
+  }, 3000);
+}
 </script>
 
 <style scoped>
