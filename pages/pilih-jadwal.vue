@@ -2,6 +2,16 @@
   <div
     class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8"
   >
+    <!-- Alert Popup -->
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
+      <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300">
+        <div class="mb-4 text-red-600 text-2xl"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="mb-4 text-gray-800 font-semibold">{{ alertMessage }}</div>
+        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+          Tutup
+        </button>
+      </div>
+    </div>
     <div
       v-if="showSuccess"
       class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50"
@@ -53,7 +63,7 @@
           <i class="fas fa-book mr-3"></i> Mata Kuliah
         </h2>
         <div class="h-[200px] overflow-y-auto pr-2">
-          <ul class="space-y-3">
+          <ul v-if="mataKuliahList.length" class="space-y-3">
             <li
               v-for="mk in mataKuliahList"
               :key="mk.matkul_kode"
@@ -63,6 +73,10 @@
               <p class="text-sm text-gray-600">{{ mk.matkul_kode }}</p>
             </li>
           </ul>
+          <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
+            <i class="fas fa-book-open text-3xl mb-2"></i>
+            <p class="text-center">Belum ada data mata kuliah.</p>
+          </div>
         </div>
       </div>
 
@@ -76,7 +90,7 @@
           <i class="fas fa-user-tie mr-3"></i> Dosen
         </h2>
         <div class="h-[200px] overflow-y-auto pr-2">
-          <ul class="space-y-3">
+          <ul v-if="dosenList.length" class="space-y-3">
             <li
               v-for="dosen in dosenList"
               :key="dosen.dosen_kode"
@@ -84,9 +98,7 @@
             >
               <p class="font-semibold text-gray-800">{{ dosen.dosen_nama }}</p>
               <div class="flex items-center gap-2 mt-1">
-                <span class="text-sm text-gray-600">{{
-                  dosen.dosen_kode
-                }}</span>
+                <span class="text-sm text-gray-600">{{ dosen.dosen_kode }}</span>
                 <span
                   :class="{
                     'px-2 py-1 rounded-lg text-xs font-medium': true,
@@ -105,6 +117,10 @@
               </div>
             </li>
           </ul>
+          <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
+            <i class="fas fa-user-slash text-3xl mb-2"></i>
+            <p class="text-center">Belum ada data dosen.</p>
+          </div>
         </div>
       </div>
 
@@ -118,7 +134,7 @@
           <i class="fas fa-chalkboard-teacher mr-3"></i> Ruang Kelas
         </h2>
         <div class="h-[200px] overflow-y-auto pr-2">
-          <ul class="space-y-3">
+          <ul v-if="ruangKelasList.length" class="space-y-3">
             <li
               v-for="ruang in ruangKelasList"
               :key="ruang.ruangan_kode"
@@ -134,6 +150,10 @@
               </span>
             </li>
           </ul>
+          <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
+            <i class="fas fa-chalkboard text-3xl mb-2"></i>
+            <p class="text-center">Belum ada data ruang kelas.</p>
+          </div>
         </div>
       </div>
 
@@ -147,7 +167,7 @@
           <i class="fas fa-calendar-times mr-3"></i> Jadwal Hindari
         </h2>
         <div class="h-[200px] overflow-y-auto pr-2">
-          <ul class="space-y-3">
+          <ul v-if="jadwalHindari.length" class="space-y-3">
             <li
               v-for="hindari in jadwalHindari"
               :key="hindari.id"
@@ -183,6 +203,10 @@
               </div>
             </li>
           </ul>
+          <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
+            <i class="fas fa-calendar-times text-3xl mb-2"></i>
+            <p class="text-center">Belum ada data jadwal hindari.</p>
+          </div>
         </div>
       </div>
 
@@ -213,11 +237,23 @@
               class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
             >
               <p class="font-semibold text-gray-800">
-                {{ match.kelas.nama_kelas }}
+                {{ match.kelas && match.kelas.nama_kelas ? match.kelas.nama_kelas : (match.mata_kuliah_kelas?.nama_kelas || '-') }}
               </p>
               <p class="text-sm text-gray-600 mt-1">
-                {{ match.dosen.dosen_nama }}
+                {{ match.dosen && match.dosen.dosen_nama ? match.dosen.dosen_nama : (match.dosen_nama || '-') }}
               </p>
+              <div class="flex flex-wrap gap-2 mt-2">
+                <span v-if="match.matkul_tipe" class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium">
+                  {{ match.matkul_tipe }}
+                </span>
+                <span 
+                  v-for="sem in getSemesterArray(match)" 
+                  :key="sem" 
+                  class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium"
+                >
+                  Semester {{ sem }}
+                </span>
+              </div>
             </li>
           </ul>
         </div>
@@ -254,73 +290,68 @@
           <table class="min-w-[700px] w-full">
             <thead>
               <tr class="bg-gray-50 border-b border-gray-100">
-                <th
-                  class="px-6 py-4 text-left text-sm font-semibold text-gray-700 sticky left-0 bg-gray-50"
-                >
-                  Hari
-                </th>
-                <th
-                  class="px-6 py-4 text-left text-sm font-semibold text-gray-700 sticky left-[140px] bg-gray-50"
-                >
-                  Sesi
-                </th>
-                <th
-                  class="px-6 py-4 text-left text-sm font-semibold text-gray-700"
-                >
-                  Kelas
-                </th>
-                <th
-                  class="px-6 py-4 text-left text-sm font-semibold text-gray-700"
-                >
-                  Semester
-                </th>
-                <th
-                  class="px-6 py-4 text-left text-sm font-semibold text-gray-700"
-                >
-                  Dosen
-                </th>
-                <th
-                  class="px-6 py-4 text-left text-sm font-semibold text-gray-700"
-                >
-                  Ruangan
-                </th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 sticky left-0 bg-gray-50">Hari</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 sticky left-[140px] bg-gray-50">Sesi</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Kelas</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Semester</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Dosen</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Ruangan</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
               <tr
-                v-for="(row, index) in jadwalGenerated"
+                v-for="(row, index) in jadwalGenerated.filter(j => j.status !== 'unplaced')"
                 :key="index"
                 class="group hover:bg-blue-50 transition-colors duration-200"
               >
-                <td
-                  class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50"
-                >
-                  {{ row.hari }}
-                </td>
-                <td
-                  class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50"
-                >
-                  {{ row.sesi }}
-                </td>
+                <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50">{{ row.hari }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50">{{ row.sesi }}</td>
                 <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">{{ row.kelas }}</td>
                 <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">
-                  <span
-                    v-for="(sem, idx) in row.semester || row.mk_kelas_sem || []"
-                    :key="idx"
-                    class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1"
-                  >
+                  <span v-for="(sem, idx) in row.semester || row.mk_kelas_sem || []" :key="idx" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
                     Semester {{ sem }}
                   </span>
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">
-                  {{ getTeamTeachingLecturers(row) }}
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">
-                  {{ row.ruangan }}
-                </td>
+                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">{{ getTeamTeachingLecturers(row) }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">{{ row.ruangan }}</td>
               </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Unplaced Table -->
+      <div v-if="jadwalGenerated.some(j => j.status === 'unplaced')" class="mt-10">
+        <h3 class="text-xl font-bold text-red-600 mb-4 flex items-center">
+          <i class="fas fa-exclamation-triangle mr-2"></i> Jadwal Tidak Terjadwal (Unplaced)
+        </h3>
+        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="min-w-[600px] w-full">
+              <thead>
+                <tr class="bg-gray-50 border-b border-gray-100">
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Kelas</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Mata Kuliah</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Semester</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Dosen</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Alasan</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr v-for="(item, idx) in jadwalGenerated.filter(j => j.status === 'unplaced')" :key="idx">
+                  <td class="px-6 py-4 text-sm text-gray-700">{{ item.kelas || '-' }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-700">{{ item.mata_kuliah_kelas?.nama_kelas || '-' }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-700">
+                    <span v-for="(sem, sidx) in item.semester || item.mk_kelas_sem || []" :key="sidx" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
+                      Semester {{ sem }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-700">{{ getTeamTeachingLecturers(item) }}</td>
+                  <td class="px-6 py-4 text-sm text-red-600">Tidak ada slot tersedia</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -422,26 +453,40 @@ const fetchData = async () => {
 
 const fetchMatchingData = async () => {
   try {
-    const token = JSON.parse(localStorage.getItem("user"))?.accessToken;
-    if (!token) throw new Error("User is not authenticated");
+    const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
 
-    const response = await axios.get("http://10.15.41.68:3000/mk_dosen", {
-      headers: { Authorization: `Bearer ${token}` },
+    const response = await axios.get('http://10.15.41.68:3000/mk_dosen', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
     });
+
+    // Debug log to check data structure
+    console.log('Matching Data Response:', response.data);
 
     // Ensure the response data is properly handled
     if (response.data && Array.isArray(response.data)) {
-      matchingList.value = response.data.map((match) => ({
-        id_mk_kelas_dosen: match.id_mk_kelas_dosen,
-        kelas: match.mata_kuliah_kelas,
-        dosen: match.dosen,
-      }));
+      matchingList.value = response.data.map(match => {
+        // Debug log for each match
+        console.log('Processing match:', match);
+        return {
+          id_mk_kelas_dosen: match.id_mk_kelas_dosen,
+          mata_kuliah_kelas: match.mata_kuliah_kelas,
+          dosen: match.dosen,
+          mk_kelas_sem: match.mk_kelas_sem,
+          matkul_tipe: match.matkul_tipe
+        };
+      });
     } else {
       matchingList.value = [];
-      console.error("Invalid matching data format received.");
+      console.error('Invalid matching data format received.');
     }
   } catch (error) {
-    console.error("Gagal mengambil data matching", error);
+    console.error('Gagal mengambil data matching', error);
   }
 };
 
@@ -463,6 +508,13 @@ const getKelasLabel = (id_mk_kelas) => {
   }
   return "-";
 };
+
+// Helper untuk ambil array semester dari mk_kelas_sem
+function getSemesters(match) {
+  if (!match || !match.mk_kelas_sem) return [];
+  if (Array.isArray(match.mk_kelas_sem)) return match.mk_kelas_sem.filter(Boolean);
+  return match.mk_kelas_sem ? [match.mk_kelas_sem] : [];
+}
 
 // Fungsi backtracking untuk penjadwalan
 function scheduleWithBacktracking(
@@ -785,8 +837,28 @@ const getTeamTeachingLecturers = (item) => {
   return uniqueDosen;
 };
 
+// Add computed property for semester handling
+const getSemesterArray = (match) => {
+  if (!match) return [];
+  if (Array.isArray(match.mk_kelas_sem)) {
+    return match.mk_kelas_sem.filter(Boolean);
+  }
+  return match.mk_kelas_sem ? [match.mk_kelas_sem] : [];
+};
+
 // Ganti generateJadwal agar menggunakan iterative improvement
 const generateJadwal = async () => {
+  // Cek data yang kosong sebelum generate
+  const emptyFields = [];
+  if (!dosenList.value.length) emptyFields.push('dosen');
+  if (!mataKuliahList.value.length) emptyFields.push('mata kuliah');
+  if (!ruangKelasList.value.length) emptyFields.push('ruang kelas');
+  if (!matchingList.value.length) emptyFields.push('matching');
+  if (emptyFields.length) {
+    alertMessage.value = `Tidak dapat generate jadwal karena: ${emptyFields.map(f => `daftar ${f} kosong`).join(', ')}.`;
+    showAlert.value = true;
+    return;
+  }
   try {
     isGenerating.value = true;
     const token = JSON.parse(localStorage.getItem("user"))?.accessToken;
@@ -981,9 +1053,22 @@ const exportExcel = () => {
   worksheet["!cols"] = colWidths;
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Jadwal");
+  
+  // Generate Excel file with proper MIME type
   const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-  const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-  saveAs(blob, "jadwal.xlsx");
+  const blob = new Blob([excelBuffer], { 
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
+  });
+  
+  // Create a temporary URL and trigger download
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `jadwal_${new Date().toISOString().split('T')[0]}.xlsx`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
 };
 
 // Add this helper function to get classes for a specific time slot

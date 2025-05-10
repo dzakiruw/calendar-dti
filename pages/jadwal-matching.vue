@@ -78,6 +78,10 @@
           <!-- Semester Checkbox -->
           <div>
             <label class="block text-gray-700 font-semibold mb-3">Pilih Semester</label>
+            <div class="mb-2 flex gap-2">
+              <button type="button" @click="selectAllSemestersFn" class="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold shadow hover:bg-blue-700 transition">Select All</button>
+              <button type="button" @click="removeAllSemestersFn" class="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg text-xs font-semibold shadow hover:bg-gray-400 transition">Remove All</button>
+            </div>
             <div class="grid grid-cols-2 gap-3">
               <label v-for="semester in 8" :key="semester" class="inline-flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors duration-300 cursor-pointer">
                 <input 
@@ -139,7 +143,7 @@
         <!-- Empty State -->
         <div 
           v-if="filteredMatchingList.length === 0" 
-          class="h-[460px] flex flex-col items-center justify-center text-gray-500"
+          class="flex flex-col items-center justify-center py-12 text-gray-500"
         >
           <i class="fas fa-calendar-times text-4xl mb-4"></i>
           <p class="text-center">
@@ -166,9 +170,7 @@
                         <span class="inline-flex items-center px-3 py-1 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 rounded-lg text-base font-bold shadow-sm border border-blue-200">
                           {{ matching.mata_kuliah_kelas.nama_kelas }}
                         </span>
-                        <span class="inline-flex items-center px-3 py-1 bg-gradient-to-r from-indigo-100 to-indigo-200 text-indigo-700 rounded-lg text-base font-bold shadow-sm border border-indigo-200">
-                          {{ matching.mata_kuliah_kelas.matkul_kode }}
-                        </span>
+                        <span class="ml-3 text-base font-semibold text-gray-600">{{ matching.mata_kuliah_kelas.matkul_kode }}</span>
                         <div class="flex flex-wrap gap-2">
                           <span 
                             v-for="semester in matching.mk_kelas_sem" 
@@ -276,6 +278,21 @@
         </button>
       </div>
     </div>
+
+    <!-- Success Alert -->
+    <div v-if="showSuccess" class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50">
+      <div class="flex items-center">
+        <div class="py-1">
+          <i class="fas fa-check-circle text-xl mr-3"></i>
+        </div>
+        <div>
+          <p class="font-semibold">{{ successMessage }}</p>
+        </div>
+        <button @click="showSuccess = false" class="ml-4 text-green-700 hover:text-green-900">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -304,10 +321,22 @@ const selectedIndex = ref(null);
 const showAlert = ref(false);
 const alertMessage = ref('');
 
+// Add success state
+const showSuccess = ref(false);
+const successMessage = ref("");
+
 // Function to show alert
 const showErrorAlert = (msg) => {
   alertMessage.value = msg;
   showAlert.value = true;
+};
+
+const showSuccessAlert = (msg) => {
+  successMessage.value = msg;
+  showSuccess.value = true;
+  setTimeout(() => {
+    showSuccess.value = false;
+  }, 3000);
 };
 
 // Fetch Data Mata Kuliah
@@ -493,6 +522,7 @@ const submitMatching = async () => {
 
     resetForm();
     editIndex.value = null;
+    showSuccessAlert('Data matching berhasil diperbarui!');
   } catch (error) {
     showErrorAlert('Gagal submit matching: ' + (error.response?.data?.error || error.message || 'Terjadi kesalahan.'));
   } finally {
@@ -519,6 +549,7 @@ const deleteMatching = async (index) => {
 
     // Remove the deleted matching from the list
     matchingList.value.splice(index, 1);
+    showSuccessAlert('Data matching berhasil dihapus!');
   } catch (error) {
     showErrorAlert('Gagal menghapus matching: ' + (error.response?.data?.error || error.message || 'Terjadi kesalahan.'));
   }
@@ -638,8 +669,17 @@ const confirmDelete = async () => {
     }
     
     showDeleteConfirm.value = false;
+    showSuccessAlert('Data matching berhasil dihapus!');
   } catch (error) {
     showErrorAlert('Gagal menghapus data jadwal: ' + (error.response?.data?.error || error.message || 'Terjadi kesalahan.'));
   }
+};
+
+// Select All & Remove All for semester selection
+const selectAllSemestersFn = () => {
+  selectedSemesters.value = Array.from({ length: 8 }, (_, i) => i + 1);
+};
+const removeAllSemestersFn = () => {
+  selectedSemesters.value = [];
 };
 </script>

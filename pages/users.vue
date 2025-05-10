@@ -41,6 +41,13 @@
       <!-- Input Form -->
       <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
         <h2 class="text-xl font-semibold mb-6 text-gray-800">{{ isEditing ? 'Edit Pengguna' : 'Tambah Pengguna Baru' }}</h2>
+        <div v-if="editInfoMessage" class="mb-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg flex items-center">
+          <i class="fas fa-info-circle mr-2"></i>
+          <span>{{ editInfoMessage }}</span>
+          <button @click="editInfoMessage = ''" class="ml-auto text-blue-700 hover:text-blue-900">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
         <form @submit.prevent="handleSubmit" class="space-y-6">
           <div>
             <label class="block text-gray-700 font-semibold mb-2">Email</label>
@@ -100,6 +107,14 @@
 
           <div class="flex gap-4">
             <button
+              type="submit"
+              class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
+                     hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            >
+              {{ isEditing ? 'Update' : 'Simpan' }}
+            </button>
+            <button
               v-if="isEditing"
               type="button"
               @click="cancelEdit"
@@ -107,15 +122,7 @@
                      hover:from-gray-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300
                      focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
             >
-              Batal
-            </button>
-            <button
-              type="submit"
-              class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
-                     hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-            >
-              {{ isEditing ? 'Update' : 'Simpan' }}
+              Cancel
             </button>
           </div>
         </form>
@@ -233,6 +240,35 @@
         </div>
       </div>
     </div>
+
+    <!-- Edit Confirmation Popup -->
+    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-pencil-alt text-2xl text-blue-600"></i>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Edit</h3>
+          <p class="text-gray-600 mb-6">
+            Apakah Anda yakin ingin mengedit profil pengguna ini?
+          </p>
+          <div class="flex justify-center space-x-4">
+            <button 
+              @click="confirmEdit" 
+              class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-300"
+            >
+              Ya, Edit
+            </button>
+            <button 
+              @click="cancelEditConfirm" 
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -252,6 +288,9 @@ const showAlert = ref(false)
 const alertMessage = ref('')
 const showSuccess = ref(false)
 const successMessage = ref('')
+const editInfoMessage = ref('')
+const showEditConfirm = ref(false)
+const selectedUserToEdit = ref(null)
 
 const form = ref({
   email: '',
@@ -347,8 +386,15 @@ const handleSubmit = async () => {
   }
 }
 
-// Edit user
+// Edit user (trigger confirmation popup)
 const editUser = (user) => {
+  selectedUserToEdit.value = user;
+  showEditConfirm.value = true;
+}
+
+// Confirm edit (set form and show info)
+const confirmEdit = () => {
+  const user = selectedUserToEdit.value;
   isEditing.value = true;
   editingId.value = user.id;
   form.value = {
@@ -358,13 +404,15 @@ const editUser = (user) => {
     role: user.role,
     password: '' // Reset password field
   };
+  editInfoMessage.value = `Anda sedang mengedit profil pengguna: ${user.name}`;
+  showEditConfirm.value = false;
+  selectedUserToEdit.value = null;
 }
 
-// Cancel editing
-const cancelEdit = () => {
-  isEditing.value = false;
-  editingId.value = null;
-  resetForm();
+// Cancel edit confirmation
+const cancelEditConfirm = () => {
+  showEditConfirm.value = false;
+  selectedUserToEdit.value = null;
 }
 
 // Delete user
@@ -407,6 +455,7 @@ const resetForm = () => {
   }
   isEditing.value = false;
   editingId.value = null;
+  editInfoMessage.value = '';
 }
 
 // Show alert message
@@ -422,5 +471,12 @@ const showSuccessMessage = (message) => {
   setTimeout(() => {
     showSuccess.value = false;
   }, 3000);
+}
+
+const cancelEdit = () => {
+  isEditing.value = false;
+  editingId.value = null;
+  editInfoMessage.value = '';
+  resetForm();
 }
 </script> 

@@ -10,12 +10,12 @@
       <div class="w-full max-w-5xl flex flex-col md:flex-row items-start justify-between gap-8">
         <!-- Left side - Welcome Content -->
         <div class="flex flex-col items-center md:items-start md:w-1/2">
-          <img src="/logo-dti.png" alt="DTI Logo" class="w-20 h-20 mb-6 animate-pulse" />
+          <img src="/logo-jadi.png" alt="DTI Logo" class="w-45 max-w-xs h-auto mb-6 animate-pulse object-contain" />
           <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 text-center md:text-left mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Selamat Datang!
           </h1>
           <p class="text-base sm:text-lg text-gray-600 text-center md:text-left mb-8 max-w-xl">
-            Sistem Penjadwalan Perkuliahan DTI yang membantu Anda mengatur jadwal dengan mudah dan efisien
+            Sistem Penjadwalan Perkuliahan yang membantu Anda mengatur jadwal dengan mudah dan efisien
           </p>
         </div>
 
@@ -58,10 +58,10 @@
     </div>
 
     <!-- Content Page -->
-    <div v-else class="bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div v-else class="bg-gradient-to-br from-blue-50 via-white to-indigo-50 min-h-screen flex items-center justify-center">
       <!-- Features Section -->
-      <section class="w-full py-16">
-        <div class="max-w-5xl mx-auto px-4">
+      <section class="w-full flex items-center justify-center">
+        <div class="max-w-5xl mx-auto px-4 w-full">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
             <div class="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
               <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4">
@@ -84,60 +84,6 @@
               <h3 class="text-xl font-semibold text-gray-800 mb-2">Fleksibel</h3>
               <p class="text-gray-600">Atur jadwal yang dihindari dan preferensi waktu mengajar dosen dengan fleksibel.</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Tech Stack Section -->
-      <section class="w-full bg-white/50 py-16">
-        <div class="max-w-5xl mx-auto px-4">
-          <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center justify-center gap-3 mb-12">
-            <WrenchScrewdriverIcon class="w-8 h-8 text-blue-600" />
-            <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Tech Stack</span>
-          </h2>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-8">
-            <a
-              v-for="tech in techStack"
-              :key="tech.name"
-              :href="tech.link"
-              target="_blank"
-              class="group flex flex-col items-center p-6 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105"
-            >
-              <img :src="tech.logo" class="w-16 h-16 object-contain mb-4 group-hover:animate-bounce" :alt="tech.name + ' Logo'" />
-              <p class="text-sm font-semibold text-gray-700 group-hover:text-blue-600">{{ tech.name }}</p>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <!-- Team Members Section -->
-      <section class="w-full py-16">
-        <div class="max-w-5xl mx-auto px-4">
-          <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center justify-center gap-3 mb-12">
-            <i class="fas fa-users text-blue-600"></i>
-            <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Team Members</span>
-          </h2>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-8">
-            <a
-              v-for="member in teamMembers"
-              :key="member.name"
-              :href="member.linkedin"
-              target="_blank"
-              class="group flex flex-col items-center p-6 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105"
-            >
-              <div class="relative mb-4">
-                <img 
-                  :src="member.avatar" 
-                  class="w-20 h-20 rounded-full border-4 border-white shadow-lg object-cover group-hover:border-blue-100"
-                />
-                <div class="absolute -bottom-2 -right-2 bg-blue-600 text-white rounded-full w-8 h-8 shadow-lg group-hover:bg-indigo-600 flex items-center justify-center">
-                  <i class="fab fa-linkedin-in text-sm"></i>
-                </div>
-              </div>
-              <h3 class="text-sm font-bold text-gray-800 mb-1 text-center group-hover:text-blue-600">{{ member.name }}</h3>
-              <p class="text-xs text-gray-500">{{ member.nrp }}</p>
-              <p class="text-xs font-medium text-blue-600 group-hover:text-indigo-600">Developer</p>
-            </a>
           </div>
         </div>
       </section>

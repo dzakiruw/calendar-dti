@@ -71,41 +71,50 @@
             <!-- Prioritas Selection -->
             <div>
               <label class="block text-gray-700 font-semibold mb-2">Prioritas</label>
-              <select 
-                v-model="prioritas" 
-                class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 cursor-pointer" 
-                required
-              >
-                <option disabled value="">Pilih Prioritas</option>
-                <option value="PRIORITAS">Prioritas</option>
-                <option value="NON_PRIORITAS">Non Prioritas</option>
-              </select>
+              <div class="relative">
+                <select 
+                  v-model="prioritas" 
+                  class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 cursor-pointer shadow-sm bg-white appearance-none hover:border-blue-400 focus:shadow-lg"
+                  required
+                >
+                  <option disabled value="">Pilih Prioritas</option>
+                  <option value="PRIORITAS">Prioritas</option>
+                  <option value="NON_PRIORITAS">Non Prioritas</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                  <i class="fas fa-chevron-down text-gray-400"></i>
+                </div>
+              </div>
             </div>
 
             <!-- Ketersediaan Dosen -->
             <div>
               <label class="block text-gray-700 font-semibold mb-4">Ketersediaan Dosen (Sesi)</label>
-              <div class="overflow-x-auto rounded-xl border border-gray-200">
-                <table class="min-w-[600px] w-full text-sm">
+              <div class="flex gap-2 mb-2">
+                <button type="button" @click="selectAllKetersediaan" class="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold shadow hover:bg-blue-700 transition">Select All</button>
+                <button type="button" @click="removeAllKetersediaan" class="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg text-xs font-semibold shadow hover:bg-gray-400 transition">Remove All</button>
+              </div>
+              <div class="w-full rounded-xl border border-gray-200 overflow-x-auto md:overflow-x-visible">
+                <table class="min-w-[600px] md:min-w-0 w-full text-xs md:text-sm">
                   <thead class="bg-gradient-to-r from-blue-50 to-indigo-50">
                     <tr>
-                      <th class="sticky left-0 z-10 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-r border-gray-200 px-2 py-2 md:px-4 md:py-3 text-xs md:text-sm">Sesi / Hari</th>
-                      <th v-for="hari in hariList" :key="hari" class="border-b border-r last:border-r-0 border-gray-200 px-2 py-2 md:px-4 md:py-3 text-xs md:text-sm">
+                      <th class="sticky left-0 z-10 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-r border-gray-200 px-2 py-2 md:px-3 md:py-3 text-xs md:text-sm">Sesi / Hari</th>
+                      <th v-for="hari in hariList" :key="hari" class="border-b border-r last:border-r-0 border-gray-200 px-2 py-2 md:px-3 md:py-3 text-xs md:text-sm">
                         {{ hari }}
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(row, sesiIndex) in sesiList" :key="sesiIndex">
-                      <td class="sticky left-0 z-10 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-r border-gray-200 px-2 py-2 md:px-4 md:py-3 font-semibold text-xs md:text-sm">
+                      <td class="sticky left-0 z-10 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-r border-gray-200 px-2 py-2 md:px-3 md:py-3 font-semibold text-xs md:text-sm">
                         Sesi {{ sesiIndex + 1 }}
                       </td>
                       <td v-for="(col, hariIndex) in hariList" :key="hariIndex" 
-                          class="border-b border-r last:border-r-0 last-row:border-b-0 border-gray-200 px-2 py-2 md:px-4 md:py-3 text-center">
+                          class="border-b border-r last:border-r-0 last-row:border-b-0 border-gray-200 px-2 py-2 md:px-3 md:py-3 text-center">
                         <input 
                           type="checkbox" 
                           v-model="ketersediaan[sesiIndex][hariIndex]" 
-                          class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all duration-300 cursor-pointer"
+                          class="w-4 h-4 md:w-5 md:h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all duration-300 cursor-pointer"
                         />
                       </td>
                     </tr>
@@ -163,7 +172,7 @@
           <!-- Empty State -->
           <div 
             v-if="filteredDosenList.length === 0" 
-            class="flex-1 flex flex-col items-center justify-center text-gray-500"
+            class="flex flex-col items-center justify-center py-12 text-gray-500"
           >
             <i class="fas fa-user-slash text-4xl mb-4"></i>
             <p class="text-center">
@@ -595,6 +604,22 @@ const resetForm = () => {
   nama.value = "";
   prioritas.value = "";
   ketersediaan.value = Array(sesiList.length).fill().map(() => Array(hariList.length).fill(false));
+};
+
+// Select All & Remove All for ketersediaan
+const selectAllKetersediaan = () => {
+  for (let i = 0; i < ketersediaan.value.length; i++) {
+    for (let j = 0; j < ketersediaan.value[i].length; j++) {
+      ketersediaan.value[i][j] = true;
+    }
+  }
+};
+const removeAllKetersediaan = () => {
+  for (let i = 0; i < ketersediaan.value.length; i++) {
+    for (let j = 0; j < ketersediaan.value[i].length; j++) {
+      ketersediaan.value[i][j] = false;
+    }
+  }
 };
 
 // Fetch dosen data when component is mounted

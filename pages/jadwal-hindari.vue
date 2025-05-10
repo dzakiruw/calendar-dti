@@ -113,15 +113,10 @@
           <div>
             <label class="block text-gray-700 font-semibold mb-3">Berlaku untuk Semester</label>
             <div class="space-y-4">
-              <label class="inline-flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors duration-300 cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  v-model="selectAllSemesters" 
-                  @change="toggleSelectAll" 
-                  class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span class="ml-2 text-gray-700">Pilih Semua Semester</span>
-              </label>
+              <div class="mb-2 flex gap-2">
+                <button type="button" @click="selectAllSemestersFn" class="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold shadow hover:bg-blue-700 transition">Select All</button>
+                <button type="button" @click="removeAllSemestersFn" class="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg text-xs font-semibold shadow hover:bg-gray-400 transition">Remove All</button>
+              </div>
               <div class="grid grid-cols-2 gap-3">
                 <label v-for="n in 8" :key="n" class="inline-flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors duration-300 cursor-pointer">
                   <input 
@@ -183,7 +178,7 @@
         <!-- Empty State -->
         <div 
           v-if="filteredJadwalHindariList.length === 0" 
-          class="flex-1 flex flex-col items-center justify-center text-gray-500"
+          class="flex flex-col items-center justify-center py-12 text-gray-500"
         >
           <i class="fas fa-calendar-times text-4xl mb-4"></i>
           <p class="text-center">
@@ -210,7 +205,7 @@
                       </span>
                       <span class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-sm font-medium">
                         <i class="fas fa-clock"></i>
-                        {{ jadwal.hindari_sesi }}
+                        Sesi {{ jadwal.hindari_sesi.replace(/[^0-9]/g, '') || jadwal.hindari_sesi }}
                       </span>
                     </div>
                     <div class="flex flex-wrap gap-2">
@@ -606,6 +601,14 @@ const showSuccessAlert = (message) => {
   setTimeout(() => {
     showSuccess.value = false;
   }, 3000); // Hide after 3 seconds
+};
+
+// Select All & Remove All for semester selection
+const selectAllSemestersFn = () => {
+  selectedSemesters.value = Array.from({ length: 8 }, (_, i) => i + 1);
+};
+const removeAllSemestersFn = () => {
+  selectedSemesters.value = [];
 };
 
 onMounted(() => {

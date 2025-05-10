@@ -26,7 +26,7 @@
       </div>
     </div>
     <!-- Profile Card -->
-    <div class="max-w-2xl mx-auto">
+    <div class="max-w-lg w-full mx-auto">
       <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
         <!-- Header with Background -->
         <div class="h-32 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
@@ -45,7 +45,7 @@
               
               <!-- Upload Button -->
               <label 
-                class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 p-2 rounded-full shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-110"
+                class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 w-8 h-8 flex items-center justify-center rounded-full shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-110"
                 title="Upload Photo"
               >
                 <input 
@@ -54,7 +54,7 @@
                   accept="image/*" 
                   class="hidden"
                 />
-                <i class="fas fa-camera text-white"></i>
+                <i class="fas fa-camera text-white text-sm"></i>
               </label>
             </div>
           </div>
@@ -81,22 +81,25 @@
             <!-- Change Password Confirmation Button -->
             <button v-if="!showChangePasswordForm" @click="showConfirmPopup = true" class="mt-8 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Ubah Password</button>
             <!-- Change Password Form -->
-            <form v-if="showChangePasswordForm" @submit.prevent="handleChangePassword" class="mt-8 max-w-lg w-full mx-auto text-left">
+            <form v-if="showChangePasswordForm" @submit.prevent="handleChangePassword" class="mt-10 max-w-xs mx-auto text-left">
               <h2 class="text-lg font-semibold mb-4 text-gray-800">Ubah Password</h2>
               <div class="mb-4">
                 <label class="block text-gray-700 font-semibold mb-2">Password Lama</label>
-                <input v-model="oldPassword" type="password" required class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Masukkan password lama" />
+                <input v-model="oldPassword" type="password" required class="w-full px-3 py-3 h-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Masukkan password lama" />
               </div>
               <div class="mb-4">
                 <label class="block text-gray-700 font-semibold mb-2">Password Baru</label>
-                <input v-model="newPassword" type="password" required class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Masukkan password baru" />
+                <input v-model="newPassword" type="password" required class="w-full px-3 py-3 h-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Masukkan password baru" />
               </div>
               <div class="mb-4">
                 <label class="block text-gray-700 font-semibold mb-2">Konfirmasi Password Baru</label>
-                <input v-model="confirmPassword" type="password" required class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Konfirmasi password baru" />
+                <input v-model="confirmPassword" type="password" required class="w-full px-3 py-3 h-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Konfirmasi password baru" />
+                <div v-if="passwordError" class="w-full text-sm text-red-600 mt-1">{{ passwordError }}</div>
               </div>
-              <div v-if="passwordError" class="mb-4 text-red-600">{{ passwordError }}</div>
-              <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Ubah Password</button>
+              <div class="flex flex-col gap-3">
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-4 text-sm rounded-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Ubah Password</button>
+                <button type="button" @click="handleCancelPassword" class="w-full bg-gray-200 text-gray-700 py-2 px-4 text-sm rounded-lg hover:bg-gray-300 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">Cancel</button>
+              </div>
               <div v-if="passwordSuccess" class="mt-4 text-green-600">{{ passwordSuccess }}</div>
             </form>
           </div>
@@ -195,6 +198,10 @@ const onConfirmChangePassword = () => {
 const handleChangePassword = async () => {
   passwordError.value = '';
   passwordSuccess.value = '';
+  if (oldPassword.value === newPassword.value) {
+    passwordError.value = 'Password baru harus berbeda dengan password lama.';
+    return;
+  }
   if (newPassword.value !== confirmPassword.value) {
     passwordError.value = 'Password baru dan konfirmasi tidak cocok.';
     return;
@@ -231,6 +238,16 @@ function showSuccessMessage(msg) {
   setTimeout(() => {
     showSuccess.value = false;
   }, 3000);
+}
+
+// Fungsi untuk handle cancel dan clear form
+function handleCancelPassword() {
+  oldPassword.value = '';
+  newPassword.value = '';
+  confirmPassword.value = '';
+  passwordError.value = '';
+  passwordSuccess.value = '';
+  showChangePasswordForm.value = false;
 }
 </script>
 

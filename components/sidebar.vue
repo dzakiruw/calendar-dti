@@ -179,10 +179,10 @@
           ></i>
         </button>
         <div v-if="dropdowns.jadwal" class="pl-4 space-y-1">
-          <NuxtLink to="/buat-jadwal" 
+          <NuxtLink to="/jadwal-matching" 
             class="flex items-center px-4 py-2 rounded-xl transition-all duration-300 group"
             :class="[
-              route.path === '/buat-jadwal'
+              route.path === '/jadwal-matching'
                 ? 'bg-indigo-100 text-indigo-700 border-l-4 border-indigo-600'
                 : 'text-gray-600 hover:bg-blue-50'
             ]"
@@ -190,13 +190,13 @@
           >
             <div class="p-2 rounded-lg transition-colors duration-300"
                  :class="[
-                   route.path === '/buat-jadwal'
+                   route.path === '/jadwal-matching'
                      ? 'bg-indigo-200'
                      : 'bg-blue-100 group-hover:bg-blue-200'
                  ]">
-              <i class="fas fa-edit" :class="route.path === '/buat-jadwal' ? 'text-indigo-700' : 'text-blue-600'"></i>
+              <i class="fas fa-edit" :class="route.path === '/jadwal-matching' ? 'text-indigo-700' : 'text-blue-600'"></i>
             </div>
-            <span class="ml-3 text-sm font-medium" :class="route.path === '/buat-jadwal' ? 'text-indigo-700' : 'group-hover:text-blue-600'">Jadwal Matching</span>
+            <span class="ml-3 text-sm font-medium" :class="route.path === '/jadwal-matching' ? 'text-indigo-700' : 'group-hover:text-blue-600'">Jadwal Matching</span>
           </NuxtLink>
           <NuxtLink to="/pilih-jadwal" 
             class="flex items-center px-4 py-2 rounded-xl transition-all duration-300 group"
@@ -218,6 +218,31 @@
             <span class="ml-3 text-sm font-medium" :class="route.path === '/pilih-jadwal' ? 'text-indigo-700' : 'group-hover:text-blue-600'">Generate Jadwal</span>
           </NuxtLink>
         </div>
+      </div>
+
+      <!-- About / Tentang -->
+      <div class="mb-4">
+        <NuxtLink to="/about" 
+          class="flex items-center px-4 py-3 rounded-xl transition-all duration-300 group"
+          :class="[
+            route.path === '/about' 
+              ? 'bg-indigo-100 text-indigo-700 border-l-4 border-indigo-600' 
+              : 'text-gray-600 hover:bg-blue-50'
+          ]"
+          @click="handleClick"
+        >
+          <div class="flex items-center">
+            <div class="p-2 rounded-lg transition-colors duration-300"
+                 :class="[
+                   route.path === '/about'
+                     ? 'bg-indigo-200'
+                     : 'bg-blue-100 group-hover:bg-blue-200'
+                 ]">
+              <i class="fas fa-info-circle" :class="route.path === '/about' ? 'text-indigo-700' : 'text-blue-600'"></i>
+            </div>
+            <span class="ml-3 font-medium" :class="route.path === '/about' ? 'text-indigo-700' : 'group-hover:text-blue-600'">Tentang</span>
+          </div>
+        </NuxtLink>
       </div>
 
       <!-- Users Management -->
@@ -340,7 +365,7 @@ const isKalenderActive = computed(() => {
 });
 
 const isJadwalActive = computed(() => {
-  return ['/buat-jadwal', '/pilih-jadwal'].includes(route.path);
+  return ['/jadwal-matching', '/pilih-jadwal'].includes(route.path);
 });
 
 // Handle link clicks on mobile
