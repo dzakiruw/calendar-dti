@@ -14,6 +14,20 @@
         </button>
       </div>
     </div>
+    <!-- Error Notification -->
+    <div v-if="showError" class="fixed top-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50">
+      <div class="flex items-center">
+        <div class="py-1">
+          <i class="fas fa-exclamation-circle text-xl mr-3"></i>
+        </div>
+        <div>
+          <p class="font-semibold">{{ errorMessage }}</p>
+        </div>
+        <button @click="showError = false" class="ml-4 text-red-700 hover:text-red-900">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
     <!-- Alert Confirmation Popup -->
     <div v-if="showConfirmPopup" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
       <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300">
@@ -51,7 +65,7 @@
                 <input 
                   type="file" 
                   @change="handleFileUpload" 
-                  accept="image/*" 
+                  accept=".jpg,.jpeg,.png" 
                   class="hidden"
                 />
                 <i class="fas fa-camera text-white text-sm"></i>
@@ -139,15 +153,54 @@ const handleImageError = (e) => {
   // console.log('Loading default avatar');
 };
 
+const showError = ref(false);
+const errorMessage = ref('');
+
+function showErrorMessage(msg) {
+  errorMessage.value = msg;
+  showError.value = true;
+  setTimeout(() => {
+    showError.value = false;
+  }, 3000);
+}
+
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
+    // Check file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+      showErrorMessage('Format file tidak didukung. Gunakan format JPG, JPEG, atau PNG.');
+      return;
+    }
+
+    // Check file size (2MB = 2 * 1024 * 1024 bytes)
+    const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+    if (file.size > maxSize) {
+      showErrorMessage('Ukuran file terlalu besar. Maksimal ukuran file adalah 2MB.');
+      return;
+    }
+    
     const reader = new FileReader();
     reader.onload = (e) => {
+      // Update profile picture
       profilePicture.value = e.target.result;
+      
+      // Update localStorage
       localStorage.setItem('profilePic', e.target.result);
-      // Trigger storage event so sidebar updates in real time
+      
+      // Update user data in localStorage
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (user) {
+        user.profilePicture = e.target.result;
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      
+      // Trigger storage event for sidebar update
       window.dispatchEvent(new Event('storage'));
+      
+      // Show success message
+      showSuccessMessage('Foto profil berhasil diperbarui!');
     };
     reader.readAsDataURL(file);
   }
