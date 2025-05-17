@@ -9,18 +9,18 @@
     <div v-else-if="!isLoggedIn" class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4">
       <div class="w-full max-w-5xl flex flex-col md:flex-row items-start justify-between gap-8">
         <!-- Left side - Welcome Content -->
-        <div class="flex flex-col items-center md:items-start md:w-1/2">
+        <div class="flex flex-col items-center md:items-start md:w-1/2 p-8">
           <div class="flex items-center space-x-6 mb-8">
-            <img src="/logo.png" alt="DTI Logo" class="w-24 h-24 rounded-lg shadow-lg animate-pulse object-contain" />
+            <img src="/logo.png" alt="DTI Logo" class="w-32 h-32 rounded-lg shadow-lg animate-pulse object-contain" />
             <div class="flex flex-col">
-              <h1 class="text-6xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">JADI</h1>
-              <span class="text-lg text-gray-600">Jadwal Automasi Departemen ITS</span>
+              <h1 class="text-7xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">JADI</h1>
+              <span class="text-xl text-gray-600">Jadwal Automasi Departemen ITS</span>
             </div>
           </div>
-          <h2 class="text-3xl sm:text-3.5xl font-bold text-gray-800 text-center md:text-left mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h2 class="text-4xl sm:text-5xl font-bold text-gray-800 text-center md:text-left mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Selamat Datang!
           </h2>
-          <p class="text-base sm:text-lg text-gray-600 text-center md:text-left mb-8 max-w-xl">
+          <p class="text-lg sm:text-xl text-gray-600 text-center md:text-left mb-8 max-w-2xl">
             Sistem Penjadwalan Perkuliahan yang membantu Anda mengatur jadwal dengan mudah dan efisien
           </p>
         </div>
