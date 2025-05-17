@@ -50,176 +50,177 @@
     </div>
 
     <!-- Informasi Daftar Data -->
-    <div
-      class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
-    >
-      <!-- Mata Kuliah -->
-      <div
-        class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
-      >
-        <h2
-          class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4"
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
+      <!-- Left Column - 3 boxes -->
+      <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+        <!-- Mata Kuliah -->
+        <div
+          class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
         >
-          <i class="fas fa-book mr-3"></i> Mata Kuliah
-        </h2>
-        <div class="h-[200px] overflow-y-auto pr-2">
-          <ul v-if="mataKuliahList.length" class="space-y-3">
-            <li
-              v-for="mk in mataKuliahList"
-              :key="mk.matkul_kode"
-              class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
-            >
-              <p class="font-semibold text-gray-800">{{ mk.matkul_nama }}</p>
-              <p class="text-sm text-gray-600">{{ mk.matkul_kode }}</p>
-            </li>
-          </ul>
-          <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
-            <i class="fas fa-book-open text-3xl mb-2"></i>
-            <p class="text-center">Belum ada data mata kuliah.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Dosen -->
-      <div
-        class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
-      >
-        <h2
-          class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4"
-        >
-          <i class="fas fa-user-tie mr-3"></i> Dosen
-        </h2>
-        <div class="h-[200px] overflow-y-auto pr-2">
-          <ul v-if="dosenList.length" class="space-y-3">
-            <li
-              v-for="dosen in dosenList"
-              :key="dosen.dosen_kode"
-              class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
-            >
-              <p class="font-semibold text-gray-800">{{ dosen.dosen_nama }}</p>
-              <div class="flex items-center gap-2 mt-1">
-                <span class="text-sm text-gray-600">{{ dosen.dosen_kode }}</span>
-                <span
-                  :class="{
-                    'px-2 py-1 rounded-lg text-xs font-medium': true,
-                    'bg-green-100 text-green-600':
-                      dosen.dosen_prioritas === 'PRIORITAS',
-                    'bg-red-100 text-red-600':
-                      dosen.dosen_prioritas !== 'PRIORITAS',
-                  }"
-                >
-                  {{
-                    dosen.dosen_prioritas === "PRIORITAS"
-                      ? "Prioritas"
-                      : "Non Prioritas"
-                  }}
-                </span>
-              </div>
-            </li>
-          </ul>
-          <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
-            <i class="fas fa-user-slash text-3xl mb-2"></i>
-            <p class="text-center">Belum ada data dosen.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Ruang Kelas -->
-      <div
-        class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
-      >
-        <h2
-          class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4"
-        >
-          <i class="fas fa-chalkboard-teacher mr-3"></i> Ruang Kelas
-        </h2>
-        <div class="h-[200px] overflow-y-auto pr-2">
-          <ul v-if="ruangKelasList.length" class="space-y-3">
-            <li
-              v-for="ruang in ruangKelasList"
-              :key="ruang.ruangan_kode"
-              class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
-            >
-              <p class="font-semibold text-gray-800">
-                {{ ruang.ruangan_kode }}
-              </p>
-              <span
-                class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium mt-1"
+          <h2
+            class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4"
+          >
+            <i class="fas fa-book mr-3"></i> Mata Kuliah
+          </h2>
+          <div class="h-[200px] overflow-y-auto pr-2">
+            <ul v-if="mataKuliahList.length" class="space-y-3">
+              <li
+                v-for="mk in mataKuliahList"
+                :key="mk.matkul_kode"
+                class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
               >
-                Kapasitas: {{ ruang.ruangan_kapasitas }}
-              </span>
-            </li>
-          </ul>
-          <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
-            <i class="fas fa-chalkboard text-3xl mb-2"></i>
-            <p class="text-center">Belum ada data ruang kelas.</p>
+                <p class="font-semibold text-gray-800">{{ mk.matkul_nama }}</p>
+                <p class="text-sm text-gray-600">{{ mk.matkul_kode }}</p>
+              </li>
+            </ul>
+            <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
+              <i class="fas fa-book-open text-3xl mb-2"></i>
+              <p class="text-center">Belum ada data mata kuliah.</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Jadwal Hindari -->
-      <div
-        class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
-      >
-        <h2
-          class="text-xl font-bold bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent flex items-center mb-4"
+        <!-- Dosen -->
+        <div
+          class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
         >
-          <i class="fas fa-calendar-times mr-3"></i> Jadwal Hindari
-        </h2>
-        <div class="h-[200px] overflow-y-auto pr-2">
-          <ul v-if="jadwalHindari.length" class="space-y-3">
-            <li
-              v-for="hindari in jadwalHindari"
-              :key="hindari.id"
-              class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-red-50 hover:border-red-200 transition-all duration-300"
-            >
-              <p class="font-semibold text-gray-800">
-                {{ hindari.hindari_agenda }}
-              </p>
-              <div class="flex flex-wrap gap-2 mt-2">
-                <div class="flex items-center">
+          <h2
+            class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4"
+          >
+            <i class="fas fa-user-tie mr-3"></i> Dosen
+          </h2>
+          <div class="h-[200px] overflow-y-auto pr-2">
+            <ul v-if="dosenList.length" class="space-y-3">
+              <li
+                v-for="dosen in dosenList"
+                :key="dosen.dosen_kode"
+                class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+              >
+                <p class="font-semibold text-gray-800">{{ dosen.dosen_nama }}</p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-sm text-gray-600">{{ dosen.dosen_kode }}</span>
                   <span
-                    class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 rounded-l-lg text-sm font-medium border-r border-red-200"
+                    :class="{
+                      'px-2 py-1 rounded-lg text-xs font-medium': true,
+                      'bg-green-100 text-green-600':
+                        dosen.dosen_prioritas === 'PRIORITAS',
+                      'bg-red-100 text-red-600':
+                        dosen.dosen_prioritas !== 'PRIORITAS',
+                    }"
                   >
-                    <i class="fas fa-calendar-day mr-2"></i>
-                    {{ hindari.hindari_hari }}
-                  </span>
-                  <span
-                    class="inline-flex items-center px-3 py-1.5 bg-red-50 text-red-700 rounded-r-lg text-sm font-medium"
-                  >
-                    <i class="fas fa-clock mr-2"></i>
-                    Sesi {{ hindari.hindari_sesi }}
-                  </span>
-                </div>
-                <div class="flex flex-wrap gap-1 mt-1">
-                  <span
-                    v-for="sem in hindari.hindari_smt"
-                    :key="sem"
-                    class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium"
-                  >
-                    Semester {{ sem }}
+                    {{
+                      dosen.dosen_prioritas === "PRIORITAS"
+                        ? "Prioritas"
+                        : "Non Prioritas"
+                    }}
                   </span>
                 </div>
-              </div>
-            </li>
-          </ul>
-          <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
-            <i class="fas fa-calendar-times text-3xl mb-2"></i>
-            <p class="text-center">Belum ada data jadwal hindari.</p>
+              </li>
+            </ul>
+            <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
+              <i class="fas fa-user-slash text-3xl mb-2"></i>
+              <p class="text-center">Belum ada data dosen.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ruang Kelas -->
+        <div
+          class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
+        >
+          <h2
+            class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4"
+          >
+            <i class="fas fa-chalkboard-teacher mr-3"></i> Ruang Kelas
+          </h2>
+          <div class="h-[200px] overflow-y-auto pr-2">
+            <ul v-if="ruangKelasList.length" class="space-y-3">
+              <li
+                v-for="ruang in ruangKelasList"
+                :key="ruang.ruangan_kode"
+                class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+              >
+                <p class="font-semibold text-gray-800">
+                  {{ ruang.ruangan_kode }}
+                </p>
+                <span
+                  class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium mt-1"
+                >
+                  Kapasitas: {{ ruang.ruangan_kapasitas }}
+                </span>
+              </li>
+            </ul>
+            <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
+              <i class="fas fa-chalkboard text-3xl mb-2"></i>
+              <p class="text-center">Belum ada data ruang kelas.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Jadwal Hindari -->
+        <div
+          class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
+        >
+          <h2
+            class="text-xl font-bold bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent flex items-center mb-4"
+          >
+            <i class="fas fa-calendar-times mr-3"></i> Jadwal Hindari
+          </h2>
+          <div class="h-[200px] overflow-y-auto pr-2">
+            <ul v-if="jadwalHindari.length" class="space-y-3">
+              <li
+                v-for="hindari in jadwalHindari"
+                :key="hindari.id"
+                class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-red-50 hover:border-red-200 transition-all duration-300"
+              >
+                <p class="font-semibold text-gray-800">
+                  {{ hindari.hindari_agenda }}
+                </p>
+                <div class="flex flex-wrap gap-2 mt-2">
+                  <div class="flex items-center">
+                    <span
+                      class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 rounded-l-lg text-sm font-medium border-r border-red-200"
+                    >
+                      <i class="fas fa-calendar-day mr-2"></i>
+                      {{ hindari.hindari_hari }}
+                    </span>
+                    <span
+                      class="inline-flex items-center px-3 py-1.5 bg-red-50 text-red-700 rounded-r-lg text-sm font-medium"
+                    >
+                      <i class="fas fa-clock mr-2"></i>
+                      Sesi {{ hindari.hindari_sesi }}
+                    </span>
+                  </div>
+                  <div class="flex flex-wrap gap-1 mt-1">
+                    <span
+                      v-for="sem in hindari.hindari_smt"
+                      :key="sem"
+                      class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium"
+                    >
+                      Semester {{ sem }}
+                    </span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+            <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
+              <i class="fas fa-calendar-times text-3xl mb-2"></i>
+              <p class="text-center">Belum ada data jadwal hindari.</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Matching -->
+      <!-- Right Column - Daftar Matching -->
       <div
-        class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
+        class="lg:col-span-2 bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
       >
         <h2
           class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4"
         >
           <i class="fas fa-list-ul mr-3"></i> Daftar Matching
         </h2>
-        <div class="h-[200px] overflow-y-auto pr-2">
+        <div class="h-[550px] overflow-y-auto pr-2">
           <!-- Empty State -->
           <div
             v-if="matchingList.length === 0"
@@ -229,33 +230,43 @@
             <p>Belum ada data matching.</p>
           </div>
 
-          <!-- Matching List -->
-          <ul v-else class="space-y-3">
-            <li
-              v-for="(match, index) in matchingList"
-              :key="index"
-              class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
-            >
-              <p class="font-semibold text-gray-800">
-                {{ match.kelas && match.kelas.nama_kelas ? match.kelas.nama_kelas : (match.mata_kuliah_kelas?.nama_kelas || '-') }}
-              </p>
-              <p class="text-sm text-gray-600 mt-1">
-                {{ match.dosen && match.dosen.dosen_nama ? match.dosen.dosen_nama : (match.dosen_nama || '-') }}
-              </p>
-              <div class="flex flex-wrap gap-2 mt-2">
-                <span v-if="match.matkul_tipe" class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium">
-                  {{ match.matkul_tipe }}
-                </span>
-                <span 
-                  v-for="sem in getSemesterArray(match)" 
-                  :key="sem" 
-                  class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium"
-                >
-                  Semester {{ sem }}
-                </span>
+          <!-- Matching List Grouped by Dosen -->
+          <div v-else class="space-y-6">
+            <div v-for="(matches, dosenName) in groupedMatches" :key="dosenName" class="space-y-3">
+              <!-- Dosen Header -->
+              <div class="sticky top-0 bg-white/90 backdrop-blur-sm py-2 z-10">
+                <h3 class="font-semibold text-gray-800 flex items-center">
+                  <i class="fas fa-user-tie text-blue-600 mr-2"></i>
+                  {{ dosenName }}
+                </h3>
               </div>
-            </li>
-          </ul>
+              
+              <!-- Matches for this Dosen -->
+              <ul class="space-y-3">
+                <li
+                  v-for="(match, index) in matches"
+                  :key="index"
+                  class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+                >
+                  <p class="font-semibold text-gray-800">
+                    {{ match.kelas && match.kelas.nama_kelas ? match.kelas.nama_kelas : (match.mata_kuliah_kelas?.nama_kelas || '-') }}
+                  </p>
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    <span v-if="match.matkul_tipe" class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium">
+                      {{ match.matkul_tipe }}
+                    </span>
+                    <span 
+                      v-for="sem in getSemesterArray(match)" 
+                      :key="sem" 
+                      class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium"
+                    >
+                      Semester {{ sem }}
+                    </span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -359,7 +370,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import axios from "axios";
@@ -845,6 +856,19 @@ const getSemesterArray = (match) => {
   }
   return match.mk_kelas_sem ? [match.mk_kelas_sem] : [];
 };
+
+// Add computed property for grouped matches
+const groupedMatches = computed(() => {
+  const groups = {};
+  matchingList.value.forEach(match => {
+    const dosenName = match.dosen?.dosen_nama || match.dosen_nama || 'Unknown';
+    if (!groups[dosenName]) {
+      groups[dosenName] = [];
+    }
+    groups[dosenName].push(match);
+  });
+  return groups;
+});
 
 // Ganti generateJadwal agar menggunakan iterative improvement
 const generateJadwal = async () => {

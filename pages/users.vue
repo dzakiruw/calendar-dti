@@ -29,7 +29,7 @@
     <!-- Title -->
     <div class="mb-8 w-full flex justify-center">
       <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transform hover:scale-105 transition-all duration-300">
-        <img src="/input-jadwalhindari.png" alt="Icon Users" class="w-16 h-16 object-contain" />
+        <img src="/user-mgmt.png" alt="Icon Users" class="w-16 h-16 object-contain" />
         <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
           Manajemen Pengguna
         </h1>

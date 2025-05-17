@@ -1,27 +1,5 @@
 <template>
   <div class="bg-gradient-to-br from-blue-50 via-white to-indigo-50 min-h-screen flex flex-col items-center justify-center">
-    <!-- Tech Stack Section -->
-    <section class="w-full py-8">
-      <div class="max-w-5xl mx-auto px-4 flex flex-col items-center">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center justify-center gap-3 mb-6">
-          <WrenchScrewdriverIcon class="w-8 h-8 text-blue-600" />
-          <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Tech Stack</span>
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 justify-center">
-          <a
-            v-for="tech in techStack"
-            :key="tech.name"
-            :href="tech.link"
-            target="_blank"
-            class="group flex flex-col items-center p-4 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105"
-          >
-            <img :src="tech.logo" class="w-16 h-16 object-contain mb-2 group-hover:animate-bounce" :alt="tech.name + ' Logo'" />
-            <p class="text-sm font-semibold text-gray-700 group-hover:text-blue-600">{{ tech.name }}</p>
-          </a>
-        </div>
-      </div>
-    </section>
-
     <!-- Team Members Section -->
     <section class="w-full py-8">
       <div class="max-w-5xl mx-auto px-4 flex flex-col items-center">
@@ -49,6 +27,28 @@
             <h3 class="text-sm font-bold text-gray-800 mb-1 text-center group-hover:text-blue-600">{{ member.name }}</h3>
             <p class="text-xs text-gray-500">{{ member.nrp }}</p>
             <p class="text-xs font-medium text-blue-600 group-hover:text-indigo-600">Developer</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="w-full py-8">
+      <div class="max-w-5xl mx-auto px-4 flex flex-col items-center">
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center justify-center gap-3 mb-6">
+          <WrenchScrewdriverIcon class="w-8 h-8 text-blue-600" />
+          <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Tech Stack</span>
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 justify-center">
+          <a
+            v-for="tech in techStack"
+            :key="tech.name"
+            :href="tech.link"
+            target="_blank"
+            class="group flex flex-col items-center p-4 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105"
+          >
+            <img :src="tech.logo" class="w-16 h-16 object-contain mb-2 group-hover:animate-bounce" :alt="tech.name + ' Logo'" />
+            <p class="text-sm font-semibold text-gray-700 group-hover:text-blue-600">{{ tech.name }}</p>
           </a>
         </div>
       </div>

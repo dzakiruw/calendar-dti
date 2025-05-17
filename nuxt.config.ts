@@ -4,9 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   // Only include the Tailwind CSS module
-  modules: [
-    '@nuxtjs/tailwindcss',
-  ],
+  modules: ['@nuxtjs/tailwindcss', '@nuxt/image'],
 
   // External resources like Font Awesome
   app: {

@@ -10,10 +10,16 @@
       <div class="w-full max-w-5xl flex flex-col md:flex-row items-start justify-between gap-8">
         <!-- Left side - Welcome Content -->
         <div class="flex flex-col items-center md:items-start md:w-1/2">
-          <img src="/logo-jadi.png" alt="DTI Logo" class="w-45 max-w-xs h-auto mb-6 animate-pulse object-contain" />
-          <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 text-center md:text-left mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <div class="flex items-center space-x-6 mb-8">
+            <img src="/logo.png" alt="DTI Logo" class="w-24 h-24 rounded-lg shadow-lg animate-pulse object-contain" />
+            <div class="flex flex-col">
+              <h1 class="text-6xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">JADI</h1>
+              <span class="text-lg text-gray-600">Jadwal Automasi Departemen ITS</span>
+            </div>
+          </div>
+          <h2 class="text-3xl sm:text-3.5xl font-bold text-gray-800 text-center md:text-left mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Selamat Datang!
-          </h1>
+          </h2>
           <p class="text-base sm:text-lg text-gray-600 text-center md:text-left mb-8 max-w-xl">
             Sistem Penjadwalan Perkuliahan yang membantu Anda mengatur jadwal dengan mudah dan efisien
           </p>
@@ -58,35 +64,56 @@
     </div>
 
     <!-- Content Page -->
-    <div v-else class="bg-gradient-to-br from-blue-50 via-white to-indigo-50 min-h-screen flex items-center justify-center">
-      <!-- Features Section -->
-      <section class="w-full flex items-center justify-center">
-        <div class="max-w-5xl mx-auto px-4 w-full">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
-              <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4">
-                <i class="fas fa-calendar-check text-blue-600 text-xl"></i>
-              </div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">Penjadwalan Otomatis</h3>
-              <p class="text-gray-600">Generate jadwal kuliah secara otomatis dengan mempertimbangkan berbagai constraint.</p>
-            </div>
-            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
-              <div class="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-lg mb-4">
-                <i class="fas fa-users-cog text-indigo-600 text-xl"></i>
-              </div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">Manajemen Data</h3>
-              <p class="text-gray-600">Kelola data mata kuliah, dosen, dan ruang kelas dengan mudah dan terstruktur.</p>
-            </div>
-            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105">
-              <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4">
-                <i class="fas fa-clock text-blue-600 text-xl"></i>
-              </div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">Fleksibel</h3>
-              <p class="text-gray-600">Atur jadwal yang dihindari dan preferensi waktu mengajar dosen dengan fleksibel.</p>
+    <div v-else class="bg-gradient-to-br from-blue-50 via-white to-indigo-50 min-h-screen">
+      <div class="max-w-7xl mx-auto px-4 py-12">
+        <!-- Header Section with Logo and App Name -->
+        <div class="flex flex-col items-center text-center mb-10">
+          <div class="flex items-center space-x-8 mb-10">
+            <img src="/logo.png" alt="DTI Logo" class="w-32 h-32 rounded-lg shadow-lg animate-pulse object-contain" />
+            <div class="flex flex-col items-start">
+              <h1 class="text-7xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">JADI</h1>
+              <span class="text-2xl text-gray-600">Jadwal Automasi Departemen ITS</span>
             </div>
           </div>
+          <div class="max-w-4xl">
+            <p class="text-xl text-gray-600 leading-relaxed">
+              JADI adalah sistem penjadwalan yang revolusioner, menggabungkan kecerdasan buatan dengan fleksibilitas untuk menciptakan jadwal kuliah yang optimal. Dengan JADI, proses penjadwalan yang sebelumnya memakan waktu berjam-jam kini dapat diselesaikan dalam hitungan menit, sambil tetap mempertimbangkan preferensi dosen dan ketersediaan ruangan.
+            </p>
+          </div>
         </div>
-      </section>
+
+        <!-- Features Section -->
+        <section class="mb-16">
+          <h2 class="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Fitur Unggulan
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-lg transform transition-all duration-300 hover:scale-105">
+              <div class="flex items-center justify-center w-20 h-20 bg-blue-100 rounded-xl mb-6">
+                <i class="fas fa-calendar-check text-blue-600 text-3xl"></i>
+              </div>
+              <h3 class="text-2xl font-semibold text-gray-800 mb-4">Penjadwalan Otomatis</h3>
+              <p class="text-gray-600 text-lg">Sistem cerdas yang menghasilkan jadwal kuliah secara otomatis dengan mempertimbangkan berbagai constraint dan preferensi dosen, menghemat waktu dan mengurangi konflik jadwal.</p>
+            </div>
+
+            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-lg transform transition-all duration-300 hover:scale-105">
+              <div class="flex items-center justify-center w-20 h-20 bg-indigo-100 rounded-xl mb-6">
+                <i class="fas fa-users-cog text-indigo-600 text-3xl"></i>
+              </div>
+              <h3 class="text-2xl font-semibold text-gray-800 mb-4">Manajemen Data Terpadu</h3>
+              <p class="text-gray-600 text-lg">Platform terpusat untuk mengelola semua data akademik, dari mata kuliah hingga ruang kelas, dengan antarmuka yang intuitif dan mudah digunakan.</p>
+            </div>
+
+            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-lg transform transition-all duration-300 hover:scale-105">
+              <div class="flex items-center justify-center w-20 h-20 bg-blue-100 rounded-xl mb-6">
+                <i class="fas fa-clock text-blue-600 text-3xl"></i>
+              </div>
+              <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fleksibilitas Maksimal</h3>
+              <p class="text-gray-600 text-lg">Sistem yang adaptif dengan kebutuhan pengguna, memungkinkan penyesuaian jadwal yang cepat dan efisien sesuai dengan perubahan yang diperlukan.</p>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </template>
