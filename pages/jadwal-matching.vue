@@ -26,7 +26,7 @@
             >
               <option disabled value="">Pilih Mata Kuliah</option>
               <option v-for="mk in mataKuliahList" :key="mk.matkul_kode" :value="mk">
-                {{ mk.matkul_kode }} - {{ mk.matkul_nama }}
+                {{ mk.matkul_kode }} - {{ mk.matkul_nama }} ({{ mk.matkul_sks }} SKS)
               </option>
             </select>
           </div>
@@ -170,7 +170,10 @@
                         <span class="inline-flex items-center px-3 py-1 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 rounded-lg text-base font-bold shadow-sm border border-blue-200">
                           {{ matching.mata_kuliah_kelas.nama_kelas }}
                         </span>
-                        <span class="ml-3 text-base font-semibold text-gray-600">{{ matching.mata_kuliah_kelas.matkul_kode }}</span>
+                        <div class="flex items-center gap-2">
+                          <span class="text-base font-semibold text-gray-600">{{ matching.mata_kuliah_kelas.matkul_kode }}</span>
+                          <span class="text-base font-semibold text-gray-600">({{ getMatkulSKS(matching) }} SKS)</span>
+                        </div>
                         <div class="flex flex-wrap gap-2">
                           <span 
                             v-for="semester in matching.mk_kelas_sem" 
@@ -681,5 +684,14 @@ const selectAllSemestersFn = () => {
 };
 const removeAllSemestersFn = () => {
   selectedSemesters.value = [];
+};
+
+// Add this function in the script section
+const getMatkulSKS = (matching) => {
+  // Try to find the mata kuliah in mataKuliahList
+  const matkul = mataKuliahList.value.find(mk => 
+    mk.matkul_kode === matching.mata_kuliah_kelas.matkul_kode
+  );
+  return matkul?.matkul_sks || '-';
 };
 </script>

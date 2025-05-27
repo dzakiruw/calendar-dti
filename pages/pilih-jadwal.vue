@@ -70,7 +70,7 @@
                 class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
               >
                 <p class="font-semibold text-gray-800">{{ mk.matkul_nama }}</p>
-                <p class="text-sm text-gray-600">{{ mk.matkul_kode }}</p>
+                <p class="text-sm text-gray-600">{{ mk.matkul_kode }} ({{ mk.matkul_sks }} SKS)</p>
               </li>
             </ul>
             <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
@@ -317,7 +317,7 @@
               >
                 <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50">{{ row.hari }}</td>
                 <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50">{{ row.sesi }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">{{ row.kelas }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">{{ row.kelas }} ({{ row.mata_kuliah_kelas?.matkul_sks || '-' }} SKS)</td>
                 <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">
                   <span v-for="(sem, idx) in row.semester || row.mk_kelas_sem || []" :key="idx" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
                     Semester {{ sem }}
