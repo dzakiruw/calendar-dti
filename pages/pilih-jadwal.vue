@@ -317,7 +317,7 @@
               >
                 <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50">{{ row.hari }}</td>
                 <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50">{{ row.sesi }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">{{ row.kelas }} ({{ row.mata_kuliah_kelas?.matkul_sks || '-' }} SKS)</td>
+                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">{{ row.kelas }} ({{ getSKS(row) }} SKS)</td>
                 <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">
                   <span v-for="(sem, idx) in row.semester || row.mk_kelas_sem || []" :key="idx" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
                     Semester {{ sem }}
@@ -352,6 +352,7 @@
                 <tr v-for="(item, idx) in jadwalGenerated.filter(j => j.status === 'unplaced')" :key="idx">
                   <td class="px-6 py-4 text-sm text-gray-700">{{ item.kelas || '-' }}</td>
                   <td class="px-6 py-4 text-sm text-gray-700">{{ item.mata_kuliah_kelas?.nama_kelas || '-' }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-700">{{ getSKS(item) }} SKS</td>
                   <td class="px-6 py-4 text-sm text-gray-700">
                     <span v-for="(sem, sidx) in item.semester || item.mk_kelas_sem || []" :key="sidx" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
                       Semester {{ sem }}
@@ -1024,8 +1025,9 @@ const exportExcel = () => {
       if (item) {
         const dosenTeamTeaching = getTeamTeachingLecturers(item);
         const namaMatkul = item.mata_kuliah_kelas?.nama_kelas || "-";
+        const sks = getSKS(item);
         row.push(
-          `${namaMatkul} - ${
+          `${namaMatkul} (${sks} SKS) - ${
             dosenTeamTeaching || item.dosen?.dosen_kode || item.dosen || "-"
           }` +
             (item.semester
@@ -1048,6 +1050,7 @@ const exportExcel = () => {
     matrixData.push([
       "Kelas Unplaced",
       "Mata Kuliah",
+      "SKS",
       "Semester",
       "Dosen",
       "Alasan",
@@ -1055,9 +1058,11 @@ const exportExcel = () => {
     unplaced.forEach((item) => {
       const dosenTeamTeaching = getTeamTeachingLecturers(item);
       const namaMatkul = item.mata_kuliah_kelas?.nama_kelas || "-";
+      const sks = getSKS(item);
       matrixData.push([
         item.kelas || "-",
         namaMatkul,
+        sks,
         (item.semester || ["-"]).join(","),
         dosenTeamTeaching ||
           (Array.isArray(item.dosen)
@@ -1364,4 +1369,23 @@ function ensureUnplacedStatus(jadwal) {
     }
   }
 }
+
+const getSKS = (row) => {
+  // Cek dari mata_kuliah_kelas
+  if (row.mata_kuliah_kelas && row.mata_kuliah_kelas.matkul_sks) {
+    return row.mata_kuliah_kelas.matkul_sks;
+  }
+  // Cek dari matkul_sks langsung (jaga-jaga)
+  if (row.matkul_sks) {
+    return row.matkul_sks;
+  }
+  // Cek dari mataKuliahList (by kode matkul)
+  const mk = mataKuliahList.value.find(
+    m => m.matkul_kode === (row.matkul_kode || row.mata_kuliah_kelas?.matkul_kode)
+  );
+  if (mk && mk.matkul_sks) {
+    return mk.matkul_sks;
+  }
+  return '-';
+};
 </script>
