@@ -339,7 +339,7 @@ onMounted(async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (token) {
-      const res = await axios.get('http://10.15.41.68:3000/user/me', {
+      const res = await axios.get('http://10.4.90.25:3000/user/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
       userName.value = res.data?.name || res.data?.username || '';

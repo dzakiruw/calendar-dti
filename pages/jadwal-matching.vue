@@ -350,7 +350,7 @@ const fetchMataKuliah = async () => {
       throw new Error('User is not authenticated');
     }
 
-    const response = await axios.get('http://10.15.41.68:3000/mata_kuliah', {
+    const response = await axios.get('http://10.4.90.25:3000/mata_kuliah', {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -369,7 +369,7 @@ const fetchDosen = async () => {
       throw new Error('User is not authenticated');
     }
 
-    const response = await axios.get('http://10.15.41.68:3000/dosen', {
+    const response = await axios.get('http://10.4.90.25:3000/dosen', {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -389,7 +389,7 @@ const fetchMatchingData = async () => {
       throw new Error('User is not authenticated');
     }
 
-    const response = await axios.get('http://10.15.41.68:3000/mk_dosen', {
+    const response = await axios.get('http://10.4.90.25:3000/mk_dosen', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -494,7 +494,7 @@ const submitMatching = async () => {
       };
       
       const response = await axios.put(
-        `http://10.15.41.68:3000/mk_dosen/${match.id_mk_kelas_dosen}`, 
+        `http://10.4.90.25:3000/mk_dosen/${match.id_mk_kelas_dosen}`, 
         updateData, 
         { headers }
       );
@@ -515,7 +515,7 @@ const submitMatching = async () => {
         matkul_tipe: selectedMataKuliahType.value
       };
 
-      const response = await axios.post('http://10.15.41.68:3000/mk_dosen', postData, { headers });
+      const response = await axios.post('http://10.4.90.25:3000/mk_dosen', postData, { headers });
 
       if (response.status === 200 || response.status === 201) {
         // Add the new matching to the list
@@ -543,7 +543,7 @@ const deleteMatching = async (index) => {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) throw new Error('User is not authenticated');
 
-    await axios.delete(`http://10.15.41.68:3000/mk_dosen/${match.id}`, {
+    await axios.delete(`http://10.4.90.25:3000/mk_dosen/${match.id}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -655,7 +655,7 @@ const confirmDelete = async () => {
 
     const jadwal = selectedIndex.value;
 
-    const response = await axios.delete(`http://10.15.41.68:3000/mk_dosen/${jadwal.id_mk_kelas_dosen}`, {
+    const response = await axios.delete(`http://10.4.90.25:3000/mk_dosen/${jadwal.id_mk_kelas_dosen}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

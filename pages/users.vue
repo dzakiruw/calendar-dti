@@ -332,7 +332,7 @@ const fetchUsers = async () => {
       throw new Error('User is not authenticated');
     }
 
-    const response = await axios.get('http://10.15.41.68:3000/user', {
+    const response = await axios.get('http://10.4.90.25:3000/user', {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -371,10 +371,10 @@ const handleSubmit = async () => {
     }
 
     if (isEditing.value) {
-      await axios.patch(`http://10.15.41.68:3000/user/${editingId.value}`, submitData, { headers });
+      await axios.patch(`http://10.4.90.25:3000/user/${editingId.value}`, submitData, { headers });
       showSuccessMessage('Pengguna berhasil diperbarui');
     } else {
-      await axios.post('http://10.15.41.68:3000/user', submitData, { headers });
+      await axios.post('http://10.4.90.25:3000/user', submitData, { headers });
       showSuccessMessage('Pengguna berhasil ditambahkan');
     }
     
@@ -429,7 +429,7 @@ const confirmDelete = async () => {
       throw new Error('User is not authenticated');
     }
 
-    await axios.delete(`http://10.15.41.68:3000/user/${selectedUserId.value}`, {
+    await axios.delete(`http://10.4.90.25:3000/user/${selectedUserId.value}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

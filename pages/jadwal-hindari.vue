@@ -390,7 +390,7 @@ const fetchJadwal = async () => {
       throw new Error('User is not authenticated');
     }
 
-    const response = await axios.get('http://10.15.41.68:3000/jadwal_hindari', {
+    const response = await axios.get('http://10.4.90.25:3000/jadwal_hindari', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -429,12 +429,12 @@ const submitForm = async () => {
     let response;
     if (editIndex.value !== null) {
       const jadwalId = jadwalList.value[editIndex.value].id_hindari;
-      response = await axios.patch(`http://10.15.41.68:3000/jadwal_hindari/${jadwalId}`, newJadwal, { headers });
+      response = await axios.patch(`http://10.4.90.25:3000/jadwal_hindari/${jadwalId}`, newJadwal, { headers });
       
       // Update the local list with the new data
       jadwalList.value[editIndex.value] = response.data.data;
     } else {
-      response = await axios.post('http://10.15.41.68:3000/jadwal_hindari', newJadwal, { headers });
+      response = await axios.post('http://10.4.90.25:3000/jadwal_hindari', newJadwal, { headers });
       
       // Add the new jadwal to the list
       jadwalList.value.push(response.data.data);
@@ -465,7 +465,7 @@ const fetchJadwalList = async () => {
       throw new Error('User is not authenticated');
     }
 
-    const response = await axios.get('http://10.15.41.68:3000/jadwal_hindari', {
+    const response = await axios.get('http://10.4.90.25:3000/jadwal_hindari', {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -505,7 +505,7 @@ const deleteJadwal = async (index) => {
       throw new Error('User is not authenticated');
     }
 
-    await axios.delete(`http://10.15.41.68:3000/jadwal_hindari/${jadwalId}`, {
+    await axios.delete(`http://10.4.90.25:3000/jadwal_hindari/${jadwalId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -570,7 +570,7 @@ const confirmDelete = async () => {
     }
 
     const jadwalHindari = jadwalList.value[selectedIndex.value];
-    await axios.delete(`http://10.15.41.68:3000/jadwal_hindari/${jadwalHindari.id_hindari}`, {
+    await axios.delete(`http://10.4.90.25:3000/jadwal_hindari/${jadwalHindari.id_hindari}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

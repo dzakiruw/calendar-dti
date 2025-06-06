@@ -267,7 +267,7 @@ const handleChangePassword = async () => {
     const user = JSON.parse(localStorage.getItem('user'));
     const token = user?.accessToken;
     if (!token) throw new Error('User not authenticated');
-    await axios.patch('http://10.15.41.68:3000/user/me', {
+    await axios.patch('http://10.4.90.25:3000/user/me', {
       oldPassword: oldPassword.value,
       newPassword: newPassword.value
     }, {

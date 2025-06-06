@@ -278,7 +278,7 @@ const fetchRuangKelas = async () => {
       throw new Error('User is not authenticated');
     }
 
-    const response = await axios.get('http://10.15.41.68:3000/ruangan', {
+    const response = await axios.get('http://10.4.90.25:3000/ruangan', {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -311,7 +311,7 @@ const submitForm = async () => {
     if (editIndex.value !== null) {
       // Update Ruang Kelas
       const ruangKelasKode = ruangKelasList.value[editIndex.value].ruangan_kode;
-      const response = await axios.put(`http://10.15.41.68:3000/ruangan/${ruangKelasKode}`, newRuangKelas, {
+      const response = await axios.put(`http://10.4.90.25:3000/ruangan/${ruangKelasKode}`, newRuangKelas, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -325,7 +325,7 @@ const submitForm = async () => {
       showSuccessAlert('Data ruang kelas berhasil diperbarui!');
     } else {
       // Add New Ruang Kelas
-      const response = await axios.post('http://10.15.41.68:3000/ruangan', newRuangKelas, {
+      const response = await axios.post('http://10.4.90.25:3000/ruangan', newRuangKelas, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -391,7 +391,7 @@ const confirmDelete = async () => {
     }
 
     const ruangKelas = ruangKelasList.value[selectedIndex.value];
-    await axios.delete(`http://10.15.41.68:3000/ruangan/${ruangKelas.ruangan_kode}`, {
+    await axios.delete(`http://10.4.90.25:3000/ruangan/${ruangKelas.ruangan_kode}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
