@@ -296,7 +296,7 @@
                    ? 'bg-indigo-200'
                    : 'bg-blue-100 group-hover:bg-blue-200'
                ]">
-            <i class="fas fa-user" :class="route.path === '/profile' ? 'text-indigo-700' : 'text-blue-600'"></i>
+              <i class="fas fa-user" :class="route.path === '/profile' ? 'text-indigo-700' : 'text-blue-600'"></i>
           </div>
           <div class="flex flex-col">
             <span class="text-sm font-medium" :class="route.path === '/profile' ? 'text-indigo-700' : 'text-gray-700 group-hover:text-blue-600'">{{ user.username }}</span>

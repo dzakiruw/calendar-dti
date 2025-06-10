@@ -38,7 +38,7 @@
     <!-- Dosen Form and List Container -->
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
       <!-- Dosen Form -->
-      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100 h-full">
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100">
         <form @submit.prevent="submitDosen" class="space-y-6">
           <div class="space-y-6">
             <div>
@@ -150,7 +150,7 @@
       </div>
 
       <!-- Daftar Dosen -->
-      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col h-full">
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100">
         <div class="flex flex-col h-full">
           <!-- Title with Icon and Counter -->
           <div class="flex items-center justify-between mb-5 border-b pb-3">
@@ -161,7 +161,7 @@
             <div class="flex items-center gap-2">
               <div class="bg-blue-100 text-blue-700 px-3 py-1 rounded-md text-sm font-medium flex items-center">
                 <i class="fas fa-user-tie mr-1.5"></i>
-                {{ filteredDosenList.length }} Dosen
+                {{ sortedDosenList.length }} Dosen
               </div>
               <button 
                 @click="toggleFullscreen" 
@@ -226,16 +226,16 @@
               @click="resetFilters" 
               class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
             >
-              <i class="fas fa-undo mr-2"></i> Reset filter
+              <i class="fas fa-undo"></i>
             </button>
           </div>
 
           <!-- Content Area -->
-          <div class="flex-1 flex flex-col">
+          <div class="h-[505px] overflow-hidden">
             <!-- Empty State -->
             <div
-              v-if="filteredDosenList.length === 0"
-              class="flex flex-col items-center justify-center py-12 text-gray-500 flex-1"
+              v-if="sortedDosenList.length === 0"
+              class="flex flex-col items-center justify-center py-12 text-gray-500 h-full"
             >
               <i class="fas fa-filter text-4xl mb-4 text-blue-300"></i>
               <p class="text-center font-medium">
@@ -250,10 +250,10 @@
             </div>
 
             <!-- Dosen List -->
-            <div v-else class="overflow-y-auto flex-1 pr-2">
-              <ul class="grid grid-cols-1 gap-4 mb-4">
+            <div v-else class="overflow-y-auto h-full pr-2">
+              <ul class="grid grid-cols-1 gap-4 pb-3">
                 <li 
-                  v-for="(dosen, index) in filteredDosenList" 
+                  v-for="(dosen, index) in sortedDosenList" 
                   :key="index" 
                   class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
                 >
@@ -270,14 +270,14 @@
                         <!-- Action Buttons -->
                         <div class="flex space-x-1">
                           <button
-                            @click="editDosen(filteredDosenList.indexOf(dosen))"
+                            @click="editDosen(sortedDosenList.indexOf(dosen))"
                             class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
                             title="Edit dosen"
                           >
                             <i class="fas fa-edit"></i>
                           </button>
                           <button
-                            @click="deleteDosen(filteredDosenList.indexOf(dosen))"
+                            @click="deleteDosen(sortedDosenList.indexOf(dosen))"
                             class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
                             title="Hapus dosen"
                           >
@@ -318,24 +318,26 @@
                         <div v-if="getGroupedSessions(dosen.jadwal_dosen).length > 0" class="text-xs text-gray-600">
                           <div v-for="(result, sesiIndex) in getGroupedSessions(dosen.jadwal_dosen)" :key="sesiIndex" class="mb-2">
                             <div class="flex">
-                              <div class="w-[80px]">
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
-                                  <i class="fas fa-clock mr-1"></i>
+                              <div class="min-w-[80px] w-[80px]">
+                                <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                                  <i class="fas fa-clock"></i>
                                   Sesi {{ result.sesi === 'SATU' ? '1' : result.sesi === 'DUA' ? '2' : '3' }}
                                 </span>
                               </div>
-                              <div class="w-[20px] text-center">
+                              <div class="w-[20px] text-center flex items-center justify-center">
                                 <span class="text-gray-400">:</span>
                               </div>
-                              <div class="flex flex-wrap gap-1">
-                                <span 
-                                  v-for="hari in result.hari" 
-                                  :key="hari"
-                                  class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md min-w-[60px] text-center mb-1 mr-1 font-medium"
-                                >
-                                  <i class="fas fa-calendar-day mr-1"></i>
-                                  {{ hari }}
-                                </span>
+                              <div class="flex-1">
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
+                                  <span 
+                                    v-for="hari in result.hari" 
+                                    :key="hari"
+                                    class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md w-full text-center mb-1 font-medium"
+                                  >
+                                    <i class="fas fa-calendar-day"></i>
+                                    {{ hari }}
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -423,7 +425,7 @@
           <div class="flex items-center gap-2">
             <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center">
               <i class="fas fa-user-tie mr-2"></i>
-              {{ filteredDosenList.length }} Dosen
+              {{ sortedDosenList.length }} Dosen
             </div>
             <button
               @click="toggleFullscreen"
@@ -493,7 +495,7 @@
 
         <!-- Multi-column List -->
         <div class="flex-1 overflow-y-auto pr-2">
-          <div v-if="filteredDosenList.length === 0" class="flex flex-col items-center justify-center h-full text-gray-500">
+          <div v-if="sortedDosenList.length === 0" class="flex flex-col items-center justify-center h-full text-gray-500">
             <i class="fas fa-filter text-6xl mb-4 text-blue-300"></i>
             <p class="text-center font-medium">
               {{
@@ -507,7 +509,7 @@
           </div>
           <ul v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
             <li 
-              v-for="(dosen, index) in filteredDosenList" 
+              v-for="(dosen, index) in sortedDosenList" 
               :key="index" 
               class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
             >
@@ -524,14 +526,14 @@
                     <!-- Action Buttons -->
                     <div class="flex space-x-1">
                       <button
-                        @click="editDosen(filteredDosenList.indexOf(dosen)); toggleFullscreen()"
+                        @click="editDosen(sortedDosenList.indexOf(dosen)); toggleFullscreen()"
                         class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
                         title="Edit dosen"
                       >
                         <i class="fas fa-edit"></i>
                       </button>
                       <button
-                        @click="deleteDosen(filteredDosenList.indexOf(dosen))"
+                        @click="deleteDosen(sortedDosenList.indexOf(dosen))"
                         class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
                         title="Hapus dosen"
                       >
@@ -572,24 +574,26 @@
                     <div v-if="getGroupedSessions(dosen.jadwal_dosen).length > 0" class="text-xs text-gray-600">
                       <div v-for="(result, sesiIndex) in getGroupedSessions(dosen.jadwal_dosen)" :key="sesiIndex" class="mb-2">
                         <div class="flex">
-                          <div class="w-[80px]">
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
-                              <i class="fas fa-clock mr-1"></i>
+                          <div class="min-w-[80px] w-[80px]">
+                            <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                              <i class="fas fa-clock"></i>
                               Sesi {{ result.sesi === 'SATU' ? '1' : result.sesi === 'DUA' ? '2' : '3' }}
                             </span>
                           </div>
-                          <div class="w-[20px] text-center">
+                          <div class="w-[20px] text-center flex items-center justify-center">
                             <span class="text-gray-400">:</span>
                           </div>
-                          <div class="flex flex-wrap gap-1">
-                            <span 
-                              v-for="hari in result.hari" 
-                              :key="hari"
-                              class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md min-w-[60px] text-center mb-1 mr-1 font-medium"
-                            >
-                              <i class="fas fa-calendar-day mr-1"></i>
-                              {{ hari }}
-                            </span>
+                          <div class="flex-1">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
+                              <span 
+                                v-for="hari in result.hari" 
+                                :key="hari"
+                                class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md w-full text-center mb-1 font-medium"
+                              >
+                                <i class="fas fa-calendar-day"></i>
+                                {{ hari }}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -675,6 +679,16 @@ const filteredDosenList = computed(() => {
   }
   
   return filtered;
+});
+
+// Computed property for sorted dosen list (newest first)
+const sortedDosenList = computed(() => {
+  // Create a copy of the filtered list to avoid modifying the original
+  const sorted = [...filteredDosenList.value];
+  
+  // Sort by newest first (assuming there's a createdAt field)
+  // If there's no createdAt field, we'll reverse the array to show "newest" first
+  return sorted.reverse();
 });
 
 // Fungsi untuk mendapatkan sesi yang difilter dan mengelompokkan hari berdasarkan sesi
@@ -857,7 +871,7 @@ const submitData = async () => {
 
 // Update edit function to show confirmation
 const editDosen = (index) => {
-  const dosen = filteredDosenList.value[index];
+  const dosen = sortedDosenList.value[index];
   selectedIndex.value = dosenList.value.findIndex(d => d.dosen_kode === dosen.dosen_kode);
   
   // Directly edit without confirmation
@@ -886,7 +900,7 @@ const editDosen = (index) => {
 
 // Update delete function to show confirmation
 const deleteDosen = (index) => {
-  const dosen = filteredDosenList.value[index];
+  const dosen = sortedDosenList.value[index];
   selectedIndex.value = dosenList.value.findIndex(d => d.dosen_kode === dosen.dosen_kode);
   showDeleteConfirm.value = true;
 };
