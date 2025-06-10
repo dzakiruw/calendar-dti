@@ -5,19 +5,10 @@
       <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
     </div>
 
-    <!-- Toggle Sidebar Button (Mobile) -->
-    <button 
-      v-if="isAuthenticated && isAuthChecked" 
-      @click="toggleSidebar"
-      class="lg:hidden fixed top-4 left-4 z-20 p-2 rounded-md bg-white shadow-md hover:bg-gray-100"
-    >
-      <i :class="isSidebarOpen ? 'fas fa-times' : 'fas fa-bars'" class="text-gray-600 text-xl"></i>
-    </button>
-
-    <!-- Sidebar Overlay (Mobile) -->
+    <!-- Mobile Overlay -->
     <div 
-      v-if="isAuthenticated && isSidebarOpen && isAuthChecked" 
-      @click="toggleSidebar"
+      v-if="isAuthenticated && isSidebarOpen && isAuthChecked && !isDesktop" 
+      @click="closeSidebar"
       class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-10"
     ></div>
 
@@ -27,18 +18,20 @@
       :class="{
         'translate-x-0': isSidebarOpen,
         '-translate-x-full': !isSidebarOpen,
-        'lg:translate-x-0': true
+        'lg:translate-x-0': !isDesktopCollapsed,
+        'lg:-translate-x-full': isDesktopCollapsed,
+        'w-64': true
       }"
-      class="w-64 fixed inset-y-0 left-0 shadow-md bg-white z-20 transform transition-transform duration-300 ease-in-out"
+      class="fixed inset-y-0 left-0 shadow-md bg-white z-20 transform transition-transform duration-300 ease-in-out"
     >
-      <sidebar />
+      <sidebar @toggle-sidebar="toggleDesktopSidebar" @close-sidebar="closeSidebar" />
     </div>
 
     <!-- Main Content -->
     <div 
       :class="{
-        'ml-0 lg:ml-64': isAuthenticated && isAuthChecked,
-        'ml-0': !isAuthenticated || !isAuthChecked
+        'ml-0 lg:ml-64': isAuthenticated && isAuthChecked && !isDesktopCollapsed,
+        'ml-0': !isAuthenticated || !isAuthChecked || isDesktopCollapsed
       }" 
       class="flex-1 min-h-screen bg-gray-50 transition-all duration-300 ease-in-out"
     >
@@ -49,13 +42,15 @@
 
 <script setup>
 import sidebar from '~/components/sidebar.vue'
-import { ref, computed, onMounted, provide } from 'vue'
+import { ref, computed, onMounted, provide, watch } from 'vue'
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 
 const user = ref({});
 const isSidebarOpen = ref(false);
+const isDesktopCollapsed = ref(false);
 const isAuthChecked = ref(false);
+const isDesktop = ref(false);
 
 // Function to validate token (frontend-safe)
 const validateToken = (token) => {
@@ -97,10 +92,73 @@ const isAuthenticated = computed(() => {
   return user.value && user.value.accessToken;
 });
 
-// Function to toggle sidebar
+// Function to toggle sidebar on mobile
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
+  notifySidebarStateChange();
 };
+
+// Function to toggle sidebar on desktop
+const toggleDesktopSidebar = () => {
+  if (isDesktop.value) {
+    isDesktopCollapsed.value = !isDesktopCollapsed.value;
+    localStorage.setItem('sidebarCollapsed', isDesktopCollapsed.value);
+    notifySidebarStateChange();
+  } else {
+    isSidebarOpen.value = !isSidebarOpen.value;
+    notifySidebarStateChange();
+  }
+};
+
+// Function to close sidebar
+const closeSidebar = () => {
+  isSidebarOpen.value = false;
+  notifySidebarStateChange();
+};
+
+// Function to notify sidebar of state changes
+const notifySidebarStateChange = () => {
+  if (process.client) {
+    window.dispatchEvent(
+      new CustomEvent('sidebar-state-changed', {
+        detail: {
+          isDesktopCollapsed: isDesktopCollapsed.value,
+          isMobileOpen: isSidebarOpen.value
+        }
+      })
+    );
+  }
+};
+
+// Set initial sidebar state based on screen size
+onMounted(() => {
+  if (process.client) {
+    // Check if sidebar was previously collapsed
+    const savedCollapsed = localStorage.getItem('sidebarCollapsed');
+    isDesktopCollapsed.value = savedCollapsed === 'true';
+    
+    // Set initial state based on screen size
+    isDesktop.value = window.innerWidth >= 1024;
+    isSidebarOpen.value = false;
+    
+    // Add resize listener
+    window.addEventListener('resize', () => {
+      const wasDesktop = isDesktop.value;
+      isDesktop.value = window.innerWidth >= 1024;
+      
+      // Only change sidebar state when transitioning between desktop and mobile
+      if (!wasDesktop && isDesktop.value) {
+        isSidebarOpen.value = false;
+      }
+      
+      // Notify sidebar of state changes
+      notifySidebarStateChange();
+    });
+    
+    // Initial notification
+    notifySidebarStateChange();
+  }
+});
 
 // Function to update authentication state
 const updateAuthState = (newUser) => {
@@ -123,7 +181,7 @@ onMounted(async () => {
   // Check auth state immediately
   await checkAuthState();
 
-    // Listen for storage events to handle auth state changes
+  // Listen for storage events to handle auth state changes
   window.addEventListener('storage', async () => {
     await checkAuthState();
   });
@@ -136,6 +194,6 @@ onMounted(async () => {
   // Listen for auth state changes from other components
   window.addEventListener('auth-state-changed', (event) => {
     user.value = event.detail || {};
-    });
+  });
 });
 </script>

@@ -1,7 +1,7 @@
 <template>
-  <div v-if="isAuthenticated" class="w-full h-full bg-white text-gray-900 flex flex-col">
+  <div v-if="isAuthenticated" class="w-full h-full bg-white text-gray-900 flex flex-col relative">
     <!-- Sidebar Header -->
-    <div class="flex flex-col px-6 py-6 bg-gradient-to-r from-blue-600 to-indigo-600">
+    <div class="flex justify-between items-center px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600">
       <div class="flex items-center space-x-3">
         <img src="/logo.png" alt="DTI Logo" class="w-10 h-10 rounded-lg shadow-lg transform hover:scale-110 transition-transform duration-300" />
         <div class="flex flex-col">
@@ -10,6 +10,18 @@
         </div>
       </div>
     </div>
+
+    <!-- Toggle Button - Fixed Position -->
+    <button 
+      @click="toggleSidebar" 
+      class="absolute -right-10 top-4 bg-white p-2 rounded-r-lg shadow-md hover:bg-gray-100 transition-colors z-30"
+    >
+      <i class="fas" :class="[
+        (isDesktop && isDesktopCollapsed) || (!isDesktop && !isMobileOpen) 
+          ? 'fa-chevron-right' 
+          : 'fa-chevron-left'
+      ]"></i>
+    </button>
 
     <!-- Sidebar Menu -->
     <nav class="flex-1 px-3 py-4 overflow-y-auto bg-gradient-to-b from-gray-50 to-white">
@@ -25,7 +37,7 @@
           @click="handleClick"
         >
           <div class="flex items-center">
-            <div class="p-2 rounded-lg transition-colors duration-300"
+            <div class="p-2 rounded-lg w-9 h-9 flex items-center justify-center transition-colors duration-300"
                  :class="[
                    route.path === '/'
                      ? 'bg-indigo-200'
@@ -44,25 +56,25 @@
           @click="toggleDropdown('kalender')" 
           class="flex items-center justify-between w-full px-4 py-3 rounded-xl transition-all duration-300 group"
           :class="[
-            isKalenderActive
+            activeInKalender && !isSpecificKalenderRoute
               ? 'bg-indigo-100 text-indigo-700 border-l-4 border-indigo-600'
               : 'text-gray-600 hover:bg-blue-50'
           ]"
         >
           <div class="flex items-center">
-            <div class="p-2 rounded-lg transition-colors duration-300"
+            <div class="p-2 rounded-lg w-9 h-9 flex items-center justify-center transition-colors duration-300"
                  :class="[
-                   isKalenderActive
+                   activeInKalender && !isSpecificKalenderRoute
                      ? 'bg-indigo-200'
                      : 'bg-blue-100 group-hover:bg-blue-200'
                  ]">
-              <i class="fas fa-calendar-alt" :class="isKalenderActive ? 'text-indigo-700' : 'text-blue-600'"></i>
+              <i class="fas fa-calendar-alt" :class="activeInKalender && !isSpecificKalenderRoute ? 'text-indigo-700' : 'text-blue-600'"></i>
             </div>
-            <span class="ml-3 font-medium" :class="isKalenderActive ? 'text-indigo-700' : 'group-hover:text-blue-600'">Data Kalender</span>
+            <span class="ml-3 font-medium" :class="activeInKalender && !isSpecificKalenderRoute ? 'text-indigo-700' : 'group-hover:text-blue-600'">Data Kalender</span>
           </div>
           <i :class="[
                dropdowns.kalender ? 'fas fa-chevron-up' : 'fas fa-chevron-down',
-               isKalenderActive ? 'text-indigo-700' : 'text-gray-400 group-hover:text-blue-600'
+               activeInKalender && !isSpecificKalenderRoute ? 'text-indigo-700' : 'text-gray-400 group-hover:text-blue-600'
              ]"
              class="transition-transform duration-300"
              :style="{ transform: dropdowns.kalender ? 'rotate(-180deg)' : 'rotate(0)' }"
@@ -78,7 +90,7 @@
             ]"
             @click="handleClick"
           >
-            <div class="p-2 rounded-lg transition-colors duration-300"
+            <div class="p-2 rounded-lg w-8 h-8 flex items-center justify-center transition-colors duration-300"
                  :class="[
                    route.path === '/mata-kuliah'
                      ? 'bg-indigo-200'
@@ -97,7 +109,7 @@
             ]"
             @click="handleClick"
           >
-            <div class="p-2 rounded-lg transition-colors duration-300"
+            <div class="p-2 rounded-lg w-8 h-8 flex items-center justify-center transition-colors duration-300"
                  :class="[
                    route.path === '/dosen'
                      ? 'bg-indigo-200'
@@ -116,7 +128,7 @@
             ]"
             @click="handleClick"
           >
-            <div class="p-2 rounded-lg transition-colors duration-300"
+            <div class="p-2 rounded-lg w-8 h-8 flex items-center justify-center transition-colors duration-300"
                  :class="[
                    route.path === '/ruang-kelas'
                      ? 'bg-indigo-200'
@@ -135,7 +147,7 @@
             ]"
             @click="handleClick"
           >
-            <div class="p-2 rounded-lg transition-colors duration-300"
+            <div class="p-2 rounded-lg w-8 h-8 flex items-center justify-center transition-colors duration-300"
                  :class="[
                    route.path === '/jadwal-hindari'
                      ? 'bg-indigo-200'
@@ -154,25 +166,25 @@
           @click="toggleDropdown('jadwal')" 
           class="flex items-center justify-between w-full px-4 py-3 rounded-xl transition-all duration-300 group"
           :class="[
-            isJadwalActive
+            activeInJadwal && !isSpecificJadwalRoute
               ? 'bg-indigo-100 text-indigo-700 border-l-4 border-indigo-600'
               : 'text-gray-600 hover:bg-blue-50'
           ]"
         >
           <div class="flex items-center">
-            <div class="p-2 rounded-lg transition-colors duration-300"
+            <div class="p-2 rounded-lg w-9 h-9 flex items-center justify-center transition-colors duration-300"
                  :class="[
-                   isJadwalActive
+                   activeInJadwal && !isSpecificJadwalRoute
                      ? 'bg-indigo-200'
                      : 'bg-blue-100 group-hover:bg-blue-200'
                  ]">
-              <i class="fas fa-calendar-check" :class="isJadwalActive ? 'text-indigo-700' : 'text-blue-600'"></i>
+              <i class="fas fa-calendar-check" :class="activeInJadwal && !isSpecificJadwalRoute ? 'text-indigo-700' : 'text-blue-600'"></i>
             </div>
-            <span class="ml-3 font-medium" :class="isJadwalActive ? 'text-indigo-700' : 'group-hover:text-blue-600'">Jadwal</span>
+            <span class="ml-3 font-medium" :class="activeInJadwal && !isSpecificJadwalRoute ? 'text-indigo-700' : 'group-hover:text-blue-600'">Jadwal</span>
           </div>
           <i :class="[
                dropdowns.jadwal ? 'fas fa-chevron-up' : 'fas fa-chevron-down',
-               isJadwalActive ? 'text-indigo-700' : 'text-gray-400 group-hover:text-blue-600'
+               activeInJadwal && !isSpecificJadwalRoute ? 'text-indigo-700' : 'text-gray-400 group-hover:text-blue-600'
              ]"
              class="transition-transform duration-300"
              :style="{ transform: dropdowns.jadwal ? 'rotate(-180deg)' : 'rotate(0)' }"
@@ -188,7 +200,7 @@
             ]"
             @click="handleClick"
           >
-            <div class="p-2 rounded-lg transition-colors duration-300"
+            <div class="p-2 rounded-lg w-8 h-8 flex items-center justify-center transition-colors duration-300"
                  :class="[
                    route.path === '/jadwal-matching'
                      ? 'bg-indigo-200'
@@ -207,7 +219,7 @@
             ]"
             @click="handleClick"
           >
-            <div class="p-2 rounded-lg transition-colors duration-300"
+            <div class="p-2 rounded-lg w-8 h-8 flex items-center justify-center transition-colors duration-300"
                  :class="[
                    route.path === '/pilih-jadwal'
                      ? 'bg-indigo-200'
@@ -232,7 +244,7 @@
           @click="handleClick"
         >
           <div class="flex items-center">
-            <div class="p-2 rounded-lg transition-colors duration-300"
+            <div class="p-2 rounded-lg w-9 h-9 flex items-center justify-center transition-colors duration-300"
                  :class="[
                    route.path === '/about'
                      ? 'bg-indigo-200'
@@ -257,7 +269,7 @@
           @click="handleClick"
         >
           <div class="flex items-center">
-            <div class="p-2 rounded-lg transition-colors duration-300"
+            <div class="p-2 rounded-lg w-9 h-9 flex items-center justify-center transition-colors duration-300"
                  :class="[
                    route.path === '/users'
                      ? 'bg-indigo-200'
@@ -278,15 +290,13 @@
           class="flex items-center space-x-3 group" 
           @click="handleClick"
         >
-          <div class="w-10 h-10 rounded-lg transition-colors duration-300"
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-300"
                :class="[
                  route.path === '/profile'
                    ? 'bg-indigo-200'
                    : 'bg-blue-100 group-hover:bg-blue-200'
                ]">
-            <div class="w-full h-full flex items-center justify-center">
-              <i class="fas fa-user" :class="route.path === '/profile' ? 'text-indigo-700' : 'text-blue-600'"></i>
-            </div>
+            <i class="fas fa-user" :class="route.path === '/profile' ? 'text-indigo-700' : 'text-blue-600'"></i>
           </div>
           <div class="flex flex-col">
             <span class="text-sm font-medium" :class="route.path === '/profile' ? 'text-indigo-700' : 'text-gray-700 group-hover:text-blue-600'">{{ user.username }}</span>
@@ -296,9 +306,9 @@
 
         <button 
           @click="handleLogout" 
-          class="p-2 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors duration-300"
+          class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors duration-300"
         >
-          <i class="fas fa-sign-out-alt text-lg"></i>
+          <i class="fas fa-sign-out-alt"></i>
         </button>
       </div>
     </div>
@@ -306,7 +316,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, inject, computed } from "vue";
+import { ref, onMounted, inject, computed, watch, onUnmounted } from "vue";
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 
@@ -317,10 +327,41 @@ const dropdowns = ref({
 
 const router = useRouter();
 const route = useRoute();
-const emit = defineEmits(['closeSidebar']);
+const emit = defineEmits(['closeSidebar', 'toggleSidebar']);
 
 // Inject auth state from layout
 const { user, isAuthenticated, updateAuthState } = inject('authState');
+
+// Sidebar states
+const isDesktopCollapsed = ref(false);
+const isMobileOpen = ref(false);
+const isDesktop = ref(window.innerWidth >= 1024);
+
+// Check viewport size on resize
+const handleResize = () => {
+  isDesktop.value = window.innerWidth >= 1024;
+};
+
+// Check if sidebar is collapsed from localStorage
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', handleResize);
+    const savedCollapsed = localStorage.getItem('sidebarCollapsed');
+    isDesktopCollapsed.value = savedCollapsed === 'true';
+  }
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize);
+});
+
+// Watch for sidebar state changes from parent component
+const updateSidebarState = (event) => {
+  if (event.detail) {
+    isDesktopCollapsed.value = event.detail.isDesktopCollapsed;
+    isMobileOpen.value = event.detail.isMobileOpen;
+  }
+};
 
 // Profile picture logic
 const profilePic = ref(localStorage.getItem('profilePic') || '/avatar.svg');
@@ -334,7 +375,9 @@ const userName = ref('');
 
 onMounted(async () => {
   window.addEventListener('storage', updateProfilePic);
+  window.addEventListener('sidebar-state-changed', updateSidebarState);
   updateProfilePic();
+  
   // Fetch user name from API
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
@@ -359,19 +402,45 @@ onMounted(async () => {
   }
 });
 
+onUnmounted(() => {
+  window.removeEventListener('storage', updateProfilePic);
+  window.removeEventListener('sidebar-state-changed', updateSidebarState);
+});
+
+// Watch for route changes to close sidebar on mobile
+watch(route, () => {
+  if (!isDesktop.value) {
+    emit('closeSidebar');
+  }
+});
+
 // Computed properties for active states
-const isKalenderActive = computed(() => {
+const activeInKalender = computed(() => {
   return ['/mata-kuliah', '/dosen', '/ruang-kelas', '/jadwal-hindari'].includes(route.path);
 });
 
-const isJadwalActive = computed(() => {
+const activeInJadwal = computed(() => {
   return ['/jadwal-matching', '/pilih-jadwal'].includes(route.path);
 });
+
+// Check if a specific route is active to avoid highlighting parent
+const isSpecificKalenderRoute = computed(() => {
+  return ['/mata-kuliah', '/dosen', '/ruang-kelas', '/jadwal-hindari'].includes(route.path);
+});
+
+const isSpecificJadwalRoute = computed(() => {
+  return ['/jadwal-matching', '/pilih-jadwal'].includes(route.path);
+});
+
+// Toggle sidebar
+const toggleSidebar = () => {
+  emit('toggleSidebar');
+};
 
 // Handle link clicks on mobile
 const handleClick = () => {
   // Check if we're on mobile by checking window width
-  if (window.innerWidth < 1024) { // 1024px is the 'lg' breakpoint in Tailwind
+  if (!isDesktop.value) {
     emit('closeSidebar');
   }
 };

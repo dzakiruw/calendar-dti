@@ -36,9 +36,9 @@
     </div>
 
     <!-- Dosen Form and List Container -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
       <!-- Dosen Form -->
-      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100 h-full">
         <form @submit.prevent="submitDosen" class="space-y-6">
           <div class="space-y-6">
             <div>
@@ -95,22 +95,22 @@
                 <button type="button" @click="removeAllKetersediaan" class="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg text-xs font-semibold shadow hover:bg-gray-400 transition">Remove All</button>
               </div>
               <div class="w-full rounded-xl border border-gray-200 overflow-x-auto md:overflow-x-visible">
-                <table class="min-w-[600px] md:min-w-0 w-full text-xs md:text-sm">
-                  <thead class="bg-gradient-to-r from-blue-50 to-indigo-50">
+                <table class="min-w-[600px] md:min-w-0 w-full text-xs md:text-sm border-collapse border border-gray-300">
+                  <thead class="bg-blue-100">
                     <tr>
-                      <th class="sticky left-0 z-10 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-r border-gray-200 px-2 py-2 md:px-3 md:py-3 text-xs md:text-sm">Sesi / Hari</th>
-                      <th v-for="hari in hariList" :key="hari" class="border-b border-r last:border-r-0 border-gray-200 px-2 py-2 md:px-3 md:py-3 text-xs md:text-sm">
+                      <th class="sticky left-0 z-10 bg-blue-100 border border-gray-300 px-2 py-2 md:px-3 md:py-3 text-xs md:text-sm text-blue-700 text-center">Sesi / Hari</th>
+                      <th v-for="hari in hariList" :key="hari" class="border border-gray-300 px-2 py-2 md:px-3 md:py-3 text-xs md:text-sm text-blue-700 text-center">
                         {{ hari }}
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(row, sesiIndex) in sesiList" :key="sesiIndex">
-                      <td class="sticky left-0 z-10 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-r border-gray-200 px-2 py-2 md:px-3 md:py-3 font-semibold text-xs md:text-sm">
+                      <td class="sticky left-0 z-10 bg-indigo-100 border border-gray-300 px-2 py-2 md:px-3 md:py-3 font-semibold text-xs md:text-sm text-indigo-700 text-center">
                         Sesi {{ sesiIndex + 1 }}
                       </td>
                       <td v-for="(col, hariIndex) in hariList" :key="hariIndex" 
-                          class="border-b border-r last:border-r-0 last-row:border-b-0 border-gray-200 px-2 py-2 md:px-3 md:py-3 text-center">
+                          class="border border-gray-300 px-2 py-2 md:px-3 md:py-3 text-center bg-white">
                         <input 
                           type="checkbox" 
                           v-model="ketersediaan[sesiIndex][hariIndex]" 
@@ -129,7 +129,7 @@
             <button 
               type="submit" 
               class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
-                     hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
+                     hover:from-blue-700 hover:to-indigo-700 transition-all duration-300
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
               {{ editIndex !== null ? 'Update' : 'Submit' }}
@@ -140,7 +140,7 @@
               type="button" 
               @click="cancelEdit" 
               class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-6 rounded-xl
-                     hover:from-gray-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300
+                     hover:from-gray-700 hover:to-gray-800 transition-all duration-300
                      focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
             >
               Cancel
@@ -150,117 +150,179 @@
       </div>
 
       <!-- Daftar Dosen -->
-      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
-        <div>
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              <i class="fas fa-list-ul mr-2"></i> Daftar Dosen
-            </h2>
-            
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col h-full">
+        <div class="flex flex-col h-full">
+          <!-- Title with Icon and Counter -->
+          <div class="flex items-center justify-between mb-5 border-b pb-3">
+            <div class="flex items-center">
+              <i class="fas fa-list-ul text-blue-600 text-xl mr-3"></i>
+              <h2 class="text-xl font-bold text-blue-600">Daftar Dosen</h2>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="bg-blue-100 text-blue-700 px-3 py-1 rounded-md text-sm font-medium flex items-center">
+                <i class="fas fa-user-tie mr-1.5"></i>
+                {{ filteredDosenList.length }} Dosen
+              </div>
+              <button 
+                @click="toggleFullscreen" 
+                class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+                title="Lihat semua dosen"
+              >
+                <i class="fas fa-expand"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Search -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
             <!-- Search Input -->
-            <div class="relative flex-1 max-w-xs ml-4">
-              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <div class="relative flex-1 w-full">
+              <i
+                class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              ></i>
               <input
                 type="text"
                 v-model="searchQuery"
                 placeholder="Cari dosen..."
-                class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
+            
+            <!-- Prioritas Filter -->
+            <select 
+              v-model="prioritasFilter" 
+              class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[160px]"
+            >
+              <option value="all">Semua Prioritas</option>
+              <option value="PRIORITAS">Prioritas</option>
+              <option value="NON_PRIORITAS">Non Prioritas</option>
+            </select>
           </div>
 
-          <!-- Empty State -->
-          <div 
-            v-if="filteredDosenList.length === 0" 
-            class="flex flex-col items-center justify-center py-12 text-gray-500"
-          >
-            <i class="fas fa-user-slash text-4xl mb-4"></i>
-            <p class="text-center">
-              {{ searchQuery ? 'Tidak ditemukan dosen yang sesuai.' : 'Belum ada dosen yang diinputkan.' }}
-            </p>
-          </div>
-
-          <!-- Dosen List -->
-          <div v-else class="overflow-y-auto pr-2" style="height: 550px;">
-            <ul class="space-y-4">
-              <li 
-                v-for="(dosen, index) in filteredDosenList" 
-                :key="index" 
-                class="group bg-gray-50 p-6 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+          <!-- Content Area -->
+          <div class="flex-1 flex flex-col">
+            <!-- Empty State -->
+            <div
+              v-if="filteredDosenList.length === 0"
+              class="flex flex-col items-center justify-center py-12 text-gray-500 flex-1"
+            >
+              <i class="fas fa-filter text-4xl mb-4 text-blue-300"></i>
+              <p class="text-center font-medium">
+                {{
+                  searchQuery
+                    ? "Tidak ada dosen yang sesuai dengan pencarian."
+                    : prioritasFilter !== 'all'
+                      ? `Tidak ada dosen dengan prioritas ${prioritasFilter === 'PRIORITAS' ? 'Prioritas' : 'Non Prioritas'}.`
+                      : "Belum ada dosen yang diinputkan."
+                }}
+              </p>
+              <button 
+                v-if="searchQuery || prioritasFilter !== 'all'"
+                @click="resetFilters" 
+                class="mt-3 text-blue-600 hover:text-blue-800 text-sm flex items-center"
               >
-                <div class="flex justify-between items-start">
-                  <div>
-                    <h3 class="font-bold text-lg text-gray-800 mb-1">{{ dosen.dosen_nama }}</h3>
-                    <p class="text-blue-600 font-medium mb-2">{{ dosen.dosen_kode }}</p>
-                    <span 
-                      :class="{
-                        'px-3 py-1 rounded-lg text-sm font-medium inline-flex items-center gap-2': true,
-                        'bg-green-100 text-green-600': dosen.dosen_prioritas === 'PRIORITAS',
-                        'bg-red-100 text-red-600': dosen.dosen_prioritas === 'NON_PRIORITAS'
-                      }"
-                    >
-                      <i :class="{
-                        'fas': true,
-                        'fa-star': dosen.dosen_prioritas === 'PRIORITAS',
-                        'fa-exclamation-circle': dosen.dosen_prioritas === 'NON_PRIORITAS'
-                      }"></i>
-                      {{ dosen.dosen_prioritas === 'PRIORITAS' ? 'Prioritas' : 'Non Prioritas' }}
-                    </span>
-                    <div class="mt-4 space-y-2">
-                      <p class="text-sm font-semibold text-gray-600 flex items-center gap-2">
-                        <i class="fas fa-calendar-alt text-blue-500"></i>
-                        Ketersediaan:
-                      </p>
-                      <ul class="space-y-2">
-                        <li
-                          v-for="(result, sesiIndex) in getGroupedSessions(dosen.jadwal_dosen)"
-                          :key="sesiIndex"
-                          class="text-sm text-gray-600"
+                <i class="fas fa-undo mr-1"></i> Reset filter
+              </button>
+            </div>
+
+            <!-- Dosen List -->
+            <div v-else class="overflow-y-auto flex-1 pr-2">
+              <ul class="grid grid-cols-1 gap-4 mb-4">
+                <li 
+                  v-for="(dosen, index) in filteredDosenList" 
+                  :key="index" 
+                  class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                >
+                  <div class="flex flex-col h-full">
+                    <!-- Top section with title and buttons -->
+                    <div>
+                      <div class="flex justify-between items-start">
+                        <div class="w-4/5">
+                          <h3 class="font-bold text-gray-800 text-lg">
+                            {{ dosen.dosen_nama }}
+                          </h3>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex space-x-1">
+                          <button
+                            @click="editDosen(filteredDosenList.indexOf(dosen))"
+                            class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
+                            title="Edit dosen"
+                          >
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button
+                            @click="deleteDosen(filteredDosenList.indexOf(dosen))"
+                            class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
+                            title="Hapus dosen"
+                          >
+                            <i class="fas fa-trash-alt"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Spacer to push content to bottom -->
+                    <div class="flex-grow"></div>
+                    
+                    <!-- Bottom section with code and classes -->
+                    <div>
+                      <!-- Dosen Code and Priority -->
+                      <div class="flex items-center gap-2 mb-2">
+                        <div class="text-blue-600 text-sm font-medium">
+                          {{ dosen.dosen_kode }}
+                        </div>
+                        <span 
+                          :class="{
+                            'px-2 py-0.5 rounded-md text-xs font-medium inline-flex items-center gap-1': true,
+                            'bg-green-100 text-green-600': dosen.dosen_prioritas === 'PRIORITAS',
+                            'bg-red-100 text-red-600': dosen.dosen_prioritas === 'NON_PRIORITAS'
+                          }"
                         >
-                          <div class="flex items-center gap-2">
-                            <span class="inline-flex items-center justify-center w-20 px-2 py-1 bg-blue-50 text-blue-600 rounded-lg font-medium">
-                              Sesi {{ result.sesi }}
-                            </span>
-                            <div class="flex flex-wrap gap-2">
-                              <span 
-                                v-for="hari in result.hari" 
-                                :key="hari"
-                                class="px-3 py-1 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg font-medium shadow-sm hover:shadow-md transition-all duration-300"
-                              >
-                                {{ hari }}
-                              </span>
+                          <i :class="{
+                            'fas fa-xs': true,
+                            'fa-star': dosen.dosen_prioritas === 'PRIORITAS',
+                            'fa-exclamation-circle': dosen.dosen_prioritas === 'NON_PRIORITAS'
+                          }"></i>
+                          {{ dosen.dosen_prioritas === 'PRIORITAS' ? 'Prioritas' : 'Non Prioritas' }}
+                        </span>
+                      </div>
+                      
+                      <!-- Ketersediaan Dosen -->
+                      <div class="border-t pt-2">
+                        <div v-if="getGroupedSessions(dosen.jadwal_dosen).length > 0" class="text-xs text-gray-600">
+                          <div v-for="(result, sesiIndex) in getGroupedSessions(dosen.jadwal_dosen)" :key="sesiIndex" class="mb-2">
+                            <div class="flex">
+                              <div class="w-[80px]">
+                                <span class="inline-block px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                                  Sesi {{ result.sesi === 'SATU' ? 'SATU' : result.sesi === 'DUA' ? 'DUA' : 'TIGA' }}
+                                </span>
+                              </div>
+                              <div class="w-[20px] text-center">
+                                <span class="text-gray-400">:</span>
+                              </div>
+                              <div class="flex flex-wrap gap-1">
+                                <span 
+                                  v-for="hari in result.hari" 
+                                  :key="hari"
+                                  class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md min-w-[60px] text-center inline-block mb-1 mr-1"
+                                >
+                                  {{ hari }}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </li>
-                        <li
-                          v-if="getGroupedSessions(dosen.jadwal_dosen).length === 0"
-                          class="text-sm italic text-gray-400 flex items-center gap-2"
-                        >
-                          <i class="fas fa-calendar-times text-gray-400"></i>
-                          Tidak tersedia
-                        </li>
-                      </ul>
+                        </div>
+                        <div v-else class="text-xs text-gray-400 italic">
+                          <i class="fas fa-calendar-times mr-1"></i> Tidak tersedia
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div class="flex space-x-3">
-                    <button 
-                      @click="editDosen(index)" 
-                      class="p-2 text-gray-400 hover:text-blue-600 transition-colors duration-300"
-                      title="Edit"
-                    >
-                      <i class="fas fa-pencil-alt"></i>
-                    </button>
-                    <button 
-                      @click="deleteDosen(index)" 
-                      class="p-2 text-gray-400 hover:text-red-600 transition-colors duration-300"
-                      title="Hapus"
-                    >
-                      <i class="fas fa-trash-alt"></i>
-                    </button>
-                  </div>
-                </div>
-              </li>
-            </ul>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -302,16 +364,16 @@
           <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <i class="fas fa-pencil-alt text-2xl text-blue-600"></i>
           </div>
-          <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Edit</h3>
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Update</h3>
           <p class="text-gray-600 mb-6">
-            Apakah Anda yakin ingin mengedit data dosen ini?
+            Apakah Anda yakin ingin mengupdate data dosen ini?
           </p>
           <div class="flex justify-center space-x-4">
             <button 
               @click="confirmEdit" 
               class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-300"
             >
-              Ya, Edit
+              Ya, Update
             </button>
             <button 
               @click="showEditConfirm = false" 
@@ -320,6 +382,169 @@
               Batal
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fullscreen Popup -->
+    <div v-if="isFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+        <div class="flex items-center justify-between mb-4 border-b pb-3">
+          <div class="flex items-center">
+            <i class="fas fa-th-list text-blue-600 text-2xl mr-3"></i>
+            <h2 class="text-2xl font-bold text-blue-600">Daftar Dosen</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center">
+              <i class="fas fa-user-tie mr-2"></i>
+              {{ filteredDosenList.length }} Dosen
+            </div>
+            <button
+              @click="toggleFullscreen"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search and Filter for Fullscreen -->
+        <div class="flex flex-row items-center gap-4 mb-6">
+          <div class="relative flex-1">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input
+              type="text"
+              v-model="searchQuery"
+              placeholder="Cari dosen..."
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <select 
+            v-model="prioritasFilter" 
+            class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[160px]"
+          >
+            <option value="all">Semua Prioritas</option>
+            <option value="PRIORITAS">Prioritas</option>
+            <option value="NON_PRIORITAS">Non Prioritas</option>
+          </select>
+        </div>
+
+        <!-- Multi-column List -->
+        <div class="flex-1 overflow-y-auto pr-2">
+          <div v-if="filteredDosenList.length === 0" class="flex flex-col items-center justify-center h-full text-gray-500">
+            <i class="fas fa-filter text-6xl mb-4 text-blue-300"></i>
+            <p class="text-center text-xl font-medium">
+              {{
+                searchQuery
+                  ? "Tidak ada dosen yang sesuai dengan pencarian."
+                  : prioritasFilter !== 'all'
+                    ? `Tidak ada dosen dengan prioritas ${prioritasFilter === 'PRIORITAS' ? 'Prioritas' : 'Non Prioritas'}.`
+                    : "Belum ada dosen yang diinputkan."
+              }}
+            </p>
+            <button 
+              v-if="searchQuery || prioritasFilter !== 'all'"
+              @click="resetFilters" 
+              class="mt-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center"
+            >
+              <i class="fas fa-undo mr-2"></i> Reset filter
+            </button>
+          </div>
+          <ul v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+            <li 
+              v-for="(dosen, index) in filteredDosenList" 
+              :key="index" 
+              class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+            >
+              <div class="flex flex-col h-full">
+                <!-- Top section with title and buttons -->
+                <div>
+                  <div class="flex justify-between items-start">
+                    <div class="w-4/5">
+                      <h3 class="font-bold text-gray-800 text-lg">
+                        {{ dosen.dosen_nama }}
+                      </h3>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-1">
+                      <button
+                        @click="editDosen(filteredDosenList.indexOf(dosen)); toggleFullscreen()"
+                        class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
+                        title="Edit dosen"
+                      >
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button
+                        @click="deleteDosen(filteredDosenList.indexOf(dosen))"
+                        class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
+                        title="Hapus dosen"
+                      >
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Spacer to push content to bottom -->
+                <div class="flex-grow"></div>
+                
+                <!-- Bottom section with code and classes -->
+                <div>
+                  <!-- Dosen Code and Priority -->
+                  <div class="flex items-center gap-2 mb-2">
+                    <div class="text-blue-600 text-sm font-medium">
+                      {{ dosen.dosen_kode }}
+                    </div>
+                    <span 
+                      :class="{
+                        'px-2 py-0.5 rounded-md text-xs font-medium inline-flex items-center gap-1': true,
+                        'bg-green-100 text-green-600': dosen.dosen_prioritas === 'PRIORITAS',
+                        'bg-red-100 text-red-600': dosen.dosen_prioritas === 'NON_PRIORITAS'
+                      }"
+                    >
+                      <i :class="{
+                        'fas fa-xs': true,
+                        'fa-star': dosen.dosen_prioritas === 'PRIORITAS',
+                        'fa-exclamation-circle': dosen.dosen_prioritas === 'NON_PRIORITAS'
+                      }"></i>
+                      {{ dosen.dosen_prioritas === 'PRIORITAS' ? 'Prioritas' : 'Non Prioritas' }}
+                    </span>
+                  </div>
+                  
+                  <!-- Ketersediaan Dosen -->
+                  <div class="border-t pt-2">
+                    <div v-if="getGroupedSessions(dosen.jadwal_dosen).length > 0" class="text-xs text-gray-600">
+                      <div v-for="(result, sesiIndex) in getGroupedSessions(dosen.jadwal_dosen)" :key="sesiIndex" class="mb-2">
+                        <div class="flex">
+                          <div class="w-[80px]">
+                            <span class="inline-block px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                              Sesi {{ result.sesi === 'SATU' ? 'SATU' : result.sesi === 'DUA' ? 'DUA' : 'TIGA' }}
+                            </span>
+                          </div>
+                          <div class="w-[20px] text-center">
+                            <span class="text-gray-400">:</span>
+                          </div>
+                          <div class="flex flex-wrap gap-1">
+                            <span 
+                              v-for="hari in result.hari" 
+                              :key="hari"
+                              class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md min-w-[60px] text-center inline-block mb-1 mr-1"
+                            >
+                              {{ hari }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-else class="text-xs text-gray-400 italic">
+                      <i class="fas fa-calendar-times mr-1"></i> Tidak tersedia
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -441,6 +666,32 @@ const submitDosen = async () => {
       showAlert.value = true;
       return;
     }
+    
+    // For update, show confirmation first
+    if (editIndex.value !== null) {
+      showEditConfirm.value = true;
+      return;
+    }
+    
+    await submitData();
+  } catch (error) {
+    console.error('Gagal mengirim data dosen', error);
+    let msg = 'Gagal mengupdate data: ';
+    if (error.response && error.response.data && error.response.data.error) {
+      msg += error.response.data.error;
+    } else if (error.message) {
+      msg += error.message;
+    } else {
+      msg += 'Terjadi kesalahan.';
+    }
+    alertMessage.value = msg;
+    showAlert.value = true;
+  }
+};
+
+// Submit data after confirmation
+const submitData = async () => {
+  try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (!token) {
       throw new Error('User is not authenticated');
@@ -522,23 +773,20 @@ const submitDosen = async () => {
 const editDosen = (index) => {
   const dosen = filteredDosenList.value[index];
   selectedIndex.value = dosenList.value.findIndex(d => d.dosen_kode === dosen.dosen_kode);
-  showEditConfirm.value = true;
-};
-
-// Confirm edit function
-const confirmEdit = () => {
-  const index = selectedIndex.value;
-  const dosen = dosenList.value[index];
-  kode.value = dosen.dosen_kode;
-  nama.value = dosen.dosen_nama;
-  prioritas.value = dosen.dosen_prioritas;
+  
+  // Directly edit without confirmation
+  const index2 = selectedIndex.value;
+  const dosen2 = dosenList.value[index2];
+  kode.value = dosen2.dosen_kode;
+  nama.value = dosen2.dosen_nama;
+  prioritas.value = dosen2.dosen_prioritas;
   
   // Reset ketersediaan array
   ketersediaan.value = Array(sesiList.length).fill().map(() => Array(hariList.length).fill(false));
   
   // Set ketersediaan based on jadwal_dosen
-  if (dosen.jadwal_dosen && Array.isArray(dosen.jadwal_dosen)) {
-    dosen.jadwal_dosen.forEach(jadwal => {
+  if (dosen2.jadwal_dosen && Array.isArray(dosen2.jadwal_dosen)) {
+    dosen2.jadwal_dosen.forEach(jadwal => {
       const sesiIndex = sesiList.indexOf(jadwal.dosen_sedia_sesi);
       const hariIndex = hariList.indexOf(jadwal.dosen_sedia_hari);
       if (sesiIndex >= 0 && hariIndex >= 0) {
@@ -547,8 +795,7 @@ const confirmEdit = () => {
     });
   }
   
-  editIndex.value = index;
-  showEditConfirm.value = false;
+  editIndex.value = index2;
 };
 
 // Update delete function to show confirmation
@@ -631,6 +878,24 @@ onMounted(() => {
 onUnmounted(() => {
   if (pollingInterval) clearInterval(pollingInterval);
 });
+
+// Fullscreen functionality
+const isFullscreen = ref(false);
+const toggleFullscreen = () => {
+  isFullscreen.value = !isFullscreen.value;
+};
+
+const prioritasFilter = ref('all');
+const resetFilters = () => {
+  searchQuery.value = '';
+  prioritasFilter.value = 'all';
+};
+
+// Confirm edit function
+const confirmEdit = async () => {
+  showEditConfirm.value = false;
+  await submitData();
+};
 </script>
 
 <style>
