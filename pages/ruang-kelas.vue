@@ -27,7 +27,7 @@
     </div>
     <!-- Title -->
     <div class="mb-8 w-full flex justify-center">
-      <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transform hover:scale-105 transition-all duration-300">
+      <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300">
         <img src="/input-kelas.png" alt="Classroom Icon" class="w-16 h-16 object-contain" />
         <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
           Input Ruang Kelas
@@ -36,9 +36,9 @@
     </div>
 
     <!-- Form and List Container -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
       <!-- Input Form -->
-      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100 h-full">
         <form @submit.prevent="submitForm" class="space-y-6">
           <div>
             <label class="block text-gray-700 font-semibold mb-2">Kode Ruangan</label>
@@ -68,11 +68,11 @@
           </div>
 
           <!-- Submit and Cancel Buttons -->
-          <div class="flex gap-4">
+          <div class="flex gap-4 pt-4">
             <button 
               type="submit" 
               class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
-                     hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
+                     hover:from-blue-700 hover:to-indigo-700 transition-all duration-300
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
               {{ editIndex !== null ? 'Update' : 'Submit' }}
@@ -83,7 +83,7 @@
               type="button" 
               @click="cancelEdit" 
               class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-6 rounded-xl
-                     hover:from-gray-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300
+                     hover:from-gray-700 hover:to-gray-800 transition-all duration-300
                      focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
             >
               Cancel
@@ -93,73 +93,133 @@
       </div>
 
       <!-- Daftar Ruang Kelas -->
-      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col h-full">
         <div class="flex flex-col h-full">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              <i class="fas fa-list-ul mr-2"></i> Daftar Ruang Kelas
-            </h2>
-            
+          <!-- Title with Icon and Counter -->
+          <div class="flex items-center justify-between mb-5 border-b pb-3">
+            <div class="flex items-center">
+              <i class="fas fa-list-ul text-blue-600 text-xl mr-3"></i>
+              <h2 class="text-xl font-bold text-blue-600">Daftar Ruang Kelas</h2>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="bg-blue-100 text-blue-700 px-3 py-1 rounded-md text-sm font-medium flex items-center">
+                <i class="fas fa-door-open mr-1.5"></i>
+                {{ filteredRuangKelasList.length }} Ruangan
+              </div>
+              <button 
+                @click="toggleFullscreen" 
+                class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+                title="Lihat semua ruangan"
+              >
+                <i class="fas fa-expand"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Search and Filter -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
             <!-- Search Input -->
-            <div class="relative flex-1 max-w-xs ml-4">
-              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <div class="relative flex-1 w-full">
+              <i
+                class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              ></i>
               <input
                 type="text"
                 v-model="searchQuery"
                 placeholder="Cari ruang kelas..."
-                class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
+            
+            <!-- Kapasitas Filter -->
+            <select 
+              v-model="kapasitasFilter" 
+              class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Kapasitas</option>
+              <option value="small">&lt; 30 orang</option>
+              <option value="medium">30-60 orang</option>
+              <option value="large">&gt; 60 orang</option>
+            </select>
           </div>
 
-          <!-- Empty State -->
-          <div 
-            v-if="filteredRuangKelasList.length === 0" 
-            class="flex-1 flex flex-col items-center justify-center text-gray-500"
-          >
-            <i class="fas fa-door-closed text-4xl mb-4"></i>
-            <p class="text-center">
-              {{ searchQuery ? 'Tidak ditemukan ruang kelas yang sesuai.' : 'Belum ada ruang kelas yang diinputkan.' }}
-            </p>
-          </div>
-
-          <!-- Ruang Kelas List -->
-          <div v-else class="overflow-y-auto pr-2" style="height: 250px;">
-            <ul class="space-y-4">
-              <li 
-                v-for="(ruang, index) in filteredRuangKelasList" 
-                :key="index" 
-                class="group bg-gray-50 p-6 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+          <!-- Content Area -->
+          <div class="flex-1 flex flex-col">
+            <!-- Empty State -->
+            <div 
+              v-if="filteredRuangKelasList.length === 0" 
+              class="flex flex-col items-center justify-center py-12 text-gray-500 flex-1"
+            >
+              <i class="fas fa-filter text-4xl mb-4 text-blue-300"></i>
+              <p class="text-center font-medium">
+                {{
+                  searchQuery
+                    ? "Tidak ada ruangan yang sesuai dengan pencarian."
+                    : kapasitasFilter !== 'all'
+                      ? `Tidak ada ruangan dengan kapasitas yang dipilih.`
+                      : "Belum ada ruangan yang diinputkan."
+                }}
+              </p>
+              <button 
+                v-if="searchQuery || kapasitasFilter !== 'all'"
+                @click="resetFilters" 
+                class="mt-3 text-blue-600 hover:text-blue-800 text-sm flex items-center"
               >
-                <div class="flex justify-between items-start">
-                  <div>
-                    <h3 class="font-bold text-lg text-gray-800 mb-2">{{ ruang.ruangan_kode }}</h3>
-                    <div class="flex items-center gap-3">
-                      <span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-600 rounded-lg text-sm font-medium">
-                        <i class="fas fa-users"></i>
-                        Kapasitas: {{ ruang.ruangan_kapasitas }}
-                      </span>
+                <i class="fas fa-undo mr-1"></i> Reset filter
+              </button>
+            </div>
+
+            <!-- Ruang Kelas List -->
+            <div v-else class="overflow-y-auto flex-1 pr-2">
+              <ul class="grid grid-cols-1 gap-4 mb-4">
+                <li 
+                  v-for="(ruang, index) in filteredRuangKelasList" 
+                  :key="index" 
+                  class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                >
+                  <div class="flex flex-col h-full">
+                    <!-- Top section with title and buttons -->
+                    <div>
+                      <div class="flex justify-between items-start">
+                        <div class="w-4/5">
+                          <h3 class="font-bold text-gray-800 text-lg">
+                            {{ ruang.ruangan_kode }}
+                          </h3>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex space-x-1">
+                          <button
+                            @click="editRuangKelas(index)"
+                            class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
+                            title="Edit ruangan"
+                          >
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button
+                            @click="deleteRuangKelas(index)"
+                            class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
+                            title="Hapus ruangan"
+                          >
+                            <i class="fas fa-trash-alt"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Bottom section with capacity -->
+                    <div class="mt-auto pt-2">
+                      <div class="flex items-center border-t pt-2">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                          <i class="fas fa-users mr-2"></i>
+                          Kapasitas: {{ ruang.ruangan_kapasitas }}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <div class="flex space-x-3">
-                    <button 
-                      @click="editRuangKelas(index)" 
-                      class="p-2 text-gray-400 hover:text-blue-600 transition-colors duration-300"
-                      title="Edit"
-                    >
-                      <i class="fas fa-pencil-alt"></i>
-                    </button>
-                    <button 
-                      @click="deleteRuangKelas(index)" 
-                      class="p-2 text-gray-400 hover:text-red-600 transition-colors duration-300"
-                      title="Hapus"
-                    >
-                      <i class="fas fa-trash-alt"></i>
-                    </button>
-                  </div>
-                </div>
-              </li>
-            </ul>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -222,6 +282,123 @@
         </div>
       </div>
     </div>
+
+    <!-- Fullscreen Popup -->
+    <div v-if="isFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+        <div class="flex items-center justify-between mb-4 border-b pb-3">
+          <div class="flex items-center">
+            <i class="fas fa-th-list text-blue-600 text-2xl mr-3"></i>
+            <h2 class="text-2xl font-bold text-blue-600">Daftar Ruang Kelas</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center">
+              <i class="fas fa-door-open mr-2"></i>
+              {{ filteredRuangKelasList.length }} Ruangan
+            </div>
+            <button
+              @click="toggleFullscreen"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search and Filter for Fullscreen -->
+        <div class="flex flex-row items-center gap-4 mb-6">
+          <div class="relative flex-1">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input
+              type="text"
+              v-model="searchQuery"
+              placeholder="Cari ruang kelas..."
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <select 
+            v-model="kapasitasFilter" 
+            class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[160px]"
+          >
+            <option value="all">Semua Kapasitas</option>
+            <option value="small">&lt; 30 orang</option>
+            <option value="medium">30-60 orang</option>
+            <option value="large">&gt; 60 orang</option>
+          </select>
+        </div>
+
+        <!-- Multi-column List -->
+        <div class="flex-1 overflow-y-auto pr-2">
+          <div v-if="filteredRuangKelasList.length === 0" class="flex flex-col items-center justify-center h-full text-gray-500">
+            <i class="fas fa-filter text-6xl mb-4 text-blue-300"></i>
+            <p class="text-center text-xl font-medium">
+              {{
+                searchQuery
+                  ? "Tidak ada ruangan yang sesuai dengan pencarian."
+                  : kapasitasFilter !== 'all'
+                    ? `Tidak ada ruangan dengan kapasitas yang dipilih.`
+                    : "Belum ada ruangan yang diinputkan."
+              }}
+            </p>
+            <button 
+              v-if="searchQuery || kapasitasFilter !== 'all'"
+              @click="resetFilters" 
+              class="mt-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center"
+            >
+              <i class="fas fa-undo mr-2"></i> Reset filter
+            </button>
+          </div>
+          <ul v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+            <li 
+              v-for="(ruang, index) in filteredRuangKelasList" 
+              :key="index" 
+              class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+            >
+              <div class="flex flex-col h-full">
+                <!-- Top section with title and buttons -->
+                <div>
+                  <div class="flex justify-between items-start">
+                    <div class="w-4/5">
+                      <h3 class="font-bold text-gray-800 text-lg">
+                        {{ ruang.ruangan_kode }}
+                      </h3>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-1">
+                      <button
+                        @click="editRuangKelas(index); toggleFullscreen()"
+                        class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
+                        title="Edit ruangan"
+                      >
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button
+                        @click="deleteRuangKelas(index)"
+                        class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
+                        title="Hapus ruangan"
+                      >
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Bottom section with capacity -->
+                <div class="mt-auto pt-2">
+                  <div class="flex items-center border-t pt-2">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                      <i class="fas fa-users mr-2"></i>
+                      Kapasitas: {{ ruang.ruangan_kapasitas }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -238,6 +415,8 @@ const form = ref({
 const ruangKelasList = ref([]);
 const editIndex = ref(null);
 const searchQuery = ref("");
+const kapasitasFilter = ref("all");
+const isFullscreen = ref(false);
 
 // Add new refs for confirmation popups
 const showDeleteConfirm = ref(false);
@@ -252,13 +431,35 @@ const successMessage = ref('');
 
 // Computed property for filtered ruang kelas list
 const filteredRuangKelasList = computed(() => {
-  if (!searchQuery.value) return ruangKelasList.value;
+  let filtered = ruangKelasList.value;
   
-  const query = searchQuery.value.toLowerCase();
-  return ruangKelasList.value.filter(ruang => 
-    ruang.ruangan_kode.toLowerCase().includes(query) ||
-    ruang.ruangan_kapasitas.toString().includes(query)
-  );
+  // Apply search filter
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(ruang => 
+      ruang.ruangan_kode.toLowerCase().includes(query) ||
+      ruang.ruangan_kapasitas.toString().includes(query)
+    );
+  }
+  
+  // Apply kapasitas filter
+  if (kapasitasFilter.value !== 'all') {
+    filtered = filtered.filter(ruang => {
+      const kapasitas = ruang.ruangan_kapasitas;
+      switch(kapasitasFilter.value) {
+        case 'small':
+          return kapasitas < 30;
+        case 'medium':
+          return kapasitas >= 30 && kapasitas <= 60;
+        case 'large':
+          return kapasitas > 60;
+        default:
+          return true;
+      }
+    });
+  }
+  
+  return filtered;
 });
 
 // Function to show success message
@@ -297,6 +498,18 @@ const submitForm = async () => {
     showAlert.value = true;
     return;
   }
+  
+  // For update, show confirmation first
+  if (editIndex.value !== null) {
+    showEditConfirm.value = true;
+    return;
+  }
+  
+  await submitData();
+};
+
+// Submit data after confirmation
+const submitData = async () => {
   const newRuangKelas = {
     ruangan_kode: form.value.kodeRuangan,
     ruangan_kapasitas: form.value.kapasitasRuangan,
@@ -356,17 +569,19 @@ const submitForm = async () => {
 const editRuangKelas = (index) => {
   const ruang = filteredRuangKelasList.value[index];
   selectedIndex.value = ruangKelasList.value.findIndex(r => r.ruangan_kode === ruang.ruangan_kode);
-  showEditConfirm.value = true;
+  
+  // Directly edit without confirmation
+  const index2 = selectedIndex.value;
+  const ruangKelas = ruangKelasList.value[index2];
+  form.value.kodeRuangan = ruangKelas.ruangan_kode;
+  form.value.kapasitasRuangan = ruangKelas.ruangan_kapasitas;
+  editIndex.value = index2;
 };
 
 // Confirm edit function
 const confirmEdit = () => {
-  const index = selectedIndex.value;
-  const ruangKelas = ruangKelasList.value[index];
-  form.value.kodeRuangan = ruangKelas.ruangan_kode;
-  form.value.kapasitasRuangan = ruangKelas.ruangan_kapasitas;
-  editIndex.value = index;
   showEditConfirm.value = false;
+  submitData();
 };
 
 // Cancel Edit
@@ -421,6 +636,17 @@ const resetForm = () => {
     kodeRuangan: '',
     kapasitasRuangan: '',
   };
+};
+
+// Function to reset filters
+const resetFilters = () => {
+  searchQuery.value = "";
+  kapasitasFilter.value = "all";
+};
+
+// Toggle fullscreen
+const toggleFullscreen = () => {
+  isFullscreen.value = !isFullscreen.value;
 };
 
 let pollingInterval = null;

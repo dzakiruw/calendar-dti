@@ -27,7 +27,7 @@
     </div>
     <!-- Title -->
     <div class="mb-8 w-full flex justify-center">
-      <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transform hover:scale-105 transition-all duration-300">
+      <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300">
         <img src="/input-dosen.png" alt="Dosen Icon" class="w-16 h-16 object-contain" />
         <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
           Input Dosen
@@ -173,10 +173,9 @@
             </div>
           </div>
           
-          <!-- Search -->
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-            <!-- Search Input -->
-            <div class="relative flex-1 w-full">
+          <!-- Search Bar -->
+          <div class="w-full mb-4">
+            <div class="relative">
               <i
                 class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
               ></i>
@@ -187,16 +186,48 @@
                 class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
+          </div>
+          
+          <!-- Filters -->
+          <div class="flex items-center gap-4 mb-4">
+            <div class="flex flex-wrap gap-2 flex-grow">
+              <!-- Prioritas Filter -->
+              <select 
+                v-model="prioritasFilter" 
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">Semua Prioritas</option>
+                <option value="PRIORITAS">Prioritas</option>
+                <option value="NON_PRIORITAS">Non Prioritas</option>
+              </select>
+              
+              <!-- Hari Filter -->
+              <select 
+                v-model="hariFilter" 
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">Semua Hari</option>
+                <option v-for="hari in hariList" :key="hari" :value="hari">{{ hari }}</option>
+              </select>
+              
+              <!-- Sesi Filter -->
+              <select 
+                v-model="sesiFilter" 
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">Semua Sesi</option>
+                <option v-for="sesi in sesiList" :key="sesi" :value="sesi">Sesi {{ sesi }}</option>
+              </select>
+            </div>
             
-            <!-- Prioritas Filter -->
-            <select 
-              v-model="prioritasFilter" 
-              class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[160px]"
+            <!-- Reset Filter Button -->
+            <button 
+              v-if="searchQuery || prioritasFilter !== 'all' || hariFilter !== 'all' || sesiFilter !== 'all'"
+              @click="resetFilters" 
+              class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
             >
-              <option value="all">Semua Prioritas</option>
-              <option value="PRIORITAS">Prioritas</option>
-              <option value="NON_PRIORITAS">Non Prioritas</option>
-            </select>
+              <i class="fas fa-undo mr-2"></i> Reset filter
+            </button>
           </div>
 
           <!-- Content Area -->
@@ -211,18 +242,11 @@
                 {{
                   searchQuery
                     ? "Tidak ada dosen yang sesuai dengan pencarian."
-                    : prioritasFilter !== 'all'
-                      ? `Tidak ada dosen dengan prioritas ${prioritasFilter === 'PRIORITAS' ? 'Prioritas' : 'Non Prioritas'}.`
+                    : prioritasFilter !== 'all' || hariFilter !== 'all' || sesiFilter !== 'all'
+                      ? "Tidak ada jadwal pada filter yang dipilih."
                       : "Belum ada dosen yang diinputkan."
                 }}
               </p>
-              <button 
-                v-if="searchQuery || prioritasFilter !== 'all'"
-                @click="resetFilters" 
-                class="mt-3 text-blue-600 hover:text-blue-800 text-sm flex items-center"
-              >
-                <i class="fas fa-undo mr-1"></i> Reset filter
-              </button>
             </div>
 
             <!-- Dosen List -->
@@ -295,8 +319,9 @@
                           <div v-for="(result, sesiIndex) in getGroupedSessions(dosen.jadwal_dosen)" :key="sesiIndex" class="mb-2">
                             <div class="flex">
                               <div class="w-[80px]">
-                                <span class="inline-block px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
-                                  Sesi {{ result.sesi === 'SATU' ? 'SATU' : result.sesi === 'DUA' ? 'DUA' : 'TIGA' }}
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                                  <i class="fas fa-clock mr-1"></i>
+                                  Sesi {{ result.sesi === 'SATU' ? '1' : result.sesi === 'DUA' ? '2' : '3' }}
                                 </span>
                               </div>
                               <div class="w-[20px] text-center">
@@ -306,8 +331,9 @@
                                 <span 
                                   v-for="hari in result.hari" 
                                   :key="hari"
-                                  class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md min-w-[60px] text-center inline-block mb-1 mr-1"
+                                  class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md min-w-[60px] text-center mb-1 mr-1 font-medium"
                                 >
+                                  <i class="fas fa-calendar-day mr-1"></i>
                                   {{ hari }}
                                 </span>
                               </div>
@@ -408,47 +434,76 @@
           </div>
         </div>
 
-        <!-- Search and Filter for Fullscreen -->
-        <div class="flex flex-row items-center gap-4 mb-6">
-          <div class="relative flex-1">
-            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        <!-- Search Bar -->
+        <div class="w-full mb-4">
+          <div class="relative">
+            <i
+              class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            ></i>
             <input
               type="text"
               v-model="searchQuery"
               placeholder="Cari dosen..."
-              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <select 
-            v-model="prioritasFilter" 
-            class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[160px]"
-          >
-            <option value="all">Semua Prioritas</option>
-            <option value="PRIORITAS">Prioritas</option>
-            <option value="NON_PRIORITAS">Non Prioritas</option>
-          </select>
+        </div>
+        
+        <!-- Filters -->
+        <div class="flex items-center gap-4 mb-6">
+          <div class="flex flex-wrap gap-2 flex-grow">
+            <!-- Prioritas Filter -->
+            <select 
+              v-model="prioritasFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Prioritas</option>
+              <option value="PRIORITAS">Prioritas</option>
+              <option value="NON_PRIORITAS">Non Prioritas</option>
+            </select>
+            
+            <!-- Hari Filter -->
+            <select 
+              v-model="hariFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Hari</option>
+              <option v-for="hari in hariList" :key="hari" :value="hari">{{ hari }}</option>
+            </select>
+            
+            <!-- Sesi Filter -->
+            <select 
+              v-model="sesiFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Sesi</option>
+              <option v-for="sesi in sesiList" :key="sesi" :value="sesi">Sesi {{ sesi }}</option>
+            </select>
+            
+            <!-- Reset Filter Button -->
+            <button 
+              v-if="searchQuery || prioritasFilter !== 'all' || hariFilter !== 'all' || sesiFilter !== 'all'"
+              @click="resetFilters" 
+              class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+            >
+              <i class="fas fa-undo mr-2"></i> Reset filter
+            </button>
+          </div>
         </div>
 
         <!-- Multi-column List -->
         <div class="flex-1 overflow-y-auto pr-2">
           <div v-if="filteredDosenList.length === 0" class="flex flex-col items-center justify-center h-full text-gray-500">
             <i class="fas fa-filter text-6xl mb-4 text-blue-300"></i>
-            <p class="text-center text-xl font-medium">
+            <p class="text-center font-medium">
               {{
                 searchQuery
                   ? "Tidak ada dosen yang sesuai dengan pencarian."
-                  : prioritasFilter !== 'all'
-                    ? `Tidak ada dosen dengan prioritas ${prioritasFilter === 'PRIORITAS' ? 'Prioritas' : 'Non Prioritas'}.`
+                  : prioritasFilter !== 'all' || hariFilter !== 'all' || sesiFilter !== 'all'
+                    ? "Tidak ada jadwal pada filter yang dipilih."
                     : "Belum ada dosen yang diinputkan."
               }}
             </p>
-            <button 
-              v-if="searchQuery || prioritasFilter !== 'all'"
-              @click="resetFilters" 
-              class="mt-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center"
-            >
-              <i class="fas fa-undo mr-2"></i> Reset filter
-            </button>
           </div>
           <ul v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
             <li 
@@ -518,8 +573,9 @@
                       <div v-for="(result, sesiIndex) in getGroupedSessions(dosen.jadwal_dosen)" :key="sesiIndex" class="mb-2">
                         <div class="flex">
                           <div class="w-[80px]">
-                            <span class="inline-block px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
-                              Sesi {{ result.sesi === 'SATU' ? 'SATU' : result.sesi === 'DUA' ? 'DUA' : 'TIGA' }}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                              <i class="fas fa-clock mr-1"></i>
+                              Sesi {{ result.sesi === 'SATU' ? '1' : result.sesi === 'DUA' ? '2' : '3' }}
                             </span>
                           </div>
                           <div class="w-[20px] text-center">
@@ -529,8 +585,9 @@
                             <span 
                               v-for="hari in result.hari" 
                               :key="hari"
-                              class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md min-w-[60px] text-center inline-block mb-1 mr-1"
+                              class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md min-w-[60px] text-center mb-1 mr-1 font-medium"
                             >
+                              <i class="fas fa-calendar-day mr-1"></i>
                               {{ hari }}
                             </span>
                           </div>
@@ -565,6 +622,9 @@ const ketersediaan = ref([...Array(3)].map(() => Array(5).fill(false)));
 const dosenList = ref([]);
 const editIndex = ref(null);
 const searchQuery = ref("");
+const prioritasFilter = ref("all");
+const hariFilter = ref("all");
+const sesiFilter = ref("all");
 
 // Add new refs for confirmation popups
 const showDeleteConfirm = ref(false);
@@ -581,14 +641,40 @@ let pollingInterval = null;
 
 // Computed property for filtered dosen list
 const filteredDosenList = computed(() => {
-  if (!searchQuery.value) return dosenList.value;
+  let filtered = dosenList.value;
   
-  const query = searchQuery.value.toLowerCase();
-  return dosenList.value.filter(dosen => 
-    dosen.dosen_nama.toLowerCase().includes(query) ||
-    dosen.dosen_kode.toLowerCase().includes(query) ||
-    dosen.dosen_prioritas.toLowerCase().includes(query)
-  );
+  // Apply search filter
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(dosen => 
+      dosen.dosen_nama.toLowerCase().includes(query) ||
+      dosen.dosen_kode.toLowerCase().includes(query) ||
+      dosen.dosen_prioritas.toLowerCase().includes(query)
+    );
+  }
+  
+  // Apply prioritas filter
+  if (prioritasFilter.value !== 'all') {
+    filtered = filtered.filter(dosen => dosen.dosen_prioritas === prioritasFilter.value);
+  }
+  
+  // Apply hari filter
+  if (hariFilter.value !== 'all') {
+    filtered = filtered.filter(dosen => {
+      if (!dosen.jadwal_dosen || !Array.isArray(dosen.jadwal_dosen)) return false;
+      return dosen.jadwal_dosen.some(jadwal => jadwal.dosen_sedia_hari === hariFilter.value);
+    });
+  }
+  
+  // Apply sesi filter
+  if (sesiFilter.value !== 'all') {
+    filtered = filtered.filter(dosen => {
+      if (!dosen.jadwal_dosen || !Array.isArray(dosen.jadwal_dosen)) return false;
+      return dosen.jadwal_dosen.some(jadwal => jadwal.dosen_sedia_sesi === sesiFilter.value);
+    });
+  }
+  
+  return filtered;
 });
 
 // Fungsi untuk mendapatkan sesi yang difilter dan mengelompokkan hari berdasarkan sesi
@@ -885,10 +971,12 @@ const toggleFullscreen = () => {
   isFullscreen.value = !isFullscreen.value;
 };
 
-const prioritasFilter = ref('all');
+// Function to reset filters
 const resetFilters = () => {
-  searchQuery.value = '';
-  prioritasFilter.value = 'all';
+  searchQuery.value = "";
+  prioritasFilter.value = "all";
+  hariFilter.value = "all";
+  sesiFilter.value = "all";
 };
 
 // Confirm edit function

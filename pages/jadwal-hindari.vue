@@ -27,7 +27,7 @@
     </div>
     <!-- Title -->
     <div class="mb-8 w-full flex justify-center">
-      <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transform hover:scale-105 transition-all duration-300">
+      <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300">
         <img src="/input-jadwalhindari.png" alt="Icon Jadwal" class="w-16 h-16 object-contain" />
         <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
           Input Jadwal Dihindari
@@ -36,9 +36,9 @@
     </div>
 
     <!-- Form and List Container -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
       <!-- Input Form -->
-      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100 h-full">
         <form @submit.prevent="submitForm" class="space-y-6">
           <!-- Agenda -->
           <div>
@@ -132,11 +132,11 @@
           </div>
 
           <!-- Submit and Cancel Buttons -->
-          <div class="flex gap-4">
+          <div class="flex gap-4 pt-4">
             <button 
               type="submit" 
               class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
-                     hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
+                     hover:from-blue-700 hover:to-indigo-700 transition-all duration-300
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
               {{ editIndex !== null ? 'Update' : 'Submit' }}
@@ -147,7 +147,7 @@
               type="button" 
               @click="cancelEdit" 
               class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-6 rounded-xl
-                     hover:from-gray-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300
+                     hover:from-gray-700 hover:to-gray-800 transition-all duration-300
                      focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
             >
               Cancel
@@ -157,87 +157,182 @@
       </div>
 
       <!-- Daftar Jadwal Hindari -->
-      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100 flex flex-col">
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            <i class="fas fa-list-ul mr-2"></i> Daftar Jadwal Hindari
-          </h2>
-          
-          <!-- Search Input -->
-          <div class="relative flex-1 max-w-xs ml-4">
-            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            <input
-              type="text"
-              v-model="searchQuery"
-              placeholder="Cari jadwal hindari..."
-              class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-            />
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col h-full">
+        <div class="flex flex-col h-full">
+          <!-- Title with Icon and Counter -->
+          <div class="flex items-center justify-between mb-5 border-b pb-3">
+            <div class="flex items-center">
+              <i class="fas fa-list-ul text-blue-600 text-xl mr-3"></i>
+              <h2 class="text-xl font-bold text-blue-600">Daftar Jadwal Hindari</h2>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="bg-blue-100 text-blue-700 px-3 py-1 rounded-md text-sm font-medium flex items-center">
+                <i class="fas fa-calendar-times mr-1.5"></i>
+                {{ filteredJadwalHindariList.length }} Jadwal
+              </div>
+              <button 
+                @click="toggleFullscreen" 
+                class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+                title="Lihat semua jadwal"
+              >
+                <i class="fas fa-expand"></i>
+              </button>
+            </div>
           </div>
-        </div>
+          
+          <!-- Search Bar -->
+          <div class="w-full mb-4">
+            <div class="relative">
+              <i
+                class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              ></i>
+              <input
+                type="text"
+                v-model="searchQuery"
+                placeholder="Cari jadwal hindari..."
+                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+          
+          <!-- Filters -->
+          <div class="flex items-center gap-4 mb-4">
+            <div class="flex flex-wrap gap-2 flex-grow">
+              <!-- Hari Filter -->
+              <select 
+                v-model="hariFilter" 
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">Semua Hari</option>
+                <option v-for="hari in [...hariListRow1, ...hariListRow2]" :key="hari" :value="hari">{{ hari }}</option>
+              </select>
+              
+              <!-- Sesi Filter -->
+              <select 
+                v-model="sesiFilter" 
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">Semua Sesi</option>
+                <option v-for="sesi in sesiList" :key="sesi" :value="sesi">{{ sesi }}</option>
+              </select>
+              
+              <!-- Semester Filter -->
+              <select 
+                v-model="semesterFilter" 
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">Semua Semester</option>
+                <option v-for="n in 8" :key="n" :value="n">Semester {{ n }}</option>
+              </select>
+              
+              <!-- Reset Filter Button -->
+              <button 
+                v-if="searchQuery || hariFilter !== 'all' || sesiFilter !== 'all' || semesterFilter !== 'all'"
+                @click="resetFilters" 
+                class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+              >
+                <i class="fas fa-undo"></i>
+              </button>
+            </div>
+          </div>
 
-        <!-- Empty State -->
-        <div 
-          v-if="filteredJadwalHindariList.length === 0" 
-          class="flex flex-col items-center justify-center py-12 text-gray-500"
-        >
-          <i class="fas fa-calendar-times text-4xl mb-4"></i>
-          <p class="text-center">
-            {{ searchQuery ? 'Tidak ditemukan jadwal hindari yang sesuai.' : 'Belum ada jadwal hindari yang diinputkan.' }}
-          </p>
-        </div>
-
-        <!-- Jadwal Hindari List -->
-        <div v-else class="overflow-y-auto pr-2" style="height: 600px;">
-          <ul class="space-y-4">
-            <li 
-              v-for="(jadwal, index) in filteredJadwalHindariList" 
-              :key="index" 
-              class="group bg-gray-50 p-6 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+          <!-- Content Area -->
+          <div class="flex-1 flex flex-col">
+            <!-- Empty State -->
+            <div 
+              v-if="filteredJadwalHindariList.length === 0" 
+              class="flex flex-col items-center justify-center py-12 text-gray-500 flex-1"
             >
-              <div class="flex justify-between items-start">
-                <div>
-                  <h3 class="font-bold text-lg text-gray-800 mb-2">{{ jadwal.hindari_agenda }}</h3>
-                  <div class="space-y-2">
-                    <div class="flex items-center gap-3">
-                      <span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-600 rounded-lg text-sm font-medium">
-                        <i class="fas fa-calendar-day"></i>
-                        {{ jadwal.hindari_hari }}
-                      </span>
-                      <span class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-sm font-medium">
-                        <i class="fas fa-clock"></i>
-                        Sesi {{ jadwal.hindari_sesi.replace(/[^0-9]/g, '') || jadwal.hindari_sesi }}
-                      </span>
+              <i class="fas fa-filter text-4xl mb-4 text-blue-300"></i>
+              <p class="text-center font-medium">
+                {{
+                  searchQuery
+                    ? "Tidak ada jadwal yang sesuai dengan pencarian."
+                    : hariFilter !== 'all' || sesiFilter !== 'all' || semesterFilter !== 'all'
+                      ? "Tidak ada jadwal pada filter yang dipilih."
+                      : "Belum ada jadwal hindari yang diinputkan."
+                }}
+              </p>
+            </div>
+
+            <!-- Jadwal Hindari List -->
+            <div v-else class="overflow-y-auto flex-1 pr-2">
+              <ul class="grid grid-cols-1 gap-4 mb-4">
+                <li 
+                  v-for="(jadwal, index) in filteredJadwalHindariList" 
+                  :key="index" 
+                  class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                >
+                  <div class="flex flex-col h-full">
+                    <!-- Top section with title and buttons -->
+                    <div>
+                      <div class="flex justify-between items-start">
+                        <div class="w-4/5">
+                          <h3 class="font-bold text-gray-800 text-lg">
+                            {{ jadwal.hindari_agenda }}
+                          </h3>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex space-x-1">
+                          <button
+                            @click="editJadwalHindari(index)"
+                            class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
+                            title="Edit jadwal"
+                          >
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button
+                            @click="deleteJadwalHindari(index)"
+                            class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
+                            title="Hapus jadwal"
+                          >
+                            <i class="fas fa-trash-alt"></i>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div class="flex flex-wrap gap-2">
-                      <span 
-                        v-for="semester in jadwal.hindari_smt" 
-                        :key="semester"
-                        class="px-2 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium"
-                      >
-                        Semester {{ semester }}
-                      </span>
+                    
+                    <!-- Bottom section with details -->
+                    <div class="mt-auto pt-2">
+                      <!-- Semester info above the line -->
+                      <div class="mb-2">
+                        <div class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-600 rounded-md text-sm font-medium">
+                          <i class="fas fa-graduation-cap mr-1"></i>
+                          Semester {{ jadwal.hindari_smt.join(', ') }}
+                        </div>
+                      </div>
+                      
+                      <!-- Hari and Sesi info below the line -->
+                      <div class="border-t pt-2">
+                        <div class="text-xs text-gray-600">
+                          <div class="mb-2">
+                            <div class="flex">
+                              <div class="w-[80px]">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                                  <i class="fas fa-clock mr-1"></i>
+                                  Sesi {{ jadwal.hindari_sesi === 'SATU' ? '1' : jadwal.hindari_sesi === 'DUA' ? '2' : '3' }}
+                                </span>
+                              </div>
+                              <div class="w-[20px] text-center">
+                                <span class="text-gray-400">:</span>
+                              </div>
+                              <div class="flex flex-wrap gap-1">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md min-w-[60px] text-center mb-1 mr-1 font-medium">
+                                  <i class="fas fa-calendar-day mr-1"></i>
+                                  {{ jadwal.hindari_hari }}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="flex space-x-3">
-                  <button 
-                    @click="editJadwalHindari(index)" 
-                    class="p-2 text-gray-400 hover:text-blue-600 transition-colors duration-300"
-                    title="Edit"
-                  >
-                    <i class="fas fa-pencil-alt"></i>
-                  </button>
-                  <button 
-                    @click="deleteJadwalHindari(index)" 
-                    class="p-2 text-gray-400 hover:text-red-600 transition-colors duration-300"
-                    title="Hapus"
-                  >
-                    <i class="fas fa-trash-alt"></i>
-                  </button>
-                </div>
-              </div>
-            </li>
-          </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -299,6 +394,174 @@
         </div>
       </div>
     </div>
+    
+    <!-- Fullscreen Popup -->
+    <div v-if="isFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+        <div class="flex items-center justify-between mb-4 border-b pb-3">
+          <div class="flex items-center">
+            <i class="fas fa-th-list text-blue-600 text-2xl mr-3"></i>
+            <h2 class="text-2xl font-bold text-blue-600">Daftar Jadwal Hindari</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center">
+              <i class="fas fa-calendar-times mr-2"></i>
+              {{ filteredJadwalHindariList.length }} Jadwal
+            </div>
+            <button
+              @click="toggleFullscreen"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Bar for Fullscreen -->
+        <div class="w-full mb-4">
+          <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input
+              type="text"
+              v-model="searchQuery"
+              placeholder="Cari jadwal hindari..."
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+        
+        <!-- Filters for Fullscreen -->
+        <div class="flex items-center gap-4 mb-6">
+          <div class="flex flex-wrap gap-2 flex-grow">
+            <!-- Hari Filter -->
+            <select 
+              v-model="hariFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Hari</option>
+              <option v-for="hari in [...hariListRow1, ...hariListRow2]" :key="hari" :value="hari">{{ hari }}</option>
+            </select>
+            
+            <!-- Sesi Filter -->
+            <select 
+              v-model="sesiFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Sesi</option>
+              <option v-for="sesi in sesiList" :key="sesi" :value="sesi">{{ sesi }}</option>
+            </select>
+            
+            <!-- Semester Filter -->
+            <select 
+              v-model="semesterFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Semester</option>
+              <option v-for="n in 8" :key="n" :value="n">Semester {{ n }}</option>
+            </select>
+            
+            <!-- Reset Filter Button -->
+            <button 
+              v-if="searchQuery || hariFilter !== 'all' || sesiFilter !== 'all' || semesterFilter !== 'all'"
+              @click="resetFilters" 
+              class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+            >
+              <i class="fas fa-undo mr-2"></i> Reset filter 
+            </button>
+          </div>
+        </div>
+
+        <!-- Multi-column List -->
+        <div class="flex-1 overflow-y-auto pr-2">
+          <div v-if="filteredJadwalHindariList.length === 0" class="flex flex-col items-center justify-center h-full text-gray-500">
+            <i class="fas fa-filter text-6xl mb-4 text-blue-300"></i>
+            <p class="text-center font-medium">
+              {{
+                searchQuery
+                  ? "Tidak ada jadwal yang sesuai dengan pencarian."
+                  : hariFilter !== 'all' || sesiFilter !== 'all' || semesterFilter !== 'all'
+                    ? "Tidak ada jadwal pada filter yang dipilih."
+                    : "Belum ada jadwal hindari yang diinputkan."
+              }}
+            </p>
+          </div>
+          <ul v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+            <li 
+              v-for="(jadwal, index) in filteredJadwalHindariList" 
+              :key="index" 
+              class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+            >
+              <div class="flex flex-col h-full">
+                <!-- Top section with title and buttons -->
+                <div>
+                  <div class="flex justify-between items-start">
+                    <div class="w-4/5">
+                      <h3 class="font-bold text-gray-800 text-lg">
+                        {{ jadwal.hindari_agenda }}
+                      </h3>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-1">
+                      <button
+                        @click="editJadwalHindari(index); toggleFullscreen()"
+                        class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
+                        title="Edit jadwal"
+                      >
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button
+                        @click="deleteJadwalHindari(index)"
+                        class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
+                        title="Hapus jadwal"
+                      >
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Bottom section with details -->
+                <div class="mt-auto pt-2">
+                  <!-- Semester info above the line -->
+                  <div class="mb-2">
+                    <div class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-600 rounded-md text-sm font-medium">
+                      <i class="fas fa-graduation-cap mr-1"></i>
+                      Semester {{ jadwal.hindari_smt.join(', ') }}
+                    </div>
+                  </div>
+                  
+                  <!-- Hari and Sesi info below the line -->
+                  <div class="border-t pt-2">
+                    <div class="text-xs text-gray-600">
+                      <div class="mb-2">
+                        <div class="flex">
+                          <div class="w-[80px]">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                              <i class="fas fa-clock mr-1"></i>
+                              Sesi {{ jadwal.hindari_sesi === 'SATU' ? '1' : jadwal.hindari_sesi === 'DUA' ? '2' : '3' }}
+                            </span>
+                          </div>
+                          <div class="w-[20px] text-center">
+                            <span class="text-gray-400">:</span>
+                          </div>
+                          <div class="flex flex-wrap gap-1">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md min-w-[60px] text-center mb-1 mr-1 font-medium">
+                              <i class="fas fa-calendar-day mr-1"></i>
+                              {{ jadwal.hindari_hari }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -339,6 +602,10 @@ const selectedSemesters = ref([])
 const selectAllSemesters = ref(false)
 
 const searchQuery = ref("");
+const hariFilter = ref("all");
+const sesiFilter = ref("all");
+const semesterFilter = ref("all");
+const isFullscreen = ref(false);
 
 // Add new refs for confirmation popups
 const showDeleteConfirm = ref(false);
@@ -353,15 +620,40 @@ const successMessage = ref('');
 
 // Computed property for filtered jadwal hindari list
 const filteredJadwalHindariList = computed(() => {
-  if (!searchQuery.value) return jadwalList.value;
+  let filtered = jadwalList.value;
   
-  const query = searchQuery.value.toLowerCase();
-  return jadwalList.value.filter(jadwal => 
-    jadwal.hindari_agenda.toLowerCase().includes(query) ||
-    jadwal.hindari_hari.toLowerCase().includes(query) ||
-    jadwal.hindari_sesi.toLowerCase().includes(query) ||
-    jadwal.hindari_smt.some(semester => semester.toString().includes(query))
-  );
+  // Apply search filter
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(jadwal => 
+      jadwal.hindari_agenda.toLowerCase().includes(query) ||
+      jadwal.hindari_hari.toLowerCase().includes(query) ||
+      jadwal.hindari_sesi.toLowerCase().includes(query) ||
+      jadwal.hindari_smt.some(semester => semester.toString().includes(query))
+    );
+  }
+  
+  // Apply hari filter
+  if (hariFilter.value !== 'all') {
+    filtered = filtered.filter(jadwal => jadwal.hindari_hari === hariFilter.value);
+  }
+  
+  // Apply sesi filter
+  if (sesiFilter.value !== 'all') {
+    filtered = filtered.filter(jadwal => {
+      const sesiValue = sesiMap[sesiFilter.value] || sesiFilter.value;
+      return jadwal.hindari_sesi === sesiValue;
+    });
+  }
+  
+  // Apply semester filter
+  if (semesterFilter.value !== 'all') {
+    filtered = filtered.filter(jadwal => 
+      jadwal.hindari_smt.includes(parseInt(semesterFilter.value))
+    );
+  }
+  
+  return filtered;
 });
 
 const toggleSelectAll = () => {
@@ -408,6 +700,24 @@ const fetchJadwal = async () => {
 };
 
 const submitForm = async () => {
+  // Validate form
+  if (!form.value.hindari_agenda || !form.value.hindari_hari || !form.value.hindari_sesi || selectedSemesters.value.length === 0) {
+    alertMessage.value = 'Semua field harus diisi dan minimal satu semester harus dipilih.';
+    showAlert.value = true;
+    return;
+  }
+  
+  // For update, show confirmation first
+  if (editIndex.value !== null) {
+    showEditConfirm.value = true;
+    return;
+  }
+  
+  await submitData();
+};
+
+// Submit data after confirmation
+const submitData = async () => {
   const newJadwal = {
     hindari_agenda: form.value.hindari_agenda,
     hindari_hari: form.value.hindari_hari,
@@ -433,16 +743,19 @@ const submitForm = async () => {
       
       // Update the local list with the new data
       jadwalList.value[editIndex.value] = response.data.data;
+      
+      resetForm();
+      editIndex.value = null;
+      showSuccessAlert('Data jadwal hindari berhasil diperbarui!');
     } else {
       response = await axios.post('http://10.4.90.25:3000/jadwal_hindari', newJadwal, { headers });
       
       // Add the new jadwal to the list
       jadwalList.value.push(response.data.data);
+      
+      resetForm();
+      showSuccessAlert('Data jadwal hindari berhasil ditambahkan!');
     }
-
-    resetForm();
-    editIndex.value = null;
-    showSuccessAlert('Data jadwal hindari berhasil diperbarui!');
   } catch (error) {
     console.error('Error in submitForm:', error);
     let msg = 'Gagal mengupdate data: ';
@@ -477,18 +790,34 @@ const fetchJadwalList = async () => {
   }
 };
 
-const editJadwal = (index) => {
-  const jadwal = jadwalList.value[index]
-  form.value = {
-    hindari_agenda: jadwal.hindari_agenda,
-    hindari_hari: jadwal.hindari_hari,
-    hindari_sesi: reverseSesiMap[jadwal.hindari_sesi] || jadwal.hindari_sesi,
-    hindari_smt: [...jadwal.hindari_smt],
-  }
-  selectedSemesters.value = [...jadwal.hindari_smt]
-  selectAllSemesters.value = jadwal.hindari_smt.length === 8
-  editIndex.value = index
-}
+const editJadwalHindari = (index) => {
+  const jadwal = filteredJadwalHindariList.value[index];
+  selectedIndex.value = jadwalList.value.findIndex(j => j.id_hindari === jadwal.id_hindari);
+  
+  // Directly edit without confirmation
+  const index2 = selectedIndex.value;
+  const jadwalHindari = jadwalList.value[index2];
+  
+  // Set form values
+  form.value.hindari_agenda = jadwalHindari.hindari_agenda;
+  form.value.hindari_hari = jadwalHindari.hindari_hari;
+  
+  // Convert sesi format (SATU -> SESI 1)
+  form.value.hindari_sesi = reverseSesiMap[jadwalHindari.hindari_sesi] || jadwalHindari.hindari_sesi;
+  
+  // Set semester values
+  form.value.hindari_smt = [...jadwalHindari.hindari_smt];
+  selectedSemesters.value = [...jadwalHindari.hindari_smt];
+  selectAllSemesters.value = jadwalHindari.hindari_smt.length === 8;
+  
+  // Set edit mode
+  editIndex.value = index2;
+};
+
+const confirmEdit = () => {
+  showEditConfirm.value = false;
+  submitData();
+};
 
 const cancelEdit = () => {
   resetForm()
@@ -524,35 +853,6 @@ const resetForm = () => {
   selectedSemesters.value = []
   selectAllSemesters.value = false
 }
-
-// Update edit function to show confirmation
-const editJadwalHindari = (index) => {
-  const jadwal = filteredJadwalHindariList.value[index];
-  selectedIndex.value = jadwalList.value.findIndex(j => j.id_hindari === jadwal.id_hindari);
-  showEditConfirm.value = true;
-};
-
-// Confirm edit function
-const confirmEdit = () => {
-  const index = selectedIndex.value;
-  const jadwalHindari = jadwalList.value[index];
-  
-  // Set form values
-  form.value.hindari_agenda = jadwalHindari.hindari_agenda;
-  form.value.hindari_hari = jadwalHindari.hindari_hari;
-  
-  // Convert sesi format (SATU -> SESI 1)
-  form.value.hindari_sesi = reverseSesiMap[jadwalHindari.hindari_sesi] || jadwalHindari.hindari_sesi;
-  
-  // Set semester values
-  form.value.hindari_smt = [...jadwalHindari.hindari_smt];
-  selectedSemesters.value = [...jadwalHindari.hindari_smt];
-  selectAllSemesters.value = jadwalHindari.hindari_smt.length === 8;
-  
-  // Set edit mode
-  editIndex.value = index;
-  showEditConfirm.value = false;
-};
 
 // Update delete function to show confirmation
 const deleteJadwalHindari = (index) => {
@@ -609,6 +909,19 @@ const selectAllSemestersFn = () => {
 };
 const removeAllSemestersFn = () => {
   selectedSemesters.value = [];
+};
+
+// Function to reset filters
+const resetFilters = () => {
+  searchQuery.value = "";
+  hariFilter.value = "all";
+  sesiFilter.value = "all";
+  semesterFilter.value = "all";
+};
+
+// Toggle fullscreen
+const toggleFullscreen = () => {
+  isFullscreen.value = !isFullscreen.value;
 };
 
 onMounted(() => {
