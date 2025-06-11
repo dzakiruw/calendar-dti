@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
     <!-- Success Notification -->
-    <div v-if="showSuccess" class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50">
+    <div v-if="showSuccess" class="fixed top-4 right-4 bg-white/60 backdrop-blur-xl border border-green-200/70 text-green-700 p-4 rounded-lg shadow-xl transform transition-all duration-300 z-50">
       <div class="flex items-center">
         <div class="py-1">
           <i class="fas fa-check-circle text-xl mr-3"></i>
@@ -15,7 +15,7 @@
       </div>
     </div>
     <!-- Error Notification -->
-    <div v-if="showError" class="fixed top-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50">
+    <div v-if="showError" class="fixed top-4 right-4 bg-white/60 backdrop-blur-xl border border-red-200/70 text-red-700 p-4 rounded-lg shadow-xl transform transition-all duration-300 z-50">
       <div class="flex items-center">
         <div class="py-1">
           <i class="fas fa-exclamation-circle text-xl mr-3"></i>
@@ -29,21 +29,21 @@
       </div>
     </div>
     <!-- Alert Confirmation Popup -->
-    <div v-if="showConfirmPopup" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
-      <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300">
+    <div v-if="showConfirmPopup" class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-md">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center transform transition-all duration-300 border border-white/70 hover:shadow-blue-100/30">
         <div class="mb-4 text-blue-600 text-2xl"><i class="fas fa-question-circle"></i></div>
         <div class="mb-4 text-gray-800 font-semibold">Apakah Anda yakin ingin mengganti password?</div>
         <div class="flex justify-center gap-4">
-          <button @click="onConfirmChangePassword" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">Ya</button>
-          <button @click="showConfirmPopup = false" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-300">Batal</button>
+          <button @click="onConfirmChangePassword" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg">Ya</button>
+          <button @click="showConfirmPopup = false" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg">Batal</button>
         </div>
       </div>
     </div>
     <!-- Profile Card -->
     <div class="max-w-lg w-full mx-auto">
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div class="bg-white/50 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/70 hover:shadow-blue-100/30 transition-all duration-500">
         <!-- Header with Background -->
-        <div class="h-32 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
+        <div class="h-32 bg-gradient-to-r from-blue-600/80 to-indigo-600/80 backdrop-blur-lg"></div>
         
         <!-- Profile Content -->
         <div class="relative px-6 pb-6">
@@ -53,13 +53,13 @@
               <img 
                 :src="getProfileImage"
                 alt="Profile Picture"
-                class="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover bg-gray-100"
+                class="w-32 h-32 rounded-full border-4 border-white/60 shadow-lg object-cover bg-gray-100"
                 @error="handleImageError"
               />
               
               <!-- Upload Button -->
               <label 
-                class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 w-8 h-8 flex items-center justify-center rounded-full shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-110"
+                class="absolute bottom-0 right-0 bg-blue-600/70 hover:bg-blue-700/90 w-8 h-8 flex items-center justify-center rounded-full shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-110 backdrop-blur-xl"
                 title="Upload Photo"
               >
                 <input 
@@ -79,40 +79,40 @@
             <p class="text-gray-600 mb-5">{{ userData?.role || 'Role' }}</p>
             
             <!-- Divider -->
-            <div class="w-24 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto mb-5 rounded-full"></div>
+            <div class="w-24 h-1 bg-gradient-to-r from-blue-600/80 to-indigo-600/80 mx-auto mb-5 rounded-full"></div>
 
             <!-- Logout Button -->
             <button 
               @click="handleLogout"
-              class="bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-3 rounded-xl
-                     hover:from-red-700 hover:to-red-800 transform hover:scale-105 transition-all duration-300
-                     focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50
-                     shadow-lg"
+              class="bg-gradient-to-r from-red-600/70 to-red-700/70 backdrop-blur-xl text-white px-8 py-3 rounded-xl
+                     hover:from-red-700/90 hover:to-red-800/90 transform hover:scale-105 transition-all duration-300
+                     focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:ring-opacity-50
+                     shadow-lg hover:shadow-xl"
             >
               <i class="fas fa-sign-out-alt mr-2"></i>
               Logout
             </button>
             <!-- Change Password Confirmation Button -->
-            <button v-if="!showChangePasswordForm" @click="showConfirmPopup = true" class="mt-6 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Ubah Password</button>
+            <button v-if="!showChangePasswordForm" @click="showConfirmPopup = true" class="mt-6 w-full bg-gradient-to-r from-blue-600/70 to-indigo-600/70 backdrop-blur-xl text-white py-3 px-6 rounded-xl hover:from-blue-700/90 hover:to-indigo-700/90 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-opacity-50 shadow-lg hover:shadow-xl">Ubah Password</button>
             <!-- Change Password Form -->
             <form v-if="showChangePasswordForm" @submit.prevent="handleChangePassword" class="mt-6 w-full text-left">
               <h2 class="text-lg font-semibold mb-4 text-gray-800 text-center">Ubah Password</h2>
               <div class="mb-3">
                 <label class="block text-gray-700 font-semibold mb-1">Password Lama</label>
-                <input v-model="oldPassword" type="password" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Masukkan password lama" />
+                <input v-model="oldPassword" type="password" required class="w-full px-3 py-2 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300" placeholder="Masukkan password lama" />
               </div>
               <div class="mb-3">
                 <label class="block text-gray-700 font-semibold mb-1">Password Baru</label>
-                <input v-model="newPassword" type="password" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Masukkan password baru" />
+                <input v-model="newPassword" type="password" required class="w-full px-3 py-2 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300" placeholder="Masukkan password baru" />
               </div>
               <div class="mb-4">
                 <label class="block text-gray-700 font-semibold mb-1">Konfirmasi Password Baru</label>
-                <input v-model="confirmPassword" type="password" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Konfirmasi password baru" />
+                <input v-model="confirmPassword" type="password" required class="w-full px-3 py-2 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300" placeholder="Konfirmasi password baru" />
                 <div v-if="passwordError" class="w-full text-sm text-red-600 mt-1">{{ passwordError }}</div>
               </div>
               <div class="flex flex-col gap-2">
-                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Ubah Password</button>
-                <button type="button" @click="handleCancelPassword" class="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">Cancel</button>
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-600/70 to-indigo-600/70 backdrop-blur-xl text-white py-2 px-4 rounded-lg hover:from-blue-700/90 hover:to-indigo-700/90 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-opacity-50 shadow-md hover:shadow-lg">Ubah Password</button>
+                <button type="button" @click="handleCancelPassword" class="w-full bg-gray-200/60 backdrop-blur-xl text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300/80 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gray-400/50 focus:ring-opacity-50 shadow-md hover:shadow-lg">Cancel</button>
               </div>
               <div v-if="passwordSuccess" class="mt-3 text-green-600 text-center text-sm">{{ passwordSuccess }}</div>
             </form>

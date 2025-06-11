@@ -1,12 +1,12 @@
 <template>
-  <div v-if="isAuthenticated" class="w-full h-full bg-white text-gray-900 flex flex-col relative">
+  <div v-if="isAuthenticated" class="w-full h-full bg-white/40 backdrop-blur-xl text-gray-900 flex flex-col relative border-r border-white/70 shadow-lg">
     <!-- Sidebar Header -->
-    <div class="flex justify-between items-center px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600">
+    <div class="flex justify-between items-center px-6 py-4 bg-gradient-to-r from-blue-600/70 to-indigo-600/70 backdrop-blur-xl">
       <div class="flex items-center space-x-3">
         <img 
           :src="profilePic" 
           alt="User Profile" 
-          class="w-10 h-10 rounded-lg shadow-lg transform hover:scale-110 transition-transform duration-300 object-cover" 
+          class="w-10 h-10 rounded-lg shadow-lg transform hover:scale-110 transition-transform duration-300 object-cover border border-white/40" 
           @error="$event.target.src = '/logo.png'"
         />
         <div class="flex flex-col">
@@ -19,7 +19,7 @@
     <!-- Toggle Button - Fixed Position -->
     <button 
       @click="toggleSidebar" 
-      class="absolute -right-10 top-4 bg-white p-2 rounded-r-lg shadow-md hover:bg-gray-100 transition-colors z-30"
+      class="absolute -right-10 top-4 bg-white/40 backdrop-blur-xl p-2 rounded-r-lg shadow-md hover:bg-gray-100/60 transition-colors z-30 border border-white/70"
     >
       <i class="fas" :class="[
         (isDesktop && isDesktopCollapsed) || (!isDesktop && !isMobileOpen) 
@@ -29,15 +29,15 @@
     </button>
 
     <!-- Sidebar Menu -->
-    <nav class="flex-1 px-3 py-4 overflow-y-auto bg-gradient-to-b from-gray-50 to-white">
+    <nav class="flex-1 px-3 py-4 overflow-y-auto bg-gradient-to-b from-gray-50/40 to-white/40 backdrop-blur-xl">
       <!-- Home -->
       <div class="mb-4">
         <NuxtLink to="/" 
           class="flex items-center px-4 py-3 rounded-xl transition-all duration-300 group"
           :class="[
             route.path === '/' 
-              ? 'bg-indigo-100 text-indigo-700 border-l-4 border-indigo-600' 
-              : 'text-gray-600 hover:bg-blue-50'
+              ? 'bg-indigo-100/40 backdrop-blur-xl text-indigo-700 border-l-4 border-indigo-600/70 shadow-sm' 
+              : 'text-gray-600 hover:bg-blue-50/40 hover:backdrop-blur-xl hover:shadow-sm'
           ]"
           @click="handleClick"
         >
@@ -45,8 +45,8 @@
             <div class="p-2 rounded-lg w-9 h-9 flex items-center justify-center transition-colors duration-300"
                  :class="[
                    route.path === '/'
-                     ? 'bg-indigo-200'
-                     : 'bg-blue-100 group-hover:bg-blue-200'
+                     ? 'bg-indigo-200/60 backdrop-blur-xl shadow-inner'
+                     : 'bg-blue-100/40 backdrop-blur-xl group-hover:bg-blue-200/60 shadow-inner'
                  ]">
               <i class="fas fa-home" :class="route.path === '/' ? 'text-indigo-700' : 'text-blue-600'"></i>
             </div>
@@ -289,17 +289,17 @@
     </nav>
 
     <!-- Sidebar Footer -->
-    <div class="px-4 py-4 bg-gradient-to-r from-gray-50 to-white border-t">
+    <div class="px-4 py-4 bg-gradient-to-r from-gray-50/40 to-white/40 backdrop-blur-xl border-t border-white/70">
       <div class="flex items-center justify-between">
         <NuxtLink to="/profile" 
           class="flex items-center space-x-3 group" 
           @click="handleClick"
         >
-          <div class="w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-300"
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-300 shadow-inner"
                :class="[
                  route.path === '/profile'
-                   ? 'bg-indigo-200'
-                   : 'bg-blue-100 group-hover:bg-blue-200'
+                   ? 'bg-indigo-200/60 backdrop-blur-xl'
+                   : 'bg-blue-100/40 backdrop-blur-xl group-hover:bg-blue-200/60'
                ]">
               <i class="fas fa-user" :class="route.path === '/profile' ? 'text-indigo-700' : 'text-blue-600'"></i>
           </div>
@@ -311,7 +311,7 @@
 
         <button 
           @click="handleLogout" 
-          class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors duration-300"
+          class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-500 hover:bg-red-50/40 hover:backdrop-blur-xl hover:text-red-600 transition-colors duration-300 shadow-inner"
         >
           <i class="fas fa-sign-out-alt"></i>
         </button>

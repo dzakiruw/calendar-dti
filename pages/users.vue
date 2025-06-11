@@ -1,18 +1,18 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
     <!-- Alert Popup -->
-    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
-      <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300">
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-md">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center transform transition-all duration-300 border border-white/70 hover:shadow-blue-100/30">
         <div class="mb-4 text-red-600 text-2xl"><i class="fas fa-exclamation-circle"></i></div>
         <div class="mb-4 text-gray-800 font-semibold">{{ alertMessage }}</div>
-        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600/70 hover:bg-blue-700/90 text-white rounded-lg transition-colors duration-300 backdrop-blur-xl shadow-md hover:shadow-lg">
           Tutup
         </button>
       </div>
     </div>
 
     <!-- Success Alert -->
-    <div v-if="showSuccess" class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50">
+    <div v-if="showSuccess" class="fixed top-4 right-4 bg-white/60 backdrop-blur-xl border border-green-200/70 text-green-700 p-4 rounded-lg shadow-xl transform transition-all duration-300 z-50">
       <div class="flex items-center">
         <div class="py-1">
           <i class="fas fa-check-circle text-xl mr-3"></i>
@@ -28,7 +28,7 @@
 
     <!-- Title -->
     <div class="mb-8 w-full flex justify-center">
-      <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300">
+      <div class="bg-white/50 backdrop-blur-xl rounded-2xl shadow-2xl p-6 flex items-center space-x-4 transition-all duration-300 border border-white/70 hover:shadow-blue-100/30">
         <img src="/user-mgmt.png" alt="Icon Users" class="w-16 h-16 object-contain" />
         <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
           Manajemen Pengguna
@@ -39,14 +39,14 @@
     <!-- Form and List Container -->
     <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Input Form -->
-      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100">
+      <div class="bg-white/50 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/70 hover:shadow-blue-100/30 transition-all duration-500">
         <div class="flex items-center justify-between mb-5 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-user-plus text-blue-600 text-xl mr-3"></i>
             <h2 class="text-xl font-bold text-blue-600">{{ isEditing ? 'Edit Pengguna' : 'Tambah Pengguna Baru' }}</h2>
           </div>
         </div>
-        <div v-if="editInfoMessage" class="mb-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg flex items-center">
+        <div v-if="editInfoMessage" class="mb-4 bg-blue-100/50 backdrop-blur-xl border-l-4 border-blue-500/70 text-blue-700 p-4 rounded-lg flex items-center">
           <i class="fas fa-info-circle mr-2"></i>
           <span>{{ editInfoMessage }}</span>
           <button @click="editInfoMessage = ''" class="ml-auto text-blue-700 hover:text-blue-900">
@@ -60,7 +60,7 @@
               v-model="form.email"
               type="email"
               required
-              class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              class="w-full p-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300 shadow-inner"
               placeholder="Masukkan email"
             />
           </div>
@@ -71,7 +71,7 @@
               v-model="form.name"
               type="text"
               required
-              class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              class="w-full p-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300 shadow-inner"
               placeholder="Masukkan nama"
             />
           </div>
@@ -82,7 +82,7 @@
               v-model="form.username"
               type="text"
               required
-              class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              class="w-full p-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300 shadow-inner"
               placeholder="Masukkan username"
             />
           </div>
@@ -93,7 +93,7 @@
               v-model="form.password"
               type="password"
               :required="!isEditing"
-              class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              class="w-full p-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300 shadow-inner"
               :placeholder="isEditing ? 'Kosongkan jika tidak ingin mengubah password' : 'Masukkan password'"
             />
           </div>
@@ -103,7 +103,7 @@
             <select
               v-model="form.role"
               required
-              class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              class="w-full p-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300 shadow-inner"
             >
               <option value="OPERATOR">OPERATOR</option>
               <option value="ADMINISTRATOR">ADMINISTRATOR</option>
@@ -113,7 +113,7 @@
           <div class="flex gap-4 pt-4">
             <button
               type="submit"
-              class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              class="flex-1 bg-gradient-to-r from-blue-600/70 to-indigo-600/70 backdrop-blur-xl text-white py-3 px-6 rounded-xl hover:from-blue-700/90 hover:to-indigo-700/90 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-opacity-50 shadow-lg hover:shadow-xl"
             >
               {{ isEditing ? 'Update' : 'Submit' }}
             </button>
@@ -121,7 +121,7 @@
               v-if="isEditing"
               type="button"
               @click="cancelEdit"
-              class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-6 rounded-xl hover:from-gray-700 hover:to-gray-800 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+              class="flex-1 bg-gradient-to-r from-gray-600/70 to-gray-700/70 backdrop-blur-xl text-white py-3 px-6 rounded-xl hover:from-gray-700/90 hover:to-gray-800/90 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:ring-opacity-50 shadow-lg hover:shadow-xl"
             >
               Cancel
             </button>
@@ -130,20 +130,20 @@
       </div>
 
       <!-- Users List -->
-      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col">
+      <div class="bg-white/50 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/70 hover:shadow-blue-100/30 transition-all duration-500 flex flex-col">
         <div class="flex items-center justify-between mb-5 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-list-ul text-blue-600 text-xl mr-3"></i>
             <h2 class="text-xl font-bold text-blue-600">Daftar Pengguna</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-3 py-1 rounded-md text-sm font-medium flex items-center h-8">
+            <div class="bg-blue-100/50 backdrop-blur-xl text-blue-700 px-3 py-1 rounded-md text-sm font-medium flex items-center h-8 shadow-sm">
               <i class="fas fa-users mr-1.5"></i>
               {{ filteredUsers.length }} Pengguna
             </div>
             <button 
               @click="toggleFullscreen" 
-              class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+              class="p-1.5 bg-gray-100/50 backdrop-blur-xl hover:bg-gray-200/50 rounded-md text-gray-700 transition-colors shadow-sm"
               title="Lihat semua pengguna"
             >
               <i class="fas fa-expand"></i>
@@ -159,7 +159,7 @@
               type="text"
               v-model="searchQuery"
               placeholder="Cari pengguna..."
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             />
           </div>
         </div>
@@ -170,7 +170,7 @@
             <!-- Role Filter -->
             <select 
               v-model="roleFilter" 
-              class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Role</option>
               <option value="ADMINISTRATOR">Administrator</option>
@@ -182,7 +182,7 @@
           <button 
             v-if="searchQuery || roleFilter !== 'all'"
             @click="resetFilters" 
-            class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+            class="px-4 py-3 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-md hover:shadow-lg transition-all duration-300"
           >
             <i class="fas fa-undo mr-2"></i> Reset filter
           </button>
@@ -197,13 +197,6 @@
           <p class="text-center font-medium mb-4">
             {{ searchQuery ? 'Tidak ditemukan pengguna yang sesuai.' : 'Belum ada pengguna yang ditambahkan.' }}
           </p>
-          <button 
-            v-if="searchQuery || roleFilter !== 'all'"
-            @click="resetFilters" 
-            class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
-          >
-            <i class="fas fa-undo mr-2"></i> Reset filter
-          </button>
         </div>
 
         <!-- Users List -->
@@ -212,7 +205,7 @@
             <li 
               v-for="user in filteredUsers" 
               :key="user.id" 
-              class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+              class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
             >
               <div class="flex flex-col h-full">
                 <!-- Top section with title and buttons -->
@@ -223,8 +216,8 @@
                       <span 
                         :class="{
                           'px-2 py-0.5 rounded-md text-xs font-medium inline-flex items-center gap-1 mt-1': true,
-                          'bg-green-100 text-green-600': user.role === 'ADMINISTRATOR',
-                          'bg-gray-100 text-gray-600': user.role === 'OPERATOR'
+                          'bg-green-100/50 backdrop-blur-xl text-green-600': user.role === 'ADMINISTRATOR',
+                          'bg-gray-100/50 backdrop-blur-xl text-gray-600': user.role === 'OPERATOR'
                         }"
                       >
                         <i :class="{
@@ -240,14 +233,14 @@
                     <div class="flex space-x-1">
                       <button 
                         @click="editUser(user)" 
-                        class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
+                        class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500/70 backdrop-blur-xl rounded-md transition-colors duration-300 shadow-sm"
                         title="Edit pengguna"
                       >
                         <i class="fas fa-edit"></i>
                       </button>
                       <button 
                         @click="deleteUser(user.id)" 
-                        class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
+                        class="p-1.5 text-red-600 hover:text-white hover:bg-red-500/70 backdrop-blur-xl rounded-md transition-colors duration-300 shadow-sm"
                         title="Hapus pengguna"
                       >
                         <i class="fas fa-trash-alt"></i>
@@ -277,8 +270,8 @@
     </div>
 
     <!-- Delete Confirmation Popup -->
-    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]">
-      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-[70]">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300 border border-white/70">
         <div class="text-center">
           <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
@@ -306,21 +299,21 @@
     </div>
 
     <!-- Fullscreen Popup -->
-    <div v-if="isFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+    <div v-if="isFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-2xl border border-white/70 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-th-list text-blue-600 text-2xl mr-3"></i>
             <h2 class="text-2xl font-bold text-blue-600">Daftar Pengguna</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+            <div class="bg-blue-100/50 backdrop-blur-xl text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
               <i class="fas fa-users mr-2"></i>
               {{ filteredUsers.length }} Pengguna
             </div>
             <button
               @click="toggleFullscreen"
-              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200/50 hover:bg-gray-300/70 backdrop-blur-xl rounded-full text-gray-700 transition-colors shadow-md hover:shadow-lg"
             >
               <i class="fas fa-times"></i>
             </button>
@@ -335,7 +328,7 @@
               type="text"
               v-model="searchQuery"
               placeholder="Cari pengguna..."
-              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             />
           </div>
         </div>
@@ -346,7 +339,7 @@
             <!-- Role Filter -->
             <select 
               v-model="roleFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Role</option>
               <option value="ADMINISTRATOR">Administrator</option>
@@ -358,7 +351,7 @@
           <button 
             v-if="searchQuery || roleFilter !== 'all'"
             @click="resetFilters" 
-            class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+            class="px-4 py-3 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-md hover:shadow-lg transition-all duration-300"
           >
             <i class="fas fa-undo mr-2"></i> Reset filter
           </button>
@@ -371,19 +364,12 @@
             <p class="text-center font-medium text-xl mb-4">
               {{ searchQuery ? 'Tidak ditemukan pengguna yang sesuai.' : 'Belum ada pengguna yang ditambahkan.' }}
             </p>
-            <button 
-              v-if="searchQuery || roleFilter !== 'all'"
-              @click="resetFilters" 
-              class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
-            >
-              <i class="fas fa-undo mr-2"></i> Reset filter
-            </button>
           </div>
           <ul v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
             <li 
               v-for="user in filteredUsers" 
               :key="user.id" 
-              class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+              class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-md hover:shadow-lg"
             >
               <div class="flex flex-col h-full">
                 <!-- Top section with title and buttons -->
@@ -394,8 +380,8 @@
                       <span 
                         :class="{
                           'px-2 py-0.5 rounded-md text-xs font-medium inline-flex items-center gap-1 mt-1': true,
-                          'bg-green-100 text-green-600': user.role === 'ADMINISTRATOR',
-                          'bg-gray-100 text-gray-600': user.role === 'OPERATOR'
+                          'bg-green-100/50 backdrop-blur-sm text-green-600': user.role === 'ADMINISTRATOR',
+                          'bg-gray-100/50 backdrop-blur-sm text-gray-600': user.role === 'OPERATOR'
                         }"
                       >
                         <i :class="{
@@ -411,14 +397,14 @@
                     <div class="flex space-x-1">
                       <button 
                         @click="editUser(user); toggleFullscreen()" 
-                        class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
+                        class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500/70 backdrop-blur-xl rounded-md transition-colors duration-300 shadow-sm"
                         title="Edit pengguna"
                       >
                         <i class="fas fa-edit"></i>
                       </button>
                       <button 
                         @click="deleteUser(user.id)" 
-                        class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
+                        class="p-1.5 text-red-600 hover:text-white hover:bg-red-500/70 backdrop-blur-xl rounded-md transition-colors duration-300 shadow-sm"
                         title="Hapus pengguna"
                       >
                         <i class="fas fa-trash-alt"></i>
@@ -428,13 +414,13 @@
                 </div>
                 
                 <!-- Bottom section with details -->
-                <div class="mt-2 pt-2 border-t border-blue-100">
+                <div class="mt-2 pt-2 border-t border-blue-100/50">
                   <div class="flex flex-wrap gap-2 mb-2">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-600 rounded-lg text-sm font-medium">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100/50 backdrop-blur-sm text-blue-600 rounded-lg text-sm font-medium shadow-sm">
                       <i class="fas fa-envelope"></i>
                       {{ user.email }}
                     </span>
-                    <span class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-sm font-medium">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-100/50 backdrop-blur-sm text-indigo-600 rounded-lg text-sm font-medium shadow-sm">
                       <i class="fas fa-user"></i>
                       {{ user.username }}
                     </span>
@@ -443,6 +429,35 @@
               </div>
             </li>
           </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Confirmation Popup -->
+    <div v-if="showEditConfirm" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-[70]">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300 border border-white/70">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-pencil-alt text-2xl text-blue-600"></i>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Update</h3>
+          <p class="text-gray-600 mb-6">
+            Apakah Anda yakin ingin mengupdate data pengguna ini?
+          </p>
+          <div class="flex justify-center space-x-4">
+            <button 
+              @click="confirmEdit" 
+              class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-300"
+            >
+              Ya, Update
+            </button>
+            <button 
+              @click="showEditConfirm = false" 
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+            >
+              Batal
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -461,6 +476,7 @@ const editingId = ref(null)
 const searchQuery = ref('')
 const roleFilter = ref('all')
 const showDeleteConfirm = ref(false)
+const showEditConfirm = ref(false)
 const selectedUserId = ref(null)
 const showAlert = ref(false)
 const alertMessage = ref('')
@@ -548,6 +564,16 @@ const fetchUsers = async () => {
 
 // Handle form submission
 const handleSubmit = async () => {
+  if (isEditing.value) {
+    showEditConfirm.value = true;
+  } else {
+    await submitData();
+  }
+};
+
+// Confirm edit function
+const confirmEdit = async () => {
+  showEditConfirm.value = false;
   await submitData();
 };
 

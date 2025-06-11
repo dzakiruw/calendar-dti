@@ -27,7 +27,7 @@
 
         <!-- Right side - Login Form -->
         <div class="md:w-1/2 w-full max-w-md">
-          <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 w-full border border-gray-100">
+          <div class="bg-white/40 backdrop-blur-xl rounded-2xl shadow-2xl p-8 w-full border border-white/70 hover:shadow-blue-100/30 transition-all duration-500">
             <h2 class="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Login</h2>
             <form @submit.prevent="login" class="w-full">
               <div class="mb-5">
@@ -35,7 +35,7 @@
                 <input
                   v-model="username"
                   type="text"
-                  class="w-full p-3 border rounded-lg"
+                  class="w-full p-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300 shadow-inner"
                   placeholder="Enter username"
                   required
                 />
@@ -45,7 +45,7 @@
                 <input
                   v-model="password"
                   type="password"
-                  class="w-full p-3 border rounded-lg"
+                  class="w-full p-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300 shadow-inner"
                   placeholder="Enter password"
                   required
                 />
@@ -53,7 +53,7 @@
               <p v-if="errorMessage" class="text-red-600 text-sm mb-4">{{ errorMessage }}</p>
               <button
                 type="submit"
-                class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg w-full hover:from-blue-700 hover:to-indigo-700 transform transition-all duration-300"
+                class="bg-gradient-to-r from-blue-600/70 to-indigo-600/70 backdrop-blur-xl text-white py-3 px-4 rounded-lg w-full hover:from-blue-700/90 hover:to-indigo-700/90 transform transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 Login
               </button>
@@ -88,24 +88,24 @@
             Fitur Unggulan
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-lg transform transition-all duration-300 hover:scale-105">
-              <div class="flex items-center justify-center w-20 h-20 bg-blue-100 rounded-xl mb-6">
+            <div class="bg-white/40 backdrop-blur-xl rounded-xl p-8 shadow-2xl transform transition-all duration-300 hover:scale-105 border border-white/70 hover:shadow-blue-100/30">
+              <div class="flex items-center justify-center w-20 h-20 bg-blue-100/50 backdrop-blur-xl rounded-xl mb-6 shadow-md">
                 <i class="fas fa-calendar-check text-blue-600 text-3xl"></i>
               </div>
               <h3 class="text-2xl font-semibold text-gray-800 mb-4">Penjadwalan Otomatis</h3>
               <p class="text-gray-600 text-lg text-justify">Sistem cerdas yang menghasilkan jadwal kuliah secara otomatis dengan mempertimbangkan berbagai constraint dan preferensi dosen, menghemat waktu dan mengurangi konflik jadwal.</p>
             </div>
 
-            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-lg transform transition-all duration-300 hover:scale-105">
-              <div class="flex items-center justify-center w-20 h-20 bg-indigo-100 rounded-xl mb-6">
+            <div class="bg-white/40 backdrop-blur-xl rounded-xl p-8 shadow-2xl transform transition-all duration-300 hover:scale-105 border border-white/70 hover:shadow-indigo-100/30">
+              <div class="flex items-center justify-center w-20 h-20 bg-indigo-100/50 backdrop-blur-xl rounded-xl mb-6 shadow-md">
                 <i class="fas fa-users-cog text-indigo-600 text-3xl"></i>
               </div>
               <h3 class="text-2xl font-semibold text-gray-800 mb-4">Manajemen Data Terpadu</h3>
               <p class="text-gray-600 text-lg text-justify">Platform terpusat untuk mengelola semua data akademik, dari mata kuliah hingga ruang kelas, dengan antarmuka yang intuitif dan mudah digunakan.</p>
             </div>
 
-            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-lg transform transition-all duration-300 hover:scale-105">
-              <div class="flex items-center justify-center w-20 h-20 bg-blue-100 rounded-xl mb-6">
+            <div class="bg-white/40 backdrop-blur-xl rounded-xl p-8 shadow-2xl transform transition-all duration-300 hover:scale-105 border border-white/70 hover:shadow-blue-100/30">
+              <div class="flex items-center justify-center w-20 h-20 bg-blue-100/50 backdrop-blur-xl rounded-xl mb-6 shadow-md">
                 <i class="fas fa-clock text-blue-600 text-3xl"></i>
               </div>
               <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fleksibilitas Maksimal</h3>

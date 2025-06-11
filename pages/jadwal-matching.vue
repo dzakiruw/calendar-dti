@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
     <!-- Title -->
     <div class="mb-8 w-full flex justify-center">
-      <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300">
+      <div class="bg-white/50 backdrop-blur-xl rounded-2xl shadow-2xl p-6 flex items-center space-x-4 transition-all duration-300 border border-white/70 hover:shadow-blue-100/30">
         <img src="/matching-dosenmatkul.png" alt="Icon Matching" class="w-16 h-16 object-contain" />
         <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
           Matching Dosen & Mata Kuliah
@@ -13,7 +13,7 @@
     <!-- Layout Form + List -->
     <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Form -->
-      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+      <div class="bg-white/50 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-white/70 hover:shadow-blue-100/30 transition-all duration-500">
         <form @submit.prevent="submitMatching" class="space-y-6">
           <!-- Mata Kuliah -->
           <div>
@@ -21,7 +21,7 @@
             <select 
               v-model="selectedMataKuliah" 
               @change="updateKelas" 
-              class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              class="w-full p-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300 shadow-inner"
               required
             >
               <option disabled value="">Pilih Mata Kuliah</option>
@@ -36,7 +36,7 @@
             <label class="block text-gray-700 font-semibold mb-2">Jenis Mata Kuliah</label>
             <select 
               v-model="selectedMataKuliahType" 
-              class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              class="w-full p-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300 shadow-inner"
               required
             >
               <option disabled value="">Pilih Jenis Mata Kuliah</option>
@@ -50,7 +50,7 @@
             <label class="block text-gray-700 font-semibold mb-2">Pilih Kelas</label>
             <select 
               v-model="selectedKelas" 
-              class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              class="w-full p-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300 shadow-inner"
               required
             >
               <option disabled value="">Pilih Kelas</option>
@@ -65,7 +65,7 @@
             <label class="block text-gray-700 font-semibold mb-2">Pilih Dosen</label>
             <select 
               v-model="selectedDosen" 
-              class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              class="w-full p-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300 shadow-inner"
               required
             >
               <option disabled value="">Pilih Dosen</option>
@@ -79,11 +79,11 @@
           <div>
             <label class="block text-gray-700 font-semibold mb-3">Pilih Semester</label>
             <div class="mb-2 flex gap-2">
-              <button type="button" @click="selectAllSemestersFn" class="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold shadow hover:bg-blue-700 transition">Select All</button>
-              <button type="button" @click="removeAllSemestersFn" class="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg text-xs font-semibold shadow hover:bg-gray-400 transition">Remove All</button>
+              <button type="button" @click="selectAllSemestersFn" class="px-3 py-1 bg-blue-600/70 hover:bg-blue-700/90 backdrop-blur-xl text-white rounded-lg text-xs font-semibold shadow-md hover:shadow-lg transition">Select All</button>
+              <button type="button" @click="removeAllSemestersFn" class="px-3 py-1 bg-gray-300/70 hover:bg-gray-400/90 backdrop-blur-xl text-gray-700 rounded-lg text-xs font-semibold shadow-md hover:shadow-lg transition">Remove All</button>
             </div>
             <div class="grid grid-cols-2 gap-3">
-              <label v-for="semester in 8" :key="semester" class="inline-flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors duration-300 cursor-pointer">
+              <label v-for="semester in 8" :key="semester" class="inline-flex items-center p-2 rounded-lg hover:bg-gray-50/40 transition-colors duration-300 cursor-pointer">
                 <input 
                   type="checkbox" 
                   :value="semester" 
@@ -99,9 +99,9 @@
           <div class="flex gap-4">
             <button 
               type="submit" 
-              class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
-                     hover:from-blue-700 hover:to-indigo-700 transition-all duration-300
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              class="flex-1 bg-gradient-to-r from-blue-600/70 to-indigo-600/70 backdrop-blur-xl text-white py-3 px-6 rounded-xl
+                     hover:from-blue-700/90 hover:to-indigo-700/90 transition-colors duration-300
+                     focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-opacity-50 shadow-lg hover:shadow-xl"
               :disabled="isSubmitting"
             >
               {{ isSubmitting ? 'Submitting...' : editIndex !== null ? 'Update' : 'Submit' }}
@@ -111,9 +111,9 @@
               v-if="editIndex !== null"
               type="button" 
               @click="cancelEdit" 
-              class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-6 rounded-xl
-                     hover:from-gray-700 hover:to-gray-800 transition-all duration-300
-                     focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+              class="flex-1 bg-gradient-to-r from-gray-600/70 to-gray-700/70 backdrop-blur-xl text-white py-3 px-6 rounded-xl
+                     hover:from-gray-700/90 hover:to-gray-800/90 transition-colors duration-300
+                     focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:ring-opacity-50 shadow-lg hover:shadow-xl"
             >
               Cancel
             </button>
@@ -122,7 +122,7 @@
       </div>
 
       <!-- Daftar Matching -->
-      <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+      <div class="bg-white/50 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-white/70 hover:shadow-blue-100/30 transition-all duration-500">
         <!-- Title with Icon and Counter -->
         <div class="flex items-center justify-between mb-5 border-b pb-3">
           <div class="flex items-center">
@@ -130,13 +130,13 @@
             <h2 class="text-xl font-bold text-blue-600">Daftar Matching</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-3 py-1 rounded-md text-sm font-medium flex items-center">
+            <div class="bg-blue-100/50 backdrop-blur-xl text-blue-700 px-3 py-1 rounded-md text-sm font-medium flex items-center h-8">
               <i class="fas fa-link mr-1.5"></i>
               {{ filteredMatchingList.length }} Matching
             </div>
             <button 
               @click="toggleFullscreen" 
-              class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+              class="p-1.5 bg-gray-100/50 backdrop-blur-xl hover:bg-gray-200/50 rounded-md text-gray-700 transition-colors shadow-sm"
               title="Lihat semua matching"
             >
               <i class="fas fa-expand"></i>
@@ -152,7 +152,7 @@
               type="text"
               v-model="searchQuery"
               placeholder="Cari matching..."
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             />
           </div>
         </div>
@@ -163,7 +163,7 @@
             <!-- Mata Kuliah Type Filter -->
             <select 
               v-model="typeFilter" 
-              class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Jenis</option>
               <option value="DEPARTEMEN">Departemen</option>
@@ -173,7 +173,7 @@
             <!-- Semester Filter -->
             <select 
               v-model="semesterFilter" 
-              class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Semester</option>
               <option v-for="n in 8" :key="n" :value="n">Semester {{ n }}</option>
@@ -182,7 +182,7 @@
             <!-- SKS Filter -->
             <select 
               v-model="sksFilter" 
-              class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua SKS</option>
               <option value="1">1 SKS</option>
@@ -196,9 +196,9 @@
           <button 
             v-if="searchQuery || typeFilter !== 'all' || semesterFilter !== 'all' || sksFilter !== 'all'"
             @click="resetFilters" 
-            class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+            class="px-4 py-3 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-md hover:shadow-lg transition-all duration-300"
           >
-            <i class="fas fa-undo"></i>
+            <i class="fas fa-undo mr-2"></i> Reset filter
           </button>
         </div>
 
@@ -233,7 +233,7 @@
                                   <li 
                   v-for="(matching, index) in classes" 
                   :key="index" 
-                  class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                  class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
                 >
                   <div class="flex flex-col h-full">
                     <!-- Top section with title and buttons -->
@@ -247,7 +247,7 @@
                             <div class="text-blue-600 text-sm font-medium">
                               {{ matching.mata_kuliah_kelas.matkul_kode }}
                             </div>
-                            <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                            <span class="px-3 py-1 bg-blue-100/60 backdrop-blur-sm text-blue-700 text-sm font-medium rounded-md flex items-center shadow-sm">
                               <i class="fas fa-book-open mr-1.5"></i> {{ getMatkulSKS(matching) }} SKS
                             </span>
                           </div>
@@ -257,14 +257,14 @@
                         <div class="flex space-x-1">
                           <button 
                             @click="editJadwal(matching)" 
-                            class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
+                            class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500/70 backdrop-blur-xl rounded-md transition-colors duration-300 shadow-sm"
                             title="Edit matching"
                           >
                             <i class="fas fa-edit"></i>
                           </button>
                           <button 
                             @click="deleteJadwal(matching)" 
-                            class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
+                            class="p-1.5 text-red-600 hover:text-white hover:bg-red-500/70 backdrop-blur-xl rounded-md transition-colors duration-300 shadow-sm"
                             title="Hapus matching"
                           >
                             <i class="fas fa-trash-alt"></i>
@@ -274,16 +274,16 @@
                     </div>
                     
                     <!-- Bottom section with details -->
-                    <div class="mt-2 pt-2 border-t border-blue-100">
+                    <div class="mt-2 pt-2 border-t border-blue-100/50">
                       <div class="flex flex-wrap gap-2">
                         <span 
                           v-for="semester in matching.mk_kelas_sem" 
                           :key="semester"
-                          class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium"
+                          class="inline-flex items-center px-2 py-1 bg-blue-100/60 backdrop-blur-sm text-blue-600 rounded-lg text-xs font-medium shadow-sm"
                         >
                           <i class="fas fa-graduation-cap mr-1"></i> Semester {{ semester }}
                         </span>
-                        <span class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium">
+                        <span class="inline-flex items-center px-2 py-1 bg-indigo-100/60 backdrop-blur-sm text-indigo-600 rounded-lg text-xs font-medium shadow-sm">
                           <i class="fas fa-tag mr-1"></i> {{ matching.matkul_tipe }}
                         </span>
                       </div>
@@ -299,10 +299,10 @@
     </div>
 
     <!-- Popup Konfirmasi Delete -->
-    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
-      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-[60]">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300 border border-white/70">
         <div class="text-center">
-          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div class="w-16 h-16 bg-red-100/70 rounded-full flex items-center justify-center mx-auto mb-4">
             <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
           </div>
           <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Hapus</h3>
@@ -312,13 +312,13 @@
           <div class="flex justify-center space-x-4">
             <button 
               @click="confirmDelete" 
-              class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-300"
+              class="px-4 py-2 bg-red-600/70 hover:bg-red-700/90 backdrop-blur-xl text-white rounded-xl transition-colors duration-300 shadow-md hover:shadow-lg"
             >
               Ya, Hapus
             </button>
             <button 
               @click="showDeleteConfirm = false" 
-              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+              class="px-4 py-2 bg-gray-200/70 hover:bg-gray-300/90 backdrop-blur-xl text-gray-700 rounded-xl transition-colors duration-300 shadow-md hover:shadow-lg"
             >
               Batal
             </button>
@@ -328,10 +328,10 @@
     </div>
 
     <!-- Popup Konfirmasi Edit -->
-    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
-      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+    <div v-if="showEditConfirm" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-[60]">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300 border border-white/70">
         <div class="text-center">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div class="w-16 h-16 bg-blue-100/70 rounded-full flex items-center justify-center mx-auto mb-4">
             <i class="fas fa-pencil-alt text-2xl text-blue-600"></i>
           </div>
           <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Edit</h3>
@@ -341,13 +341,13 @@
           <div class="flex justify-center space-x-4">
             <button 
               @click="confirmEdit" 
-              class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-300"
+              class="px-4 py-2 bg-blue-600/70 hover:bg-blue-700/90 backdrop-blur-xl text-white rounded-xl transition-colors duration-300 shadow-md hover:shadow-lg"
             >
               Ya, Edit
             </button>
             <button 
               @click="showEditConfirm = false" 
-              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+              class="px-4 py-2 bg-gray-200/70 hover:bg-gray-300/90 backdrop-blur-xl text-gray-700 rounded-xl transition-colors duration-300 shadow-md hover:shadow-lg"
             >
               Batal
             </button>
@@ -357,18 +357,18 @@
     </div>
 
     <!-- Alert Popup -->
-    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
-      <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300">
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-md">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center transform transition-all duration-300 border border-white/70">
         <div class="mb-4 text-red-600 text-2xl"><i class="fas fa-exclamation-circle"></i></div>
         <div class="mb-4 text-gray-800 font-semibold">{{ alertMessage }}</div>
-        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600/70 hover:bg-blue-700/90 backdrop-blur-xl text-white rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg">
           Tutup
         </button>
       </div>
     </div>
 
     <!-- Success Alert -->
-    <div v-if="showSuccess" class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50">
+    <div v-if="showSuccess" class="fixed top-4 right-4 bg-white/60 backdrop-blur-xl border border-green-200/70 text-green-700 p-4 rounded-lg shadow-xl transform transition-all duration-300 z-50">
       <div class="flex items-center">
         <div class="py-1">
           <i class="fas fa-check-circle text-xl mr-3"></i>
@@ -383,21 +383,21 @@
     </div>
 
     <!-- Fullscreen Popup -->
-    <div v-if="isFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+    <div v-if="isFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-2xl border border-white/70 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-th-list text-blue-600 text-2xl mr-3"></i>
             <h2 class="text-2xl font-bold text-blue-600">Daftar Matching</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+            <div class="bg-blue-100/50 backdrop-blur-xl text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
               <i class="fas fa-link mr-2"></i>
               {{ filteredMatchingList.length }} Matching
             </div>
             <button
               @click="toggleFullscreen"
-              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200/50 hover:bg-gray-300/70 backdrop-blur-xl rounded-full text-gray-700 transition-colors shadow-md hover:shadow-lg"
             >
               <i class="fas fa-times"></i>
             </button>
@@ -412,7 +412,7 @@
               type="text"
               v-model="searchQuery"
               placeholder="Cari matching..."
-              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             />
           </div>
         </div>
@@ -423,7 +423,7 @@
             <!-- Mata Kuliah Type Filter -->
             <select 
               v-model="typeFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Jenis</option>
               <option value="DEPARTEMEN">Departemen</option>
@@ -433,7 +433,7 @@
             <!-- Semester Filter -->
             <select 
               v-model="semesterFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Semester</option>
               <option v-for="n in 8" :key="n" :value="n">Semester {{ n }}</option>
@@ -442,7 +442,7 @@
             <!-- SKS Filter -->
             <select 
               v-model="sksFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua SKS</option>
               <option value="1">1 SKS</option>
@@ -456,7 +456,7 @@
           <button 
             v-if="searchQuery || typeFilter !== 'all' || semesterFilter !== 'all' || sksFilter !== 'all'"
             @click="resetFilters" 
-            class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+            class="px-4 py-3 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-md hover:shadow-lg transition-all duration-300"
           >
             <i class="fas fa-undo mr-2"></i> Reset filter
           </button>
@@ -486,7 +486,7 @@
                 <li 
                   v-for="(matching, index) in classes" 
                   :key="index" 
-                  class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                  class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-md hover:shadow-lg"
                 >
                   <div class="flex flex-col h-full">
                     <!-- Top section with title and buttons -->
@@ -500,7 +500,7 @@
                             <div class="text-blue-600 text-sm font-medium">
                               {{ matching.mata_kuliah_kelas.matkul_kode }}
                             </div>
-                            <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                            <span class="px-3 py-1 bg-blue-100/60 backdrop-blur-sm text-blue-700 text-sm font-medium rounded-md flex items-center shadow-sm">
                               <i class="fas fa-book-open mr-1.5"></i> {{ getMatkulSKS(matching) }} SKS
                             </span>
                           </div>
@@ -510,14 +510,14 @@
                         <div class="flex space-x-1">
                           <button 
                             @click="editJadwal(matching)" 
-                            class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
+                            class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500/70 backdrop-blur-xl rounded-md transition-colors duration-300 shadow-sm"
                             title="Edit matching"
                           >
                             <i class="fas fa-edit"></i>
                           </button>
                           <button 
                             @click="deleteJadwal(matching)" 
-                            class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
+                            class="p-1.5 text-red-600 hover:text-white hover:bg-red-500/70 backdrop-blur-xl rounded-md transition-colors duration-300 shadow-sm"
                             title="Hapus matching"
                           >
                             <i class="fas fa-trash-alt"></i>
@@ -527,16 +527,16 @@
                     </div>
                     
                     <!-- Bottom section with details -->
-                    <div class="mt-2 pt-2 border-t border-blue-100">
+                    <div class="mt-2 pt-2 border-t border-blue-100/50">
                       <div class="flex flex-wrap gap-2">
                         <span 
                           v-for="semester in matching.mk_kelas_sem" 
                           :key="semester"
-                          class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium"
+                          class="inline-flex items-center px-2 py-1 bg-blue-100/60 backdrop-blur-sm text-blue-600 rounded-lg text-xs font-medium shadow-sm"
                         >
                           <i class="fas fa-graduation-cap mr-1"></i> Semester {{ semester }}
                         </span>
-                        <span class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium">
+                        <span class="inline-flex items-center px-2 py-1 bg-indigo-100/60 backdrop-blur-sm text-indigo-600 rounded-lg text-xs font-medium shadow-sm">
                           <i class="fas fa-tag mr-1"></i> {{ matching.matkul_tipe }}
                         </span>
                       </div>

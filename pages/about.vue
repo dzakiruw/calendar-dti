@@ -13,14 +13,14 @@
             :key="member.name"
             :href="member.linkedin"
             target="_blank"
-            class="group flex flex-col items-center p-6 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105"
+            class="group flex flex-col items-center p-6 bg-white/40 backdrop-blur-xl rounded-xl shadow-2xl transform transition-all duration-300 hover:scale-105 border border-white/70 hover:shadow-blue-100/30"
           >
             <div class="relative mb-4">
               <img 
                 :src="member.avatar" 
-                class="w-28 h-28 rounded-full border-4 border-white shadow-lg object-cover group-hover:border-blue-100"
+                class="w-28 h-28 rounded-full border-4 border-white/60 shadow-lg object-cover group-hover:border-blue-100/60"
               />
-              <div class="absolute -bottom-3 -right-3 bg-blue-600 text-white rounded-full w-10 h-10 shadow-lg group-hover:bg-indigo-600 flex items-center justify-center">
+              <div class="absolute -bottom-3 -right-3 bg-blue-600/70 backdrop-blur-xl text-white rounded-full w-10 h-10 shadow-lg group-hover:bg-indigo-600/70 flex items-center justify-center">
                 <i class="fab fa-linkedin-in text-base"></i>
               </div>
             </div>
@@ -45,7 +45,7 @@
             :key="tech.name"
             :href="tech.link"
             target="_blank"
-            class="group flex flex-col items-center p-6 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105"
+            class="group flex flex-col items-center p-6 bg-white/40 backdrop-blur-xl rounded-xl shadow-2xl transform transition-all duration-300 hover:scale-105 border border-white/70 hover:shadow-blue-100/30"
           >
             <img :src="tech.logo" class="w-20 h-20 object-contain mb-4 group-hover:animate-bounce" :alt="tech.name + ' Logo'" />
             <p class="text-lg font-semibold text-gray-700 group-hover:text-blue-600">{{ tech.name }}</p>

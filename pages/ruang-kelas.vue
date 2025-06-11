@@ -1,18 +1,18 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
     <!-- Alert Popup -->
-    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
-      <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300">
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-md">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center transform transition-all duration-300 border border-white/70">
         <div class="mb-4 text-red-600 text-2xl"><i class="fas fa-exclamation-circle"></i></div>
         <div class="mb-4 text-gray-800 font-semibold">{{ alertMessage }}</div>
-        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600/70 hover:bg-blue-700/90 backdrop-blur-xl text-white rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg">
           Tutup
         </button>
       </div>
     </div>
 
     <!-- Success Alert -->
-    <div v-if="showSuccess" class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50">
+    <div v-if="showSuccess" class="fixed top-4 right-4 bg-white/60 backdrop-blur-xl border border-green-200/70 text-green-700 p-4 rounded-lg shadow-xl transform transition-all duration-300 z-50">
       <div class="flex items-center">
         <div class="py-1">
           <i class="fas fa-check-circle text-xl mr-3"></i>
@@ -27,7 +27,7 @@
     </div>
     <!-- Title -->
     <div class="mb-8 w-full flex justify-center">
-      <div class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300">
+      <div class="bg-white/50 backdrop-blur-xl rounded-2xl shadow-2xl p-6 flex items-center space-x-4 transition-all duration-300 border border-white/70 hover:shadow-blue-100/30">
         <img src="/input-kelas.png" alt="Classroom Icon" class="w-16 h-16 object-contain" />
         <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
           Input Ruang Kelas
@@ -38,7 +38,7 @@
     <!-- Form and List Container -->
     <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
       <!-- Input Form -->
-      <div class="bg-white/90 backdrop-blur-sm p-5 rounded-2xl shadow-lg border border-gray-100 flex flex-col max-h-[450px]">
+      <div class="bg-white/50 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/70 hover:shadow-blue-100/30 transition-all duration-500 flex flex-col max-h-[450px]">
         <form @submit.prevent="submitForm" class="flex-1 flex flex-col">
           <div class="space-y-4 flex-1">
           <div>
@@ -50,7 +50,7 @@
               <input
                 v-model="form.kodeRuangan"
                 type="text"
-                  class="w-full p-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  class="w-full p-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300 shadow-inner"
                 placeholder="Masukkan kode ruangan"
                 required
               />
@@ -62,7 +62,7 @@
             <input
               v-model="form.kapasitasRuangan"
               type="number"
-                class="w-full p-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                class="w-full p-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300 shadow-inner"
               placeholder="Masukkan kapasitas ruangan"
               required
             />
@@ -73,9 +73,9 @@
           <div class="flex gap-4 pt-2">
             <button 
               type="submit" 
-              class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-6 rounded-xl
-                     hover:from-blue-700 hover:to-indigo-700 transition-all duration-300
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              class="flex-1 bg-gradient-to-r from-blue-600/70 to-indigo-600/70 backdrop-blur-xl text-white py-3 px-6 rounded-xl
+                     hover:from-blue-700/90 hover:to-indigo-700/90 transition-colors duration-300
+                     focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-opacity-50 shadow-lg hover:shadow-xl"
             >
               {{ editIndex !== null ? 'Update' : 'Submit' }}
             </button>
@@ -84,9 +84,9 @@
               v-if="editIndex !== null"
               type="button" 
               @click="cancelEdit" 
-              class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-2 px-6 rounded-xl
-                     hover:from-gray-700 hover:to-gray-800 transition-all duration-300
-                     focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+              class="flex-1 bg-gradient-to-r from-gray-600/70 to-gray-700/70 backdrop-blur-xl text-white py-3 px-6 rounded-xl
+                     hover:from-gray-700/90 hover:to-gray-800/90 transition-colors duration-300
+                     focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:ring-opacity-50 shadow-lg hover:shadow-xl"
             >
               Cancel
             </button>
@@ -95,21 +95,21 @@
       </div>
 
       <!-- Daftar Ruang Kelas -->
-      <div class="bg-white/90 backdrop-blur-sm p-5 rounded-2xl shadow-lg border border-gray-100 flex flex-col max-h-[450px]">
+      <div class="bg-white/50 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/70 hover:shadow-blue-100/30 transition-all duration-500 flex flex-col max-h-[450px]">
         <!-- Title with Icon and Counter -->
-        <div class="flex items-center justify-between mb-3 border-b pb-2">
+        <div class="flex items-center justify-between mb-5 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-list-ul text-blue-600 text-xl mr-3"></i>
             <h2 class="text-xl font-bold text-blue-600">Daftar Ruang Kelas</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+            <div class="bg-blue-100/50 backdrop-blur-xl text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
               <i class="fas fa-door-open mr-2"></i>
               {{ sortedRuangKelasList.length }} Ruangan
             </div>
             <button 
               @click="toggleFullscreen" 
-              class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+              class="p-1.5 bg-gray-100/50 backdrop-blur-xl hover:bg-gray-200/50 rounded-md text-gray-700 transition-colors shadow-sm"
               title="Lihat semua ruangan"
             >
               <i class="fas fa-expand"></i>
@@ -118,14 +118,14 @@
         </div>
         
         <!-- Search Bar -->
-        <div class="w-full mb-3">
+        <div class="w-full mb-4">
           <div class="relative">
             <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             <input
               type="text"
               v-model="searchQuery"
               placeholder="Cari ruang kelas..."
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full pl-10 pr-4 py-2 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             />
           </div>
         </div>
@@ -148,7 +148,7 @@
             <button 
               v-if="searchQuery"
               @click="resetFilters" 
-              class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+              class="px-4 py-2 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-md hover:shadow-lg transition-all duration-300"
             >
               <i class="fas fa-undo mr-2"></i> Reset filter
             </button>
@@ -160,7 +160,7 @@
               <li 
               v-for="(ruang, index) in sortedRuangKelasList" 
                 :key="index" 
-                class="bg-blue-50 p-3 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                class="bg-blue-50/40 backdrop-blur-xl p-3 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
               >
                 <div class="flex flex-col h-full">
                   <!-- Top section with title and buttons -->
@@ -176,14 +176,14 @@
                       <div class="flex space-x-1">
                     <button 
                     @click="editRuangKelas(sortedRuangKelasList.indexOf(ruang))" 
-                          class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
+                          class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500/70 backdrop-blur-xl rounded-md transition-colors duration-300 shadow-sm"
                           title="Edit ruangan"
                     >
                           <i class="fas fa-edit"></i>
                     </button>
                     <button 
                     @click="deleteRuangKelas(sortedRuangKelasList.indexOf(ruang))" 
-                          class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
+                          class="p-1.5 text-red-600 hover:text-white hover:bg-red-500/70 backdrop-blur-xl rounded-md transition-colors duration-300 shadow-sm"
                           title="Hapus ruangan"
                     >
                       <i class="fas fa-trash-alt"></i>
@@ -198,7 +198,7 @@
                   <!-- Bottom section with capacity -->
                   <div class="mt-2 pt-2">
                     <div class="flex items-center border-t pt-2">
-                      <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                      <span class="px-3 py-1 bg-blue-100/50 backdrop-blur-sm text-blue-700 text-sm font-medium rounded-md flex items-center shadow-sm">
                         <i class="fas fa-users mr-2"></i>
                         Kapasitas: {{ ruang.ruangan_kapasitas }}
                       </span>
@@ -213,10 +213,10 @@
     </div>
 
     <!-- Popup Konfirmasi Delete -->
-    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
-      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-[60]">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300 border border-white/70">
         <div class="text-center">
-          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div class="w-16 h-16 bg-red-100/70 rounded-full flex items-center justify-center mx-auto mb-4">
             <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
           </div>
           <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Hapus</h3>
@@ -226,13 +226,13 @@
           <div class="flex justify-center space-x-4">
             <button 
               @click="confirmDelete" 
-              class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-300"
+              class="px-4 py-2 bg-red-600/70 hover:bg-red-700/90 backdrop-blur-xl text-white rounded-xl transition-colors duration-300 shadow-md hover:shadow-lg"
             >
               Ya, Hapus
             </button>
             <button 
               @click="showDeleteConfirm = false" 
-              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+              class="px-4 py-2 bg-gray-200/70 hover:bg-gray-300/90 backdrop-blur-xl text-gray-700 rounded-xl transition-colors duration-300 shadow-md hover:shadow-lg"
             >
               Batal
             </button>
@@ -242,10 +242,10 @@
     </div>
 
     <!-- Popup Konfirmasi Edit -->
-    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
-      <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
+    <div v-if="showEditConfirm" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-[60]">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300 border border-white/70">
         <div class="text-center">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div class="w-16 h-16 bg-blue-100/70 rounded-full flex items-center justify-center mx-auto mb-4">
             <i class="fas fa-pencil-alt text-2xl text-blue-600"></i>
           </div>
           <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Edit</h3>
@@ -255,13 +255,13 @@
           <div class="flex justify-center space-x-4">
             <button 
               @click="confirmEdit" 
-              class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-300"
+              class="px-4 py-2 bg-blue-600/70 hover:bg-blue-700/90 backdrop-blur-xl text-white rounded-xl transition-colors duration-300 shadow-md hover:shadow-lg"
             >
               Ya, Edit
             </button>
             <button 
               @click="showEditConfirm = false" 
-              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+              class="px-4 py-2 bg-gray-200/70 hover:bg-gray-300/90 backdrop-blur-xl text-gray-700 rounded-xl transition-colors duration-300 shadow-md hover:shadow-lg"
             >
               Batal
             </button>
@@ -271,21 +271,21 @@
     </div>
 
     <!-- Fullscreen Popup -->
-    <div v-if="isFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+    <div v-if="isFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-2xl border border-white/70 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-th-list text-blue-600 text-2xl mr-3"></i>
             <h2 class="text-2xl font-bold text-blue-600">Daftar Ruang Kelas</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+            <div class="bg-blue-100/50 backdrop-blur-xl text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
               <i class="fas fa-door-open mr-2"></i>
               {{ sortedRuangKelasList.length }} Ruangan
             </div>
             <button
               @click="toggleFullscreen"
-              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200/50 hover:bg-gray-300/70 backdrop-blur-xl rounded-full text-gray-700 transition-colors shadow-md hover:shadow-lg"
             >
               <i class="fas fa-times"></i>
             </button>
@@ -300,7 +300,7 @@
               type="text"
               v-model="searchQuery"
               placeholder="Cari ruang kelas..."
-              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             />
           </div>
         </div>
@@ -319,7 +319,7 @@
             <button 
               v-if="searchQuery"
               @click="resetFilters" 
-              class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+              class="px-4 py-2 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-md hover:shadow-lg transition-all duration-300"
             >
               <i class="fas fa-undo mr-2"></i> Reset filter
             </button>
@@ -328,7 +328,7 @@
             <li 
               v-for="(ruang, index) in sortedRuangKelasList" 
               :key="index" 
-              class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+              class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-md hover:shadow-lg"
             >
               <div class="flex flex-col h-full">
                 <!-- Top section with title and buttons -->
@@ -344,14 +344,14 @@
                     <div class="flex space-x-1">
                       <button
                         @click="editRuangKelas(sortedRuangKelasList.indexOf(ruang)); toggleFullscreen()"
-                        class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
+                        class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500/70 backdrop-blur-xl rounded-md transition-colors duration-300 shadow-sm"
                         title="Edit ruangan"
                       >
                         <i class="fas fa-edit"></i>
                       </button>
                       <button
                         @click="deleteRuangKelas(sortedRuangKelasList.indexOf(ruang))"
-                        class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
+                        class="p-1.5 text-red-600 hover:text-white hover:bg-red-500/70 backdrop-blur-xl rounded-md transition-colors duration-300 shadow-sm"
                         title="Hapus ruangan"
                       >
                         <i class="fas fa-trash-alt"></i>
@@ -363,7 +363,7 @@
                 <!-- Bottom section with capacity -->
                 <div class="mt-auto pt-2">
                   <div class="flex items-center border-t pt-2">
-                    <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                    <span class="px-3 py-1 bg-blue-100/50 backdrop-blur-sm text-blue-700 text-sm font-medium rounded-md flex items-center shadow-sm">
                       <i class="fas fa-users mr-2"></i>
                       Kapasitas: {{ ruang.ruangan_kapasitas }}
                     </span>

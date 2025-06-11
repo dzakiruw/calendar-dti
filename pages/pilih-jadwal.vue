@@ -3,18 +3,18 @@
     class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8"
   >
     <!-- Alert Popup -->
-    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
-      <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300">
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-md">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center transform transition-all duration-300 border border-white/70">
         <div class="mb-4 text-red-600 text-2xl"><i class="fas fa-exclamation-circle"></i></div>
         <div class="mb-4 text-gray-800 font-semibold">{{ alertMessage }}</div>
-        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600/70 hover:bg-blue-700/90 backdrop-blur-xl text-white rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg">
           Tutup
         </button>
       </div>
     </div>
     <div
       v-if="showSuccess"
-      class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 z-50"
+      class="fixed top-4 right-4 bg-white/60 backdrop-blur-xl border border-green-200/70 text-green-700 p-4 rounded-lg shadow-xl transform transition-all duration-300 z-50"
     >
       <div class="flex items-center">
         <div class="py-1">
@@ -34,7 +34,7 @@
     <!-- Title -->
     <div class="mb-8 w-full flex justify-center">
       <div
-        class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300"
+        class="bg-white/50 backdrop-blur-xl rounded-2xl shadow-2xl p-6 flex items-center space-x-4 transition-all duration-300 border border-white/70 hover:shadow-blue-100/30"
       >
         <img
           src="/pilih-jadwal.png"
@@ -54,9 +54,9 @@
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <!-- Total Matching Card -->
-        <div class="bg-white rounded-xl shadow-md p-4 border border-blue-100">
+        <div class="bg-white/50 backdrop-blur-xl rounded-xl shadow-md p-4 border border-white/70 hover:shadow-blue-100/30 transition-all duration-300">
           <div class="flex items-center">
-            <div class="p-3 rounded-full bg-blue-100 mr-4 w-12 h-12 flex items-center justify-center">
+            <div class="p-3 rounded-full bg-blue-100/70 mr-4 w-12 h-12 flex items-center justify-center">
               <i class="fas fa-link text-blue-600 text-xl"></i>
             </div>
             <div>
@@ -67,9 +67,9 @@
         </div>
         
         <!-- Total Dosen Card -->
-        <div class="bg-white rounded-xl shadow-md p-4 border border-blue-100">
+        <div class="bg-white/50 backdrop-blur-xl rounded-xl shadow-md p-4 border border-white/70 hover:shadow-blue-100/30 transition-all duration-300">
           <div class="flex items-center">
-            <div class="p-3 rounded-full bg-indigo-100 mr-4 w-12 h-12 flex items-center justify-center">
+            <div class="p-3 rounded-full bg-indigo-100/70 mr-4 w-12 h-12 flex items-center justify-center">
               <i class="fas fa-user-tie text-indigo-600 text-xl"></i>
             </div>
             <div>
@@ -80,9 +80,9 @@
         </div>
         
         <!-- Total Mata Kuliah Card -->
-        <div class="bg-white rounded-xl shadow-md p-4 border border-blue-100">
+        <div class="bg-white/50 backdrop-blur-xl rounded-xl shadow-md p-4 border border-white/70 hover:shadow-blue-100/30 transition-all duration-300">
           <div class="flex items-center">
-            <div class="p-3 rounded-full bg-green-100 mr-4 w-12 h-12 flex items-center justify-center">
+            <div class="p-3 rounded-full bg-green-100/70 mr-4 w-12 h-12 flex items-center justify-center">
               <i class="fas fa-book text-green-600 text-xl"></i>
             </div>
             <div>
@@ -93,9 +93,9 @@
         </div>
         
         <!-- Total Ruang Kelas Card -->
-        <div class="bg-white rounded-xl shadow-md p-4 border border-blue-100">
+        <div class="bg-white/50 backdrop-blur-xl rounded-xl shadow-md p-4 border border-white/70 hover:shadow-blue-100/30 transition-all duration-300">
           <div class="flex items-center">
-            <div class="p-3 rounded-full bg-purple-100 mr-4 w-12 h-12 flex items-center justify-center">
+            <div class="p-3 rounded-full bg-purple-100/70 mr-4 w-12 h-12 flex items-center justify-center">
               <i class="fas fa-chalkboard-teacher text-purple-600 text-xl"></i>
             </div>
             <div>
@@ -111,7 +111,7 @@
         <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
           <!-- Mata Kuliah -->
           <div
-            class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
+            class="bg-white/50 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/70 hover:shadow-blue-100/30 transition-all duration-500"
           >
             <div class="flex items-center justify-between mb-4 border-b pb-3">
               <h2
@@ -121,7 +121,7 @@
               </h2>
               <button 
                 @click="toggleMataKuliahFullscreen" 
-                class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+                class="p-1.5 bg-gray-100/50 hover:bg-gray-200/50 backdrop-blur-xl rounded-md text-gray-700 transition-colors shadow-sm hover:shadow-md"
                 title="Lihat semua mata kuliah"
               >
                 <i class="fas fa-expand"></i>
@@ -132,7 +132,7 @@
                 <li
                   v-for="mk in mataKuliahList"
                   :key="mk.matkul_kode"
-                  class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                  class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
                 >
                   <div class="flex flex-col h-full justify-between">
                     <div>
@@ -142,7 +142,7 @@
                       <!-- Course Code and SKS -->
                       <div class="flex items-center gap-2 mt-1 border-t pt-2">
                         <div class="text-blue-600 text-sm font-medium">{{ mk.matkul_kode }}</div>
-                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                        <span class="px-3 py-1 bg-blue-100/60 backdrop-blur-sm text-blue-700 text-sm font-medium rounded-md flex items-center shadow-sm">
                           <i class="fas fa-book-open mr-1.5"></i> {{ mk.matkul_sks }} SKS
                         </span>
                       </div>
@@ -159,7 +159,7 @@
 
           <!-- Dosen -->
           <div
-            class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
+            class="bg-white/50 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/70 hover:shadow-blue-100/30 transition-all duration-500"
           >
             <div class="flex items-center justify-between mb-4 border-b pb-3">
               <h2
@@ -169,7 +169,7 @@
               </h2>
               <button 
                 @click="toggleDosenFullscreen" 
-                class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+                class="p-1.5 bg-gray-100/50 hover:bg-gray-200/50 backdrop-blur-xl rounded-md text-gray-700 transition-colors shadow-sm hover:shadow-md"
                 title="Lihat semua dosen"
               >
                 <i class="fas fa-expand"></i>
@@ -180,7 +180,7 @@
                 <li
                   v-for="dosen in dosenList"
                   :key="dosen.dosen_kode"
-                  class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                  class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
                 >
                   <div class="flex flex-col h-full">
                     <div>
@@ -191,9 +191,9 @@
                         <div class="text-blue-600 text-sm font-medium">{{ dosen.dosen_kode }}</div>
                         <span 
                           :class="{
-                            'px-2 py-0.5 rounded-md text-xs font-medium inline-flex items-center gap-1': true,
-                            'bg-green-100 text-green-600': dosen.dosen_prioritas === 'PRIORITAS',
-                            'bg-red-100 text-red-600': dosen.dosen_prioritas !== 'PRIORITAS'
+                            'px-2 py-0.5 rounded-md text-xs font-medium inline-flex items-center gap-1 shadow-sm': true,
+                            'bg-green-100/60 backdrop-blur-sm text-green-600': dosen.dosen_prioritas === 'PRIORITAS',
+                            'bg-red-100/60 backdrop-blur-sm text-red-600': dosen.dosen_prioritas !== 'PRIORITAS'
                           }"
                         >
                           <i :class="{
@@ -217,7 +217,7 @@
 
           <!-- Ruang Kelas -->
           <div
-            class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
+            class="bg-white/50 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/70 hover:shadow-blue-100/30 transition-all duration-500"
           >
             <div class="flex items-center justify-between mb-4 border-b pb-3">
               <h2
@@ -227,7 +227,7 @@
               </h2>
               <button 
                 @click="toggleRuangKelasFullscreen" 
-                class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+                class="p-1.5 bg-gray-100/50 hover:bg-gray-200/50 backdrop-blur-xl rounded-md text-gray-700 transition-colors shadow-sm hover:shadow-md"
                 title="Lihat semua ruang kelas"
               >
                 <i class="fas fa-expand"></i>
@@ -238,14 +238,19 @@
                 <li
                   v-for="ruang in ruangKelasList"
                   :key="ruang.ruangan_kode"
-                  class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                  class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
                 >
-                  <div class="flex flex-col h-full">
+                  <div class="flex flex-col h-full justify-between">
+                    <!-- Top section with title -->
                     <div>
-                      <h3 class="font-bold text-gray-800 text-lg">{{ ruang.ruangan_kode }}</h3>
+                      <h3 class="font-bold text-gray-800 text-lg">
+                        {{ ruang.ruangan_kode }}
+                      </h3>
                     </div>
-                    <div class="mt-2 pt-2 border-t">
-                      <span class="inline-flex items-center px-3 py-1 bg-indigo-100 text-indigo-600 rounded-md text-sm font-medium">
+                    
+                    <!-- Bottom section with capacity -->
+                    <div class="mt-auto pt-2 border-t border-blue-100/50">
+                      <span class="inline-flex items-center px-3 py-1 bg-indigo-100/60 backdrop-blur-sm text-indigo-600 rounded-md text-sm font-medium shadow-sm">
                         <i class="fas fa-users mr-1.5"></i>
                         Kapasitas: {{ ruang.ruangan_kapasitas }}
                       </span>
@@ -262,7 +267,7 @@
 
           <!-- Jadwal Hindari -->
           <div
-            class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
+            class="bg-white/50 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/70 hover:shadow-blue-100/30 transition-all duration-500"
           >
             <div class="flex items-center justify-between mb-4 border-b pb-3">
               <h2
@@ -272,7 +277,7 @@
               </h2>
               <button 
                 @click="toggleJadwalHindariFullscreen" 
-                class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+                class="p-1.5 bg-gray-100/50 hover:bg-gray-200/50 backdrop-blur-xl rounded-md text-gray-700 transition-colors shadow-sm hover:shadow-md"
                 title="Lihat semua jadwal hindari"
               >
                 <i class="fas fa-expand"></i>
@@ -283,7 +288,7 @@
                               <li
                 v-for="hindari in jadwalHindari"
                 :key="hindari.id"
-                class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
               >
                 <div class="flex flex-col h-full">
                   <!-- Top section with title -->
@@ -301,7 +306,7 @@
                         <span 
                           v-for="sem in hindari.hindari_smt" 
                           :key="sem" 
-                          class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium"
+                          class="inline-flex items-center px-2 py-1 bg-indigo-100/60 backdrop-blur-sm text-indigo-600 rounded-lg text-xs font-medium shadow-sm"
                         >
                           <i class="fas fa-graduation-cap mr-1"></i> Semester {{ sem }}
                         </span>
@@ -314,7 +319,7 @@
                         <div class="mb-2">
                           <div class="flex">
                             <div class="min-w-[80px] w-[80px]">
-                              <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                              <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-indigo-100/50 backdrop-blur-sm text-indigo-700 rounded-md font-medium w-full text-center shadow-sm">
                                 <i class="fas fa-clock"></i>
                                 Sesi {{ hindari.hindari_sesi === 'SATU' ? '1' : hindari.hindari_sesi === 'DUA' ? '2' : '3' }}
                               </span>
@@ -324,7 +329,7 @@
                             </div>
                             <div class="flex-1">
                               <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
-                                <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-center mb-1 font-medium min-w-[100px]">
+                                <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100/50 backdrop-blur-sm text-blue-700 rounded-md text-center mb-1 font-medium min-w-[100px] shadow-sm">
                                   <i class="fas fa-calendar-day mr-1"></i>
                                   {{ hindari.hindari_hari }}
                                 </span>
@@ -348,7 +353,7 @@
 
         <!-- Right Column - Daftar Matching -->
         <div
-          class="lg:col-span-2 bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
+          class="lg:col-span-2 bg-white/50 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/70 hover:shadow-blue-100/30 transition-all duration-500"
         >
           <div class="flex items-center justify-between mb-4 border-b pb-3">
             <h2
@@ -358,7 +363,7 @@
             </h2>
             <button 
               @click="toggleMatchingFullscreen" 
-              class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+              class="p-1.5 bg-gray-100/50 hover:bg-gray-200/50 backdrop-blur-xl rounded-md text-gray-700 transition-colors shadow-sm hover:shadow-md"
               title="Lihat semua matching"
             >
               <i class="fas fa-expand"></i>
@@ -391,7 +396,7 @@
                   <li
                     v-for="(match, index) in matches"
                     :key="index"
-                    class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                    class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
                   >
                     <div class="flex flex-col h-full">
                       <!-- Top section with title -->
@@ -401,23 +406,23 @@
                         </h3>
                         <div class="flex items-center gap-2 mt-1">
                           <div class="text-blue-600 text-sm font-medium">{{ match.mata_kuliah_kelas?.matkul_kode || '-' }}</div>
-                          <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                          <span class="px-3 py-1 bg-blue-100/60 backdrop-blur-sm text-blue-700 text-sm font-medium rounded-md flex items-center shadow-sm">
                             <i class="fas fa-book-open mr-1.5"></i> {{ getSKS(match) }} SKS
                           </span>
                         </div>
                       </div>
                       
                       <!-- Bottom section with details -->
-                      <div class="mt-2 pt-2 border-t border-blue-100">
+                      <div class="mt-2 pt-2 border-t border-blue-100/50">
                         <div class="flex flex-wrap gap-2">
-                          <span v-if="match.matkul_tipe" class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium">
+                          <span v-if="match.matkul_tipe" class="inline-flex items-center px-2 py-1 bg-indigo-100/60 backdrop-blur-sm text-indigo-600 rounded-lg text-xs font-medium shadow-sm">
                             <i class="fas fa-tag mr-1"></i> {{ match.matkul_tipe }}
                           </span>
                           
                           <span 
                             v-for="sem in getSemesterArray(match)" 
                             :key="sem" 
-                            class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium"
+                            class="inline-flex items-center px-2 py-1 bg-blue-100/60 backdrop-blur-sm text-blue-600 rounded-lg text-xs font-medium shadow-sm"
                           >
                             <i class="fas fa-graduation-cap mr-1"></i> Semester {{ sem }}
                           </span>
@@ -434,21 +439,21 @@
     </div>
 
     <!-- Matching Fullscreen Popup -->
-    <div v-if="isMatchingFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+    <div v-if="isMatchingFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70">
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-th-list text-blue-600 text-2xl mr-3"></i>
             <h2 class="text-2xl font-bold text-blue-600">Daftar Matching</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+            <div class="bg-blue-100/50 backdrop-blur-xl text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
               <i class="fas fa-link mr-2"></i>
               {{ filteredMatchingList.length }} Matching
             </div>
             <button
               @click="toggleMatchingFullscreen"
-              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200/50 hover:bg-gray-300/70 backdrop-blur-xl rounded-full text-gray-700 transition-colors shadow-md hover:shadow-lg"
             >
               <i class="fas fa-times"></i>
             </button>
@@ -463,7 +468,7 @@
               type="text"
               v-model="matchingSearchQuery"
               placeholder="Cari matching..."
-              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             />
           </div>
         </div>
@@ -474,7 +479,7 @@
             <!-- Type Filter -->
             <select 
               v-model="matchingTypeFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Jenis</option>
               <option value="DEPRTEMEN">Departemen</option>
@@ -484,7 +489,7 @@
             <!-- Semester Filter -->
             <select 
               v-model="matchingSemesterFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Semester</option>
               <option v-for="sem in [1,2,3,4,5,6,7,8]" :key="sem" :value="sem">Semester {{ sem }}</option>
@@ -495,7 +500,7 @@
           <button 
             v-if="matchingSearchQuery || matchingTypeFilter !== 'all' || matchingSemesterFilter !== 'all'"
             @click="resetMatchingFilters" 
-            class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+            class="px-4 py-3 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-md hover:shadow-lg transition-all duration-300"
           >
             <i class="fas fa-undo mr-2"></i> Reset filter
           </button>
@@ -519,7 +524,7 @@
                 <li
                   v-for="(match, index) in matches"
                   :key="index"
-                  class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                  class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-md hover:shadow-lg"
                 >
                   <div class="flex flex-col h-full">
                     <div>
@@ -528,23 +533,23 @@
                       </h3>
                       <div class="flex items-center gap-2 mt-1">
                         <div class="text-blue-600 text-sm font-medium">{{ match.mata_kuliah_kelas?.matkul_kode || '-' }}</div>
-                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                        <span class="px-3 py-1 bg-blue-100/60 backdrop-blur-sm text-blue-700 text-sm font-medium rounded-md flex items-center shadow-sm">
                           <i class="fas fa-book-open mr-1.5"></i> {{ getSKS(match) }} SKS
                         </span>
                       </div>
                     </div>
                     
                     <!-- Bottom section with details -->
-                    <div class="mt-2 pt-2 border-t border-blue-100">
+                    <div class="mt-2 pt-2 border-t border-blue-100/50">
                       <div class="flex flex-wrap gap-2">
-                        <span v-if="match.matkul_tipe" class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium">
+                        <span v-if="match.matkul_tipe" class="inline-flex items-center px-2 py-1 bg-indigo-100/60 backdrop-blur-sm text-indigo-600 rounded-lg text-xs font-medium shadow-sm">
                           <i class="fas fa-tag mr-1"></i> {{ match.matkul_tipe }}
                         </span>
                         
                         <span 
                           v-for="sem in getSemesterArray(match)" 
                           :key="sem" 
-                          class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium"
+                          class="inline-flex items-center px-2 py-1 bg-blue-100/60 backdrop-blur-sm text-blue-600 rounded-lg text-xs font-medium shadow-sm"
                         >
                           <i class="fas fa-graduation-cap mr-1"></i> Semester {{ sem }}
                         </span>
@@ -560,21 +565,21 @@
     </div>
 
     <!-- Mata Kuliah Fullscreen Popup -->
-    <div v-if="isMataKuliahFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+    <div v-if="isMataKuliahFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70">
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-book text-blue-600 text-2xl mr-3"></i>
             <h2 class="text-2xl font-bold text-blue-600">Daftar Mata Kuliah</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+            <div class="bg-blue-100/50 backdrop-blur-xl text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
               <i class="fas fa-book mr-2"></i>
               {{ mataKuliahList.length }} Mata Kuliah
             </div>
             <button
               @click="toggleMataKuliahFullscreen"
-              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200/50 hover:bg-gray-300/70 backdrop-blur-xl rounded-full text-gray-700 transition-colors shadow-md hover:shadow-lg"
             >
               <i class="fas fa-times"></i>
             </button>
@@ -589,7 +594,7 @@
               type="text"
               v-model="mataKuliahSearchQuery"
               placeholder="Cari mata kuliah..."
-              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             />
           </div>
         </div>
@@ -600,7 +605,7 @@
             <!-- SKS Filter -->
             <select 
               v-model="mkSksFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua SKS</option>
               <option value="2">2 SKS</option>
@@ -613,7 +618,7 @@
           <button 
             v-if="mataKuliahSearchQuery || mkSksFilter !== 'all'"
             @click="resetMkFilters" 
-            class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+            class="px-4 py-3 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-md hover:shadow-lg transition-all duration-300"
           >
             <i class="fas fa-undo mr-2"></i> Reset filter
           </button>
@@ -671,21 +676,21 @@
     </div>
     
     <!-- Dosen Fullscreen Popup -->
-    <div v-if="isDosenFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+    <div v-if="isDosenFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70">
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-user-tie text-blue-600 text-2xl mr-3"></i>
             <h2 class="text-2xl font-bold text-blue-600">Daftar Dosen</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+            <div class="bg-blue-100/50 backdrop-blur-xl text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
               <i class="fas fa-user-tie mr-2"></i>
               {{ dosenList.length }} Dosen
             </div>
             <button
               @click="toggleDosenFullscreen"
-              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200/50 hover:bg-gray-300/70 backdrop-blur-xl rounded-full text-gray-700 transition-colors shadow-md hover:shadow-lg"
             >
               <i class="fas fa-times"></i>
             </button>
@@ -700,7 +705,7 @@
               type="text"
               v-model="dosenSearchQuery"
               placeholder="Cari dosen..."
-              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             />
           </div>
         </div>
@@ -711,7 +716,7 @@
             <!-- Prioritas Filter -->
             <select 
               v-model="dosenPrioritasFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Prioritas</option>
               <option value="PRIORITAS">Prioritas</option>
@@ -721,7 +726,7 @@
             <!-- Hari Filter -->
             <select 
               v-model="dosenHariFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Hari</option>
               <option v-for="hari in ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT']" :key="hari" :value="hari">{{ hari }}</option>
@@ -730,7 +735,7 @@
             <!-- Sesi Filter -->
             <select 
               v-model="dosenSesiFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Sesi</option>
               <option value="SATU">Sesi 1</option>
@@ -743,7 +748,7 @@
           <button 
             v-if="dosenSearchQuery || dosenPrioritasFilter !== 'all' || dosenHariFilter !== 'all' || dosenSesiFilter !== 'all'"
             @click="resetDosenFilters" 
-            class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+            class="px-4 py-3 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-md hover:shadow-lg transition-all duration-300"
           >
             <i class="fas fa-undo mr-2"></i> Reset filter
           </button>
@@ -761,7 +766,7 @@
             <li
               v-for="dosen in filteredDosenList"
               :key="dosen.dosen_kode"
-              class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+              class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-md hover:shadow-lg"
             >
               <div class="flex flex-col h-full">
                 <!-- Top section with title -->
@@ -784,8 +789,8 @@
                     <span 
                       :class="{
                         'px-2 py-0.5 rounded-md text-xs font-medium inline-flex items-center gap-1': true,
-                        'bg-green-100 text-green-600': dosen.dosen_prioritas === 'PRIORITAS',
-                        'bg-red-100 text-red-600': dosen.dosen_prioritas !== 'PRIORITAS'
+                        'bg-green-100/50 backdrop-blur-sm text-green-600': dosen.dosen_prioritas === 'PRIORITAS',
+                        'bg-red-100/50 backdrop-blur-sm text-red-600': dosen.dosen_prioritas !== 'PRIORITAS'
                       }"
                     >
                       <i :class="{
@@ -803,7 +808,7 @@
                       <div v-for="(sesi, sesiName) in groupDosenAvailability(dosen.jadwal_dosen)" :key="sesiName" class="mb-2">
                         <div class="flex">
                           <div class="min-w-[80px] w-[80px]">
-                            <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                            <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-indigo-100/50 backdrop-blur-sm text-indigo-700 rounded-md font-medium w-full text-center shadow-sm">
                               <i class="fas fa-clock"></i>
                               Sesi {{ sesiName === 'SATU' ? '1' : sesiName === 'DUA' ? '2' : '3' }}
                             </span>
@@ -816,9 +821,9 @@
                               <span 
                                 v-for="hari in sesi" 
                                 :key="hari"
-                                class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md w-full text-center mb-1 font-medium"
+                                class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100/50 backdrop-blur-sm text-blue-700 rounded-md w-full text-center mb-1 font-medium shadow-sm"
                               >
-                                <i class="fas fa-calendar-day"></i>
+                                <i class="fas fa-calendar-day mr-1"></i>
                                 {{ hari }}
                               </span>
                             </div>
@@ -839,21 +844,21 @@
     </div>
     
     <!-- Ruang Kelas Fullscreen Popup -->
-    <div v-if="isRuangKelasFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+    <div v-if="isRuangKelasFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70">
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-chalkboard-teacher text-blue-600 text-2xl mr-3"></i>
             <h2 class="text-2xl font-bold text-blue-600">Daftar Ruang Kelas</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+            <div class="bg-blue-100/50 backdrop-blur-xl text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
               <i class="fas fa-chalkboard-teacher mr-2"></i>
               {{ ruangKelasList.length }} Ruang Kelas
             </div>
             <button
               @click="toggleRuangKelasFullscreen"
-              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200/50 hover:bg-gray-300/70 backdrop-blur-xl rounded-full text-gray-700 transition-colors shadow-md hover:shadow-lg"
             >
               <i class="fas fa-times"></i>
             </button>
@@ -868,7 +873,7 @@
               type="text"
               v-model="ruangKelasSearchQuery"
               placeholder="Cari ruang kelas..."
-              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             />
           </div>
         </div>
@@ -883,7 +888,7 @@
             <button 
               v-if="ruangKelasSearchQuery"
               @click="resetRuangKelasFilters" 
-              class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+              class="px-4 py-3 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-md hover:shadow-lg transition-all duration-300"
             >
               <i class="fas fa-undo mr-2"></i> Reset filter
             </button>
@@ -892,7 +897,7 @@
             <li
               v-for="ruang in filteredRuangKelasList"
               :key="ruang.ruangan_kode"
-              class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+              class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-md hover:shadow-lg"
             >
               <div class="flex flex-col h-full justify-between">
                 <!-- Top section with title -->
@@ -903,8 +908,8 @@
                 </div>
                 
                 <!-- Bottom section with capacity -->
-                <div class="mt-auto pt-2 border-t border-blue-100">
-                  <span class="inline-flex items-center px-3 py-1 bg-indigo-100 text-indigo-600 rounded-md text-sm font-medium">
+                <div class="mt-auto pt-2 border-t border-blue-100/50">
+                  <span class="inline-flex items-center px-3 py-1 bg-indigo-100/60 backdrop-blur-sm text-indigo-600 rounded-md text-sm font-medium shadow-sm">
                     <i class="fas fa-users mr-1.5"></i>
                     Kapasitas: {{ ruang.ruangan_kapasitas }}
                   </span>
@@ -917,21 +922,21 @@
     </div>
     
     <!-- Jadwal Hindari Fullscreen Popup -->
-    <div v-if="isJadwalHindariFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+    <div v-if="isJadwalHindariFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70">
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-calendar-times text-red-600 text-2xl mr-3"></i>
             <h2 class="text-2xl font-bold text-red-600">Daftar Jadwal Hindari</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-red-100 text-red-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+            <div class="bg-red-100/50 backdrop-blur-xl text-red-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
               <i class="fas fa-calendar-times mr-2"></i>
               {{ jadwalHindari.length }} Jadwal
             </div>
             <button
               @click="toggleJadwalHindariFullscreen"
-              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200/50 hover:bg-gray-300/70 backdrop-blur-xl rounded-full text-gray-700 transition-colors shadow-md hover:shadow-lg"
             >
               <i class="fas fa-times"></i>
             </button>
@@ -946,7 +951,7 @@
               type="text"
               v-model="jadwalHindariSearchQuery"
               placeholder="Cari jadwal hindari..."
-              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full pl-10 pr-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             />
           </div>
         </div>
@@ -957,7 +962,7 @@
             <!-- Hari Filter -->
             <select 
               v-model="hindariHariFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Hari</option>
               <option v-for="hari in ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT']" :key="hari" :value="hari">{{ hari }}</option>
@@ -966,7 +971,7 @@
             <!-- Sesi Filter -->
             <select 
               v-model="hindariSesiFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Sesi</option>
               <option value="SATU">Sesi 1</option>
@@ -977,7 +982,7 @@
             <!-- Semester Filter -->
             <select 
               v-model="hindariSemesterFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="px-4 py-3 border border-gray-200/50 bg-white/40 backdrop-blur-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-inner"
             >
               <option value="all">Semua Semester</option>
               <option v-for="n in 8" :key="n" :value="n">Semester {{ n }}</option>
@@ -988,7 +993,7 @@
           <button 
             v-if="jadwalHindariSearchQuery || hindariHariFilter !== 'all' || hindariSesiFilter !== 'all' || hindariSemesterFilter !== 'all'"
             @click="resetJadwalHindariFilters" 
-            class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+            class="px-4 py-3 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-md hover:shadow-lg transition-all duration-300"
           >
             <i class="fas fa-undo mr-2"></i> Reset filter
           </button>
@@ -1024,7 +1029,7 @@
                       <span 
                         v-for="sem in hindari.hindari_smt" 
                         :key="sem" 
-                        class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium"
+                        class="inline-flex items-center px-2 py-1 bg-indigo-100/60 backdrop-blur-sm text-indigo-600 rounded-lg text-xs font-medium shadow-sm"
                       >
                         <i class="fas fa-graduation-cap mr-1"></i> Semester {{ sem }}
                       </span>
@@ -1037,7 +1042,7 @@
                       <div class="mb-2">
                         <div class="flex">
                           <div class="min-w-[80px] w-[80px]">
-                            <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                            <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-indigo-100/50 backdrop-blur-sm text-indigo-700 rounded-md font-medium w-full text-center shadow-sm">
                               <i class="fas fa-clock"></i>
                               Sesi {{ hindari.hindari_sesi === 'SATU' ? '1' : hindari.hindari_sesi === 'DUA' ? '2' : '3' }}
                             </span>
@@ -1047,7 +1052,7 @@
                           </div>
                           <div class="flex-1">
                             <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
-                              <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-center mb-1 font-medium min-w-[100px]">
+                              <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100/50 backdrop-blur-sm text-blue-700 rounded-md text-center mb-1 font-medium min-w-[100px] shadow-sm">
                                 <i class="fas fa-calendar-day mr-1"></i>
                                 {{ hindari.hindari_hari }}
                               </span>
@@ -1069,7 +1074,7 @@
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row gap-4 mb-8">
       <button
         @click="generateJadwal"
-        class="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-6 rounded-xl hover:from-green-700 hover:to-green-800 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 shadow-lg"
+        class="flex-1 bg-gradient-to-r from-green-600/70 to-green-700/70 backdrop-blur-xl text-white py-3 px-6 rounded-xl hover:from-green-700/90 hover:to-green-800/90 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:ring-opacity-50 shadow-lg hover:shadow-xl flex items-center justify-center"
       >
         <i class="fas fa-cogs mr-2"></i> Generate Jadwal
       </button>
@@ -1085,7 +1090,7 @@
       <div class="flex flex-col sm:flex-row justify-end mb-4 gap-2">
         <button
           @click="exportExcel"
-          class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow-lg"
+          class="bg-gradient-to-r from-blue-600/70 to-indigo-600/70 backdrop-blur-xl text-white py-2 px-6 rounded-xl hover:from-blue-700/90 hover:to-indigo-700/90 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-opacity-50 shadow-lg hover:shadow-xl flex items-center justify-center"
         >
           <i class="fas fa-file-excel mr-2"></i> Export ke Excel
         </button>
