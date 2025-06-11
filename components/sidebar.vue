@@ -3,7 +3,12 @@
     <!-- Sidebar Header -->
     <div class="flex justify-between items-center px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600">
       <div class="flex items-center space-x-3">
-        <img src="/logo.png" alt="DTI Logo" class="w-10 h-10 rounded-lg shadow-lg transform hover:scale-110 transition-transform duration-300" />
+        <img 
+          :src="profilePic" 
+          alt="User Profile" 
+          class="w-10 h-10 rounded-lg shadow-lg transform hover:scale-110 transition-transform duration-300 object-cover" 
+          @error="$event.target.src = '/logo.png'"
+        />
         <div class="flex flex-col">
           <h1 class="text-lg font-bold text-white leading-tight">Perkuliahan</h1>
           <span class="text-sm text-blue-100 font-medium mt-1">{{ userName }}</span>

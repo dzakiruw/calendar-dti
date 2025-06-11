@@ -46,9 +46,9 @@
         <div class="h-32 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
         
         <!-- Profile Content -->
-        <div class="relative px-8 pb-8">
+        <div class="relative px-6 pb-6">
           <!-- Profile Picture -->
-          <div class="relative -mt-16 mb-6 flex justify-center">
+          <div class="relative -mt-16 mb-5 flex justify-center">
             <div class="relative">
               <img 
                 :src="getProfileImage"
@@ -76,10 +76,10 @@
           <!-- Profile Info -->
           <div class="text-center">
             <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ userData?.username || 'User Name' }}</h1>
-            <p class="text-gray-600 mb-6">{{ userData?.role || 'Role' }}</p>
+            <p class="text-gray-600 mb-5">{{ userData?.role || 'Role' }}</p>
             
             <!-- Divider -->
-            <div class="w-24 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto mb-6 rounded-full"></div>
+            <div class="w-24 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto mb-5 rounded-full"></div>
 
             <!-- Logout Button -->
             <button 
@@ -93,28 +93,28 @@
               Logout
             </button>
             <!-- Change Password Confirmation Button -->
-            <button v-if="!showChangePasswordForm" @click="showConfirmPopup = true" class="mt-8 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Ubah Password</button>
+            <button v-if="!showChangePasswordForm" @click="showConfirmPopup = true" class="mt-6 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Ubah Password</button>
             <!-- Change Password Form -->
-            <form v-if="showChangePasswordForm" @submit.prevent="handleChangePassword" class="mt-10 max-w-xs mx-auto text-left">
-              <h2 class="text-lg font-semibold mb-4 text-gray-800">Ubah Password</h2>
-              <div class="mb-4">
-                <label class="block text-gray-700 font-semibold mb-2">Password Lama</label>
-                <input v-model="oldPassword" type="password" required class="w-full px-3 py-3 h-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Masukkan password lama" />
+            <form v-if="showChangePasswordForm" @submit.prevent="handleChangePassword" class="mt-6 w-full text-left">
+              <h2 class="text-lg font-semibold mb-4 text-gray-800 text-center">Ubah Password</h2>
+              <div class="mb-3">
+                <label class="block text-gray-700 font-semibold mb-1">Password Lama</label>
+                <input v-model="oldPassword" type="password" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Masukkan password lama" />
+              </div>
+              <div class="mb-3">
+                <label class="block text-gray-700 font-semibold mb-1">Password Baru</label>
+                <input v-model="newPassword" type="password" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Masukkan password baru" />
               </div>
               <div class="mb-4">
-                <label class="block text-gray-700 font-semibold mb-2">Password Baru</label>
-                <input v-model="newPassword" type="password" required class="w-full px-3 py-3 h-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Masukkan password baru" />
-              </div>
-              <div class="mb-4">
-                <label class="block text-gray-700 font-semibold mb-2">Konfirmasi Password Baru</label>
-                <input v-model="confirmPassword" type="password" required class="w-full px-3 py-3 h-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Konfirmasi password baru" />
+                <label class="block text-gray-700 font-semibold mb-1">Konfirmasi Password Baru</label>
+                <input v-model="confirmPassword" type="password" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Konfirmasi password baru" />
                 <div v-if="passwordError" class="w-full text-sm text-red-600 mt-1">{{ passwordError }}</div>
               </div>
-              <div class="flex flex-col gap-3">
-                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-4 text-sm rounded-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Ubah Password</button>
-                <button type="button" @click="handleCancelPassword" class="w-full bg-gray-200 text-gray-700 py-2 px-4 text-sm rounded-lg hover:bg-gray-300 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">Cancel</button>
+              <div class="flex flex-col gap-2">
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Ubah Password</button>
+                <button type="button" @click="handleCancelPassword" class="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">Cancel</button>
               </div>
-              <div v-if="passwordSuccess" class="mt-4 text-green-600">{{ passwordSuccess }}</div>
+              <div v-if="passwordSuccess" class="mt-3 text-green-600 text-center text-sm">{{ passwordSuccess }}</div>
             </form>
           </div>
         </div>

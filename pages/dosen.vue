@@ -187,7 +187,7 @@
               />
             </div>
           </div>
-          
+
           <!-- Filters -->
           <div class="flex items-center gap-4 mb-4">
             <div class="flex flex-wrap gap-2 flex-grow">
@@ -232,11 +232,11 @@
 
           <!-- Content Area -->
           <div class="h-[505px] overflow-hidden">
-            <!-- Empty State -->
-            <div
+          <!-- Empty State -->
+          <div 
               v-if="sortedDosenList.length === 0"
               class="flex flex-col items-center justify-center py-12 text-gray-500 h-full"
-            >
+          >
               <i class="fas fa-filter text-4xl mb-4 text-blue-300"></i>
               <p class="text-center font-medium">
                 {{
@@ -246,21 +246,21 @@
                       ? "Tidak ada jadwal pada filter yang dipilih."
                       : "Belum ada dosen yang diinputkan."
                 }}
-              </p>
-            </div>
+            </p>
+          </div>
 
-            <!-- Dosen List -->
+          <!-- Dosen List -->
             <div v-else class="overflow-y-auto h-full pr-2">
               <ul class="grid grid-cols-1 gap-4 pb-3">
-                <li 
+              <li 
                   v-for="(dosen, index) in sortedDosenList" 
-                  :key="index" 
+                :key="index" 
                   class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
-                >
+              >
                   <div class="flex flex-col h-full">
                     <!-- Top section with title and buttons -->
                     <div>
-                      <div class="flex justify-between items-start">
+                <div class="flex justify-between items-start">
                         <div class="w-4/5">
                           <h3 class="font-bold text-gray-800 text-lg">
                             {{ dosen.dosen_nama }}
@@ -291,26 +291,26 @@
                     <div class="flex-grow"></div>
                     
                     <!-- Bottom section with code and classes -->
-                    <div>
+                  <div>
                       <!-- Dosen Code and Priority -->
                       <div class="flex items-center gap-2 mb-2">
                         <div class="text-blue-600 text-sm font-medium">
                           {{ dosen.dosen_kode }}
                         </div>
-                        <span 
-                          :class="{
+                    <span 
+                      :class="{
                             'px-2 py-0.5 rounded-md text-xs font-medium inline-flex items-center gap-1': true,
-                            'bg-green-100 text-green-600': dosen.dosen_prioritas === 'PRIORITAS',
-                            'bg-red-100 text-red-600': dosen.dosen_prioritas === 'NON_PRIORITAS'
-                          }"
-                        >
-                          <i :class="{
+                        'bg-green-100 text-green-600': dosen.dosen_prioritas === 'PRIORITAS',
+                        'bg-red-100 text-red-600': dosen.dosen_prioritas === 'NON_PRIORITAS'
+                      }"
+                    >
+                      <i :class="{
                             'fas fa-xs': true,
-                            'fa-star': dosen.dosen_prioritas === 'PRIORITAS',
-                            'fa-exclamation-circle': dosen.dosen_prioritas === 'NON_PRIORITAS'
-                          }"></i>
-                          {{ dosen.dosen_prioritas === 'PRIORITAS' ? 'Prioritas' : 'Non Prioritas' }}
-                        </span>
+                        'fa-star': dosen.dosen_prioritas === 'PRIORITAS',
+                        'fa-exclamation-circle': dosen.dosen_prioritas === 'NON_PRIORITAS'
+                      }"></i>
+                      {{ dosen.dosen_prioritas === 'PRIORITAS' ? 'Prioritas' : 'Non Prioritas' }}
+                    </span>
                       </div>
                       
                       <!-- Ketersediaan Dosen -->
@@ -322,21 +322,21 @@
                                 <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
                                   <i class="fas fa-clock"></i>
                                   Sesi {{ result.sesi === 'SATU' ? '1' : result.sesi === 'DUA' ? '2' : '3' }}
-                                </span>
+                            </span>
                               </div>
                               <div class="w-[20px] text-center flex items-center justify-center">
                                 <span class="text-gray-400">:</span>
                               </div>
                               <div class="flex-1">
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
-                                  <span 
-                                    v-for="hari in result.hari" 
-                                    :key="hari"
+                              <span 
+                                v-for="hari in result.hari" 
+                                :key="hari"
                                     class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md w-full text-center mb-1 font-medium"
-                                  >
+                              >
                                     <i class="fas fa-calendar-day"></i>
-                                    {{ hari }}
-                                  </span>
+                                {{ hari }}
+                              </span>
                                 </div>
                               </div>
                             </div>
@@ -344,12 +344,12 @@
                         </div>
                         <div v-else class="text-xs text-gray-400 italic">
                           <i class="fas fa-calendar-times mr-1"></i> Tidak tersedia
-                        </div>
-                      </div>
                     </div>
                   </div>
-                </li>
-              </ul>
+                  </div>
+                </div>
+              </li>
+            </ul>
             </div>
           </div>
         </div>
@@ -357,7 +357,7 @@
     </div>
 
     <!-- Popup Konfirmasi Delete -->
-    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
       <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
         <div class="text-center">
           <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -386,7 +386,7 @@
     </div>
 
     <!-- Popup Konfirmasi Edit -->
-    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
       <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
         <div class="text-center">
           <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -452,8 +452,8 @@
         </div>
         
         <!-- Filters -->
-        <div class="flex items-center gap-4 mb-6">
-          <div class="flex flex-wrap gap-2 flex-grow">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex flex-wrap gap-2">
             <!-- Prioritas Filter -->
             <select 
               v-model="prioritasFilter" 
@@ -481,16 +481,16 @@
               <option value="all">Semua Sesi</option>
               <option v-for="sesi in sesiList" :key="sesi" :value="sesi">Sesi {{ sesi }}</option>
             </select>
-            
-            <!-- Reset Filter Button -->
-            <button 
-              v-if="searchQuery || prioritasFilter !== 'all' || hariFilter !== 'all' || sesiFilter !== 'all'"
-              @click="resetFilters" 
-              class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
-            >
-              <i class="fas fa-undo mr-2"></i> Reset filter
-            </button>
           </div>
+          
+          <!-- Reset Filter Button -->
+          <button 
+            v-if="searchQuery || prioritasFilter !== 'all' || hariFilter !== 'all' || sesiFilter !== 'all'"
+            @click="resetFilters" 
+            class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+          >
+            <i class="fas fa-undo mr-2"></i> Reset filter
+          </button>
         </div>
 
         <!-- Multi-column List -->
@@ -649,12 +649,12 @@ const filteredDosenList = computed(() => {
   
   // Apply search filter
   if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
+  const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(dosen => 
-      dosen.dosen_nama.toLowerCase().includes(query) ||
-      dosen.dosen_kode.toLowerCase().includes(query) ||
-      dosen.dosen_prioritas.toLowerCase().includes(query)
-    );
+    dosen.dosen_nama.toLowerCase().includes(query) ||
+    dosen.dosen_kode.toLowerCase().includes(query) ||
+    dosen.dosen_prioritas.toLowerCase().includes(query)
+  );
   }
   
   // Apply prioritas filter
@@ -873,7 +873,7 @@ const submitData = async () => {
 const editDosen = (index) => {
   const dosen = sortedDosenList.value[index];
   selectedIndex.value = dosenList.value.findIndex(d => d.dosen_kode === dosen.dosen_kode);
-  
+
   // Directly edit without confirmation
   const index2 = selectedIndex.value;
   const dosen2 = dosenList.value[index2];

@@ -136,7 +136,7 @@
             <button 
               type="submit" 
               class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl
-                     hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300
+                     hover:from-blue-700 hover:to-indigo-700 transition-all duration-300
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
               {{ editIndex !== null ? 'Update' : 'Submit' }}
@@ -147,7 +147,7 @@
               type="button" 
               @click="cancelEdit" 
               class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-6 rounded-xl
-                    hover:from-gray-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300
+                    hover:from-gray-700 hover:to-gray-800 transition-all duration-300
                     focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
             >
               Cancel
@@ -165,8 +165,8 @@
             <h2 class="text-xl font-bold text-blue-600">Daftar Jadwal Hindari</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-3 py-1 rounded-md text-sm font-medium flex items-center">
-              <i class="fas fa-calendar-times mr-1.5"></i>
+            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+              <i class="fas fa-calendar-times mr-2"></i>
               {{ sortedJadwalHindariList.length }} Jadwal
             </div>
             <button 
@@ -297,9 +297,14 @@
                   <div class="mt-2 pt-2">
                     <!-- Semester info above the line -->
                     <div class="mb-2">
-                      <div class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-600 rounded-md text-sm font-medium">
-                        <i class="fas fa-graduation-cap mr-1"></i>
-                        Semester {{ jadwal.hindari_smt.join(', ') }}
+                      <div class="flex flex-wrap gap-1">
+                        <span 
+                          v-for="sem in jadwal.hindari_smt" 
+                          :key="sem" 
+                          class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium"
+                        >
+                          <i class="fas fa-graduation-cap mr-1"></i> Semester {{ sem }}
+                        </span>
                       </div>
                     </div>
                     
@@ -319,8 +324,8 @@
                             </div>
                             <div class="flex-1">
                               <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
-                                <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md w-full text-center mb-1 font-medium">
-                                  <i class="fas fa-calendar-day"></i>
+                                <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-center mb-1 font-medium min-w-[100px]">
+                                  <i class="fas fa-calendar-day mr-1"></i>
                                   {{ jadwal.hindari_hari }}
                                 </span>
                               </div>
@@ -339,7 +344,7 @@
     </div>
 
     <!-- Popup Konfirmasi Delete -->
-    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
       <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
         <div class="text-center">
           <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -368,7 +373,7 @@
     </div>
 
     <!-- Popup Konfirmasi Edit -->
-    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
       <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
         <div class="text-center">
           <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -405,7 +410,7 @@
             <h2 class="text-2xl font-bold text-blue-600">Daftar Jadwal Hindari</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center">
+            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
               <i class="fas fa-calendar-times mr-2"></i>
               {{ sortedJadwalHindariList.length }} Jadwal
             </div>
@@ -526,9 +531,14 @@
                 <div class="mt-auto pt-2">
                   <!-- Semester info above the line -->
                   <div class="mb-2">
-                    <div class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-600 rounded-md text-sm font-medium">
-                      <i class="fas fa-graduation-cap mr-1"></i>
-                      Semester {{ jadwal.hindari_smt.join(', ') }}
+                    <div class="flex flex-wrap gap-1">
+                      <span 
+                        v-for="sem in jadwal.hindari_smt" 
+                        :key="sem" 
+                        class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium"
+                      >
+                        <i class="fas fa-graduation-cap mr-1"></i> Semester {{ sem }}
+                      </span>
                     </div>
                   </div>
                   
@@ -548,8 +558,8 @@
                           </div>
                           <div class="flex-1">
                             <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
-                              <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md w-full text-center mb-1 font-medium">
-                                <i class="fas fa-calendar-day"></i>
+                              <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-center mb-1 font-medium min-w-[100px]">
+                                <i class="fas fa-calendar-day mr-1"></i>
                                 {{ jadwal.hindari_hari }}
                               </span>
                             </div>

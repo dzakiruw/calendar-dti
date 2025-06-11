@@ -214,13 +214,10 @@
           </div>
         </div>
 
-        <!-- Search and Filter -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-          <!-- Search Input -->
-          <div class="relative flex-1 w-full">
-            <i
-              class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-            ></i>
+        <!-- Search Bar -->
+        <div class="w-full mb-4">
+          <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             <input
               type="text"
               v-model="searchQuery"
@@ -228,17 +225,31 @@
               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex flex-wrap gap-2">
+            <!-- SKS Filter -->
+            <select 
+              v-model="sksFilter" 
+              class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[140px]"
+            >
+              <option value="all">Semua SKS</option>
+              <option value="2">2 SKS</option>
+              <option value="3">3 SKS</option>
+              <option value="4">4 SKS</option>
+            </select>
+          </div>
           
-          <!-- SKS Filter -->
-          <select 
-            v-model="sksFilter" 
-            class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[140px]"
+          <!-- Reset Filter Button -->
+          <button 
+            v-if="searchQuery || sksFilter !== 'all'"
+            @click="resetFilters" 
+            class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
           >
-            <option value="all">Semua SKS</option>
-            <option value="2">2 SKS</option>
-            <option value="3">3 SKS</option>
-            <option value="4">4 SKS</option>
-          </select>
+            <i class="fas fa-undo mr-2"></i> Reset filter
+          </button>
         </div>
 
         <!-- Content Area -->
@@ -258,13 +269,6 @@
                     : "Belum ada mata kuliah yang diinputkan."
               }}
             </p>
-            <button 
-              v-if="searchQuery || sksFilter !== 'all'"
-              @click="resetFilters" 
-              class="mt-3 text-blue-600 hover:text-blue-800 text-sm flex items-center"
-            >
-              <i class="fas fa-undo mr-1"></i> Reset filter
-            </button>
           </div>
 
           <!-- Mata Kuliah List -->
@@ -307,24 +311,23 @@
                   
                   <!-- Bottom section with code and classes - forced to bottom but not too far -->
                   <div class="mt-auto pt-2">
-                    <!-- Course Code -->
-                    <div class="text-blue-600 text-sm font-medium mb-2">
-                      {{ mk.matkul_kode }}
+                    <!-- Course Code and SKS -->
+                    <div class="flex items-center gap-2 mb-2">
+                      <div class="text-blue-600 text-sm font-medium">{{ mk.matkul_kode }}</div>
+                      <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                        <i class="fas fa-book-open mr-1.5"></i> {{ mk.matkul_sks }} SKS
+                      </span>
                     </div>
                     
-                    <!-- SKS and Classes -->
+                    <!-- Classes -->
                     <div class="flex flex-wrap gap-2 items-center border-t pt-2">
-                      <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md">
-                        {{ mk.matkul_sks }} SKS
-                      </span>
-                      
                       <span
                         v-for="kelas in mk.mata_kuliah_kelas"
                         :key="kelas.kelas_mk"
                         :class="getKelasColor(kelas.kelas_mk)"
-                        class="px-2 py-0.5 rounded-md text-xs font-medium"
+                        class="px-2 py-0.5 rounded-md text-xs font-medium flex items-center"
                       >
-                        Kelas {{ kelas.kelas_mk }}
+                        <i class="fas fa-chalkboard-teacher mr-1"></i> Kelas {{ kelas.kelas_mk }}
                       </span>
                     </div>
                   </div>
@@ -358,8 +361,8 @@
           </div>
 
           <!-- Search and Filter for Fullscreen -->
-          <div class="flex flex-row items-center gap-4 mb-6">
-            <div class="relative flex-1">
+          <div class="w-full mb-4">
+            <div class="relative">
               <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
               <input
                 type="text"
@@ -368,15 +371,30 @@
                 class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            <select 
-              v-model="sksFilter" 
-              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[160px]"
+          </div>
+          
+          <!-- Filters -->
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex flex-wrap gap-2">
+              <select 
+                v-model="sksFilter" 
+                class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[160px]"
+              >
+                <option value="all">Semua SKS</option>
+                <option value="2">2 SKS</option>
+                <option value="3">3 SKS</option>
+                <option value="4">4 SKS</option>
+              </select>
+            </div>
+            
+            <!-- Reset Filter Button -->
+            <button 
+              v-if="searchQuery || sksFilter !== 'all'"
+              @click="resetFilters" 
+              class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
             >
-              <option value="all">Semua SKS</option>
-              <option value="2">2 SKS</option>
-              <option value="3">3 SKS</option>
-              <option value="4">4 SKS</option>
-            </select>
+              <i class="fas fa-undo mr-2"></i> Reset filter
+            </button>
           </div>
 
           <!-- Multi-column List -->
@@ -392,13 +410,6 @@
                       : "Belum ada mata kuliah yang diinputkan."
                 }}
               </p>
-              <button 
-                v-if="searchQuery || sksFilter !== 'all'"
-                @click="resetFilters" 
-                class="mt-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center"
-              >
-                <i class="fas fa-undo mr-2"></i> Reset filter
-              </button>
             </div>
             <ul v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
               <li
@@ -438,24 +449,23 @@
                   
                   <!-- Bottom section with code and classes - forced to bottom but not too far -->
                   <div class="mt-auto pt-2">
-                    <!-- Course Code -->
-                    <div class="text-blue-600 text-sm font-medium mb-2">
-                      {{ mk.matkul_kode }}
+                    <!-- Course Code and SKS -->
+                    <div class="flex items-center gap-2 mb-2">
+                      <div class="text-blue-600 text-sm font-medium">{{ mk.matkul_kode }}</div>
+                      <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                        <i class="fas fa-book-open mr-1.5"></i> {{ mk.matkul_sks }} SKS
+                      </span>
                     </div>
                     
-                    <!-- SKS and Classes -->
+                    <!-- Classes -->
                     <div class="flex flex-wrap gap-2 items-center border-t pt-2">
-                      <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md">
-                        {{ mk.matkul_sks }} SKS
-                      </span>
-                      
                       <span
                         v-for="kelas in mk.mata_kuliah_kelas"
                         :key="kelas.kelas_mk"
                         :class="getKelasColor(kelas.kelas_mk)"
-                        class="px-2 py-0.5 rounded-md text-xs font-medium"
+                        class="px-2 py-0.5 rounded-md text-xs font-medium flex items-center"
                       >
-                        Kelas {{ kelas.kelas_mk }}
+                        <i class="fas fa-chalkboard-teacher mr-1"></i> Kelas {{ kelas.kelas_mk }}
                       </span>
                     </div>
                   </div>

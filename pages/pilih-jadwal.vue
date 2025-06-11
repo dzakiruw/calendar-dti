@@ -34,7 +34,7 @@
     <!-- Title -->
     <div class="mb-8 w-full flex justify-center">
       <div
-        class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transform hover:scale-105 transition-all duration-300"
+        class="bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300"
       >
         <img
           src="/pilih-jadwal.png"
@@ -50,223 +50,1017 @@
     </div>
 
     <!-- Informasi Daftar Data -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-      <!-- Left Column - 3 boxes -->
-      <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-        <!-- Mata Kuliah -->
-        <div
-          class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
-        >
-          <h2
-            class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4"
-          >
-            <i class="fas fa-book mr-3"></i> Mata Kuliah
-          </h2>
-          <div class="h-[200px] overflow-y-auto pr-2">
-            <ul v-if="mataKuliahList.length" class="space-y-3">
-              <li
-                v-for="mk in mataKuliahList"
-                :key="mk.matkul_kode"
-                class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
-              >
-                <p class="font-semibold text-gray-800">{{ mk.matkul_nama }}</p>
-                <p class="text-sm text-gray-600">{{ mk.matkul_kode }} ({{ mk.matkul_sks }} SKS)</p>
-              </li>
-            </ul>
-            <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
-              <i class="fas fa-book-open text-3xl mb-2"></i>
-              <p class="text-center">Belum ada data mata kuliah.</p>
+    <div class="max-w-7xl mx-auto mb-8">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <!-- Total Matching Card -->
+        <div class="bg-white rounded-xl shadow-md p-4 border border-blue-100">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-blue-100 mr-4 w-12 h-12 flex items-center justify-center">
+              <i class="fas fa-link text-blue-600 text-xl"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500 font-medium">Total Matching</p>
+              <p class="text-xl font-bold text-gray-800">{{ matchingList.length }}</p>
             </div>
           </div>
         </div>
-
-        <!-- Dosen -->
-        <div
-          class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
-        >
-          <h2
-            class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4"
-          >
-            <i class="fas fa-user-tie mr-3"></i> Dosen
-          </h2>
-          <div class="h-[200px] overflow-y-auto pr-2">
-            <ul v-if="dosenList.length" class="space-y-3">
-              <li
-                v-for="dosen in dosenList"
-                :key="dosen.dosen_kode"
-                class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
-              >
-                <p class="font-semibold text-gray-800">{{ dosen.dosen_nama }}</p>
-                <div class="flex items-center gap-2 mt-1">
-                  <span class="text-sm text-gray-600">{{ dosen.dosen_kode }}</span>
-                  <span
-                    :class="{
-                      'px-2 py-1 rounded-lg text-xs font-medium': true,
-                      'bg-green-100 text-green-600':
-                        dosen.dosen_prioritas === 'PRIORITAS',
-                      'bg-red-100 text-red-600':
-                        dosen.dosen_prioritas !== 'PRIORITAS',
-                    }"
-                  >
-                    {{
-                      dosen.dosen_prioritas === "PRIORITAS"
-                        ? "Prioritas"
-                        : "Non Prioritas"
-                    }}
-                  </span>
-                </div>
-              </li>
-            </ul>
-            <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
-              <i class="fas fa-user-slash text-3xl mb-2"></i>
-              <p class="text-center">Belum ada data dosen.</p>
+        
+        <!-- Total Dosen Card -->
+        <div class="bg-white rounded-xl shadow-md p-4 border border-blue-100">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-indigo-100 mr-4 w-12 h-12 flex items-center justify-center">
+              <i class="fas fa-user-tie text-indigo-600 text-xl"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500 font-medium">Total Dosen</p>
+              <p class="text-xl font-bold text-gray-800">{{ dosenList.length }}</p>
             </div>
           </div>
         </div>
-
-        <!-- Ruang Kelas -->
-        <div
-          class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
-        >
-          <h2
-            class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4"
-          >
-            <i class="fas fa-chalkboard-teacher mr-3"></i> Ruang Kelas
-          </h2>
-          <div class="h-[200px] overflow-y-auto pr-2">
-            <ul v-if="ruangKelasList.length" class="space-y-3">
-              <li
-                v-for="ruang in ruangKelasList"
-                :key="ruang.ruangan_kode"
-                class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
-              >
-                <p class="font-semibold text-gray-800">
-                  {{ ruang.ruangan_kode }}
-                </p>
-                <span
-                  class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium mt-1"
-                >
-                  Kapasitas: {{ ruang.ruangan_kapasitas }}
-                </span>
-              </li>
-            </ul>
-            <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
-              <i class="fas fa-chalkboard text-3xl mb-2"></i>
-              <p class="text-center">Belum ada data ruang kelas.</p>
+        
+        <!-- Total Mata Kuliah Card -->
+        <div class="bg-white rounded-xl shadow-md p-4 border border-blue-100">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-green-100 mr-4 w-12 h-12 flex items-center justify-center">
+              <i class="fas fa-book text-green-600 text-xl"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500 font-medium">Total Mata Kuliah</p>
+              <p class="text-xl font-bold text-gray-800">{{ mataKuliahList.length }}</p>
             </div>
           </div>
         </div>
-
-        <!-- Jadwal Hindari -->
-        <div
-          class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
-        >
-          <h2
-            class="text-xl font-bold bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent flex items-center mb-4"
-          >
-            <i class="fas fa-calendar-times mr-3"></i> Jadwal Hindari
-          </h2>
-          <div class="h-[200px] overflow-y-auto pr-2">
-            <ul v-if="jadwalHindari.length" class="space-y-3">
-              <li
-                v-for="hindari in jadwalHindari"
-                :key="hindari.id"
-                class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-red-50 hover:border-red-200 transition-all duration-300"
-              >
-                <p class="font-semibold text-gray-800">
-                  {{ hindari.hindari_agenda }}
-                </p>
-                <div class="flex flex-wrap gap-2 mt-2">
-                  <div class="flex items-center">
-                    <span
-                      class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 rounded-l-lg text-sm font-medium border-r border-red-200"
-                    >
-                      <i class="fas fa-calendar-day mr-2"></i>
-                      {{ hindari.hindari_hari }}
-                    </span>
-                    <span
-                      class="inline-flex items-center px-3 py-1.5 bg-red-50 text-red-700 rounded-r-lg text-sm font-medium"
-                    >
-                      <i class="fas fa-clock mr-2"></i>
-                      Sesi {{ hindari.hindari_sesi }}
-                    </span>
-                  </div>
-                  <div class="flex flex-wrap gap-1 mt-1">
-                    <span
-                      v-for="sem in hindari.hindari_smt"
-                      :key="sem"
-                      class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium"
-                    >
-                      Semester {{ sem }}
-                    </span>
-                  </div>
-                </div>
-              </li>
-            </ul>
-            <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
-              <i class="fas fa-calendar-times text-3xl mb-2"></i>
-              <p class="text-center">Belum ada data jadwal hindari.</p>
+        
+        <!-- Total Ruang Kelas Card -->
+        <div class="bg-white rounded-xl shadow-md p-4 border border-blue-100">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-purple-100 mr-4 w-12 h-12 flex items-center justify-center">
+              <i class="fas fa-chalkboard-teacher text-purple-600 text-xl"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500 font-medium">Total Ruang Kelas</p>
+              <p class="text-xl font-bold text-gray-800">{{ ruangKelasList.length }}</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Right Column - Daftar Matching -->
-      <div
-        class="lg:col-span-2 bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
-      >
-        <h2
-          class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center mb-4"
-        >
-          <i class="fas fa-list-ul mr-3"></i> Daftar Matching
-        </h2>
-        <div class="h-[550px] overflow-y-auto pr-2">
-          <!-- Empty State -->
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <!-- Left Column - 3 boxes -->
+        <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+          <!-- Mata Kuliah -->
           <div
-            v-if="matchingList.length === 0"
-            class="flex flex-col items-center justify-center h-full text-gray-500"
+            class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
           >
-            <i class="fas fa-clipboard-list text-4xl mb-2"></i>
-            <p>Belum ada data matching.</p>
+            <div class="flex items-center justify-between mb-4 border-b pb-3">
+              <h2
+                class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center"
+              >
+                <i class="fas fa-book mr-3"></i> Mata Kuliah
+              </h2>
+              <button 
+                @click="toggleMataKuliahFullscreen" 
+                class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+                title="Lihat semua mata kuliah"
+              >
+                <i class="fas fa-expand"></i>
+              </button>
+            </div>
+            <div class="h-[200px] overflow-y-auto pr-2">
+              <ul v-if="mataKuliahList.length" class="space-y-3">
+                <li
+                  v-for="mk in mataKuliahList"
+                  :key="mk.matkul_kode"
+                  class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                >
+                  <div class="flex flex-col h-full justify-between">
+                    <div>
+                      <h3 class="font-bold text-gray-800 text-lg">{{ mk.matkul_nama }}</h3>
+                    </div>
+                    <div class="mt-auto pt-1">
+                      <!-- Course Code and SKS -->
+                      <div class="flex items-center gap-2 mt-1 border-t pt-2">
+                        <div class="text-blue-600 text-sm font-medium">{{ mk.matkul_kode }}</div>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                          <i class="fas fa-book-open mr-1.5"></i> {{ mk.matkul_sks }} SKS
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
+                <i class="fas fa-book-open text-3xl mb-2"></i>
+                <p class="text-center">Belum ada data mata kuliah.</p>
+              </div>
+            </div>
           </div>
 
-          <!-- Matching List Grouped by Dosen -->
-          <div v-else class="space-y-6">
-            <div v-for="(matches, dosenName) in groupedMatches" :key="dosenName" class="space-y-3">
-              <!-- Dosen Header -->
-              <div class="sticky top-0 bg-white/90 backdrop-blur-sm py-2 z-10">
-                <h3 class="font-semibold text-gray-800 flex items-center">
-                  <i class="fas fa-user-tie text-blue-600 mr-2"></i>
-                  {{ dosenName }}
-                </h3>
+          <!-- Dosen -->
+          <div
+            class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
+          >
+            <div class="flex items-center justify-between mb-4 border-b pb-3">
+              <h2
+                class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center"
+              >
+                <i class="fas fa-user-tie mr-3"></i> Dosen
+              </h2>
+              <button 
+                @click="toggleDosenFullscreen" 
+                class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+                title="Lihat semua dosen"
+              >
+                <i class="fas fa-expand"></i>
+              </button>
+            </div>
+            <div class="h-[200px] overflow-y-auto pr-2">
+              <ul v-if="dosenList.length" class="space-y-3">
+                <li
+                  v-for="dosen in dosenList"
+                  :key="dosen.dosen_kode"
+                  class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                >
+                  <div class="flex flex-col h-full">
+                    <div>
+                      <h3 class="font-bold text-gray-800 text-lg">{{ dosen.dosen_nama }}</h3>
+                    </div>
+                    <div class="mt-2 pt-2 border-t">
+                      <div class="flex items-center gap-2">
+                        <div class="text-blue-600 text-sm font-medium">{{ dosen.dosen_kode }}</div>
+                        <span 
+                          :class="{
+                            'px-2 py-0.5 rounded-md text-xs font-medium inline-flex items-center gap-1': true,
+                            'bg-green-100 text-green-600': dosen.dosen_prioritas === 'PRIORITAS',
+                            'bg-red-100 text-red-600': dosen.dosen_prioritas !== 'PRIORITAS'
+                          }"
+                        >
+                          <i :class="{
+                            'fas fa-xs': true,
+                            'fa-star': dosen.dosen_prioritas === 'PRIORITAS',
+                            'fa-exclamation-circle': dosen.dosen_prioritas !== 'PRIORITAS'
+                          }"></i>
+                          {{ dosen.dosen_prioritas === "PRIORITAS" ? "Prioritas" : "Non Prioritas" }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
+                <i class="fas fa-user-slash text-3xl mb-2"></i>
+                <p class="text-center">Belum ada data dosen.</p>
               </div>
-              
-              <!-- Matches for this Dosen -->
-              <ul class="space-y-3">
+            </div>
+          </div>
+
+          <!-- Ruang Kelas -->
+          <div
+            class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
+          >
+            <div class="flex items-center justify-between mb-4 border-b pb-3">
+              <h2
+                class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center"
+              >
+                <i class="fas fa-chalkboard-teacher mr-3"></i> Ruang Kelas
+              </h2>
+              <button 
+                @click="toggleRuangKelasFullscreen" 
+                class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+                title="Lihat semua ruang kelas"
+              >
+                <i class="fas fa-expand"></i>
+              </button>
+            </div>
+            <div class="h-[200px] overflow-y-auto pr-2">
+              <ul v-if="ruangKelasList.length" class="space-y-3">
+                <li
+                  v-for="ruang in ruangKelasList"
+                  :key="ruang.ruangan_kode"
+                  class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                >
+                  <div class="flex flex-col h-full">
+                    <div>
+                      <h3 class="font-bold text-gray-800 text-lg">{{ ruang.ruangan_kode }}</h3>
+                    </div>
+                    <div class="mt-2 pt-2 border-t">
+                      <span class="inline-flex items-center px-3 py-1 bg-indigo-100 text-indigo-600 rounded-md text-sm font-medium">
+                        <i class="fas fa-users mr-1.5"></i>
+                        Kapasitas: {{ ruang.ruangan_kapasitas }}
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
+                <i class="fas fa-chalkboard text-3xl mb-2"></i>
+                <p class="text-center">Belum ada data ruang kelas.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Jadwal Hindari -->
+          <div
+            class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
+          >
+            <div class="flex items-center justify-between mb-4 border-b pb-3">
+              <h2
+                class="text-xl font-bold bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent flex items-center"
+              >
+                <i class="fas fa-calendar-times mr-3"></i> Jadwal Hindari
+              </h2>
+              <button 
+                @click="toggleJadwalHindariFullscreen" 
+                class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+                title="Lihat semua jadwal hindari"
+              >
+                <i class="fas fa-expand"></i>
+              </button>
+            </div>
+            <div class="h-[200px] overflow-y-auto pr-2">
+              <ul v-if="jadwalHindari.length" class="space-y-3">
+                              <li
+                v-for="hindari in jadwalHindari"
+                :key="hindari.id"
+                class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+              >
+                <div class="flex flex-col h-full">
+                  <!-- Top section with title -->
+                  <div>
+                    <h3 class="font-bold text-gray-800 text-lg">
+                      {{ hindari.hindari_agenda }}
+                    </h3>
+                  </div>
+                  
+                  <!-- Bottom section with details -->
+                  <div class="mt-auto pt-2">
+                    <!-- Semester info above the line -->
+                    <div class="mb-2">
+                      <div class="flex flex-wrap gap-1">
+                        <span 
+                          v-for="sem in hindari.hindari_smt" 
+                          :key="sem" 
+                          class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium"
+                        >
+                          <i class="fas fa-graduation-cap mr-1"></i> Semester {{ sem }}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <!-- Hari and Sesi info below the line -->
+                    <div class="border-t pt-2">
+                      <div class="text-xs text-gray-600">
+                        <div class="mb-2">
+                          <div class="flex">
+                            <div class="min-w-[80px] w-[80px]">
+                              <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                                <i class="fas fa-clock"></i>
+                                Sesi {{ hindari.hindari_sesi === 'SATU' ? '1' : hindari.hindari_sesi === 'DUA' ? '2' : '3' }}
+                              </span>
+                            </div>
+                            <div class="w-[20px] text-center flex items-center justify-center">
+                              <span class="text-gray-400">:</span>
+                            </div>
+                            <div class="flex-1">
+                              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
+                                <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-center mb-1 font-medium min-w-[100px]">
+                                  <i class="fas fa-calendar-day mr-1"></i>
+                                  {{ hindari.hindari_hari }}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              </ul>
+              <div v-else class="flex flex-col items-center justify-center h-full text-gray-500">
+                <i class="fas fa-calendar-times text-3xl mb-2"></i>
+                <p class="text-center">Belum ada data jadwal hindari.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Daftar Matching -->
+        <div
+          class="lg:col-span-2 bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100"
+        >
+          <div class="flex items-center justify-between mb-4 border-b pb-3">
+            <h2
+              class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center"
+            >
+              <i class="fas fa-list-ul mr-3"></i> Daftar Matching
+            </h2>
+            <button 
+              @click="toggleMatchingFullscreen" 
+              class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700 transition-colors"
+              title="Lihat semua matching"
+            >
+              <i class="fas fa-expand"></i>
+            </button>
+          </div>
+          
+          <div class="h-[540px] overflow-y-auto pr-2">
+            <!-- Empty State -->
+            <div
+              v-if="filteredMatchingList.length === 0"
+              class="flex flex-col items-center justify-center h-full text-gray-500"
+            >
+              <i class="fas fa-clipboard-list text-4xl mb-2"></i>
+              <p>Belum ada data matching.</p>
+            </div>
+
+            <!-- Matching List Grouped by Dosen -->
+            <div v-else class="space-y-6">
+              <div v-for="(matches, dosenName) in filteredGroupedMatches" :key="dosenName" class="space-y-3">
+                <!-- Dosen Header -->
+                <div class="sticky top-0 bg-white/90 backdrop-blur-sm py-2 z-10">
+                  <h3 class="font-semibold text-gray-800 flex items-center">
+                    <i class="fas fa-user-tie text-blue-600 mr-2"></i>
+                    {{ dosenName }}
+                  </h3>
+                </div>
+                
+                <!-- Matches for this Dosen -->
+                <ul class="space-y-3">
+                  <li
+                    v-for="(match, index) in matches"
+                    :key="index"
+                    class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+                  >
+                    <div class="flex flex-col h-full">
+                      <!-- Top section with title -->
+                      <div>
+                        <h3 class="font-bold text-gray-800 text-lg">
+                          {{ match.kelas && match.kelas.nama_kelas ? match.kelas.nama_kelas : (match.mata_kuliah_kelas?.nama_kelas || '-') }}
+                        </h3>
+                        <div class="flex items-center gap-2 mt-1">
+                          <div class="text-blue-600 text-sm font-medium">{{ match.mata_kuliah_kelas?.matkul_kode || '-' }}</div>
+                          <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                            <i class="fas fa-book-open mr-1.5"></i> {{ getSKS(match) }} SKS
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <!-- Bottom section with details -->
+                      <div class="mt-2 pt-2 border-t border-blue-100">
+                        <div class="flex flex-wrap gap-2">
+                          <span v-if="match.matkul_tipe" class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium">
+                            <i class="fas fa-tag mr-1"></i> {{ match.matkul_tipe }}
+                          </span>
+                          
+                          <span 
+                            v-for="sem in getSemesterArray(match)" 
+                            :key="sem" 
+                            class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium"
+                          >
+                            <i class="fas fa-graduation-cap mr-1"></i> Semester {{ sem }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Matching Fullscreen Popup -->
+    <div v-if="isMatchingFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+        <div class="flex items-center justify-between mb-4 border-b pb-3">
+          <div class="flex items-center">
+            <i class="fas fa-th-list text-blue-600 text-2xl mr-3"></i>
+            <h2 class="text-2xl font-bold text-blue-600">Daftar Matching</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+              <i class="fas fa-link mr-2"></i>
+              {{ filteredMatchingList.length }} Matching
+            </div>
+            <button
+              @click="toggleMatchingFullscreen"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Bar for Fullscreen -->
+        <div class="w-full mb-4">
+          <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input
+              type="text"
+              v-model="matchingSearchQuery"
+              placeholder="Cari matching..."
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+        
+        <!-- Filters for Matching -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex flex-wrap gap-2">
+            <!-- Type Filter -->
+            <select 
+              v-model="matchingTypeFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Jenis</option>
+              <option value="DEPRTEMEN">Departemen</option>
+              <option value="PENGAYAAN">Pengayaan</option>
+            </select>
+            
+            <!-- Semester Filter -->
+            <select 
+              v-model="matchingSemesterFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Semester</option>
+              <option v-for="sem in [1,2,3,4,5,6,7,8]" :key="sem" :value="sem">Semester {{ sem }}</option>
+            </select>
+          </div>
+          
+          <!-- Reset Filter Button -->
+          <button 
+            v-if="matchingSearchQuery || matchingTypeFilter !== 'all' || matchingSemesterFilter !== 'all'"
+            @click="resetMatchingFilters" 
+            class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+          >
+            <i class="fas fa-undo mr-2"></i> Reset filter
+          </button>
+        </div>
+        
+        <!-- Multi-column List -->
+        <div class="flex-1 overflow-y-auto pr-2">
+          <div v-if="filteredMatchingList.length === 0" class="flex flex-col items-center justify-center h-full text-gray-500">
+            <i class="fas fa-filter text-6xl mb-4 text-blue-300"></i>
+            <p class="text-center font-medium text-xl">
+              {{ matchingSearchQuery ? "Tidak ada matching yang sesuai dengan pencarian." : "Belum ada matching yang diinputkan." }}
+            </p>
+          </div>
+          <div v-else class="space-y-4">
+            <div v-for="(matches, dosenName) in filteredGroupedMatches" :key="dosenName" class="mb-6 last:mb-0">
+              <h3 class="text-lg font-semibold mb-3 text-gray-700 sticky top-0 bg-white/90 backdrop-blur-sm py-2 z-10 border-b">
+                <i class="fas fa-user-tie text-blue-600 mr-2"></i>
+                {{ dosenName }}
+              </h3>
+              <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <li
                   v-for="(match, index) in matches"
                   :key="index"
-                  class="p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+                  class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
                 >
-                  <p class="font-semibold text-gray-800">
-                    {{ match.kelas && match.kelas.nama_kelas ? match.kelas.nama_kelas : (match.mata_kuliah_kelas?.nama_kelas || '-') }}
-                  </p>
-                  <div class="flex flex-wrap gap-2 mt-2">
-                    <span v-if="match.matkul_tipe" class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium">
-                      {{ match.matkul_tipe }}
-                    </span>
-                    <span 
-                      v-for="sem in getSemesterArray(match)" 
-                      :key="sem" 
-                      class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium"
-                    >
-                      Semester {{ sem }}
-                    </span>
+                  <div class="flex flex-col h-full">
+                    <div>
+                      <h3 class="font-bold text-gray-800 text-lg">
+                        {{ match.kelas && match.kelas.nama_kelas ? match.kelas.nama_kelas : (match.mata_kuliah_kelas?.nama_kelas || '-') }}
+                      </h3>
+                      <div class="flex items-center gap-2 mt-1">
+                        <div class="text-blue-600 text-sm font-medium">{{ match.mata_kuliah_kelas?.matkul_kode || '-' }}</div>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                          <i class="fas fa-book-open mr-1.5"></i> {{ getSKS(match) }} SKS
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <!-- Bottom section with details -->
+                    <div class="mt-2 pt-2 border-t border-blue-100">
+                      <div class="flex flex-wrap gap-2">
+                        <span v-if="match.matkul_tipe" class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium">
+                          <i class="fas fa-tag mr-1"></i> {{ match.matkul_tipe }}
+                        </span>
+                        
+                        <span 
+                          v-for="sem in getSemesterArray(match)" 
+                          :key="sem" 
+                          class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium"
+                        >
+                          <i class="fas fa-graduation-cap mr-1"></i> Semester {{ sem }}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </li>
               </ul>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mata Kuliah Fullscreen Popup -->
+    <div v-if="isMataKuliahFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+        <div class="flex items-center justify-between mb-4 border-b pb-3">
+          <div class="flex items-center">
+            <i class="fas fa-book text-blue-600 text-2xl mr-3"></i>
+            <h2 class="text-2xl font-bold text-blue-600">Daftar Mata Kuliah</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+              <i class="fas fa-book mr-2"></i>
+              {{ mataKuliahList.length }} Mata Kuliah
+            </div>
+            <button
+              @click="toggleMataKuliahFullscreen"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Bar for Fullscreen -->
+        <div class="w-full mb-4">
+          <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input
+              type="text"
+              v-model="mataKuliahSearchQuery"
+              placeholder="Cari mata kuliah..."
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+        
+        <!-- Filters for Mata Kuliah -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex flex-wrap gap-2">
+            <!-- SKS Filter -->
+            <select 
+              v-model="mkSksFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua SKS</option>
+              <option value="2">2 SKS</option>
+              <option value="3">3 SKS</option>
+              <option value="4">4 SKS</option>
+            </select>
+          </div>
+          
+          <!-- Reset Filter Button -->
+          <button 
+            v-if="mataKuliahSearchQuery || mkSksFilter !== 'all'"
+            @click="resetMkFilters" 
+            class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+          >
+            <i class="fas fa-undo mr-2"></i> Reset filter
+          </button>
+        </div>
+        
+        <!-- Multi-column List -->
+        <div class="flex-1 overflow-y-auto pr-2">
+          <div v-if="filteredMataKuliahList.length === 0" class="flex flex-col items-center justify-center h-full text-gray-500">
+            <i class="fas fa-filter text-6xl mb-4 text-blue-300"></i>
+            <p class="text-center font-medium text-xl">
+              {{ mataKuliahSearchQuery ? "Tidak ada mata kuliah yang sesuai dengan pencarian." : "Belum ada mata kuliah yang diinputkan." }}
+            </p>
+          </div>
+          <ul v-else class="grid grid-cols-1 md:grid-cols-3 gap-4 pb-4">
+            <li
+              v-for="mk in filteredMataKuliahList"
+              :key="mk.matkul_kode"
+              class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+            >
+              <div class="flex flex-col h-full justify-between">
+                <!-- Top section with title -->
+                <div>
+                  <h3 class="font-bold text-gray-800 text-lg">
+                    {{ mk.matkul_nama }}
+                  </h3>
+                </div>
+                
+                <!-- Bottom section with details -->
+                <div class="mt-auto pt-2">
+                  <!-- Course Code and SKS -->
+                  <div class="flex items-center gap-2 mb-2">
+                    <div class="text-blue-600 text-sm font-medium">{{ mk.matkul_kode }}</div>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-md flex items-center">
+                      <i class="fas fa-book-open mr-1.5"></i> {{ mk.matkul_sks }} SKS
+                    </span>
+                  </div>
+                  
+                  <!-- Classes -->
+                  <div class="flex flex-wrap gap-2 items-center border-t pt-2">
+                    <span
+                      v-for="kelas in mk.mata_kuliah_kelas"
+                      :key="kelas.kelas_mk"
+                      :class="getKelasColor(kelas.kelas_mk)"
+                      class="px-2 py-0.5 rounded-md text-xs font-medium flex items-center"
+                    >
+                      <i class="fas fa-chalkboard-teacher mr-1"></i> Kelas {{ kelas.kelas_mk }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Dosen Fullscreen Popup -->
+    <div v-if="isDosenFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+        <div class="flex items-center justify-between mb-4 border-b pb-3">
+          <div class="flex items-center">
+            <i class="fas fa-user-tie text-blue-600 text-2xl mr-3"></i>
+            <h2 class="text-2xl font-bold text-blue-600">Daftar Dosen</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+              <i class="fas fa-user-tie mr-2"></i>
+              {{ dosenList.length }} Dosen
+            </div>
+            <button
+              @click="toggleDosenFullscreen"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Bar for Fullscreen -->
+        <div class="w-full mb-4">
+          <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input
+              type="text"
+              v-model="dosenSearchQuery"
+              placeholder="Cari dosen..."
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+        
+        <!-- Filters for Dosen -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex flex-wrap gap-2">
+            <!-- Prioritas Filter -->
+            <select 
+              v-model="dosenPrioritasFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Prioritas</option>
+              <option value="PRIORITAS">Prioritas</option>
+              <option value="NON_PRIORITAS">Non Prioritas</option>
+            </select>
+            
+            <!-- Hari Filter -->
+            <select 
+              v-model="dosenHariFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Hari</option>
+              <option v-for="hari in ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT']" :key="hari" :value="hari">{{ hari }}</option>
+            </select>
+            
+            <!-- Sesi Filter -->
+            <select 
+              v-model="dosenSesiFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Sesi</option>
+              <option value="SATU">Sesi 1</option>
+              <option value="DUA">Sesi 2</option>
+              <option value="TIGA">Sesi 3</option>
+            </select>
+          </div>
+          
+          <!-- Reset Filter Button -->
+          <button 
+            v-if="dosenSearchQuery || dosenPrioritasFilter !== 'all' || dosenHariFilter !== 'all' || dosenSesiFilter !== 'all'"
+            @click="resetDosenFilters" 
+            class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+          >
+            <i class="fas fa-undo mr-2"></i> Reset filter
+          </button>
+        </div>
+        
+        <!-- Multi-column List -->
+        <div class="flex-1 overflow-y-auto pr-2">
+          <div v-if="filteredDosenList.length === 0" class="flex flex-col items-center justify-center h-full text-gray-500">
+            <i class="fas fa-filter text-6xl mb-4 text-blue-300"></i>
+            <p class="text-center font-medium text-xl">
+              {{ dosenSearchQuery ? "Tidak ada dosen yang sesuai dengan pencarian." : "Belum ada dosen yang diinputkan." }}
+            </p>
+          </div>
+          <ul v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+            <li
+              v-for="dosen in filteredDosenList"
+              :key="dosen.dosen_kode"
+              class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+            >
+              <div class="flex flex-col h-full">
+                <!-- Top section with title -->
+                <div>
+                  <h3 class="font-bold text-gray-800 text-lg">
+                    {{ dosen.dosen_nama }}
+                  </h3>
+                </div>
+                
+                <!-- Spacer to push content to bottom -->
+                <div class="flex-grow"></div>
+                
+                <!-- Bottom section with details -->
+                <div>
+                  <!-- Dosen Code and Priority -->
+                  <div class="flex items-center gap-2 mb-2">
+                    <div class="text-blue-600 text-sm font-medium">
+                      {{ dosen.dosen_kode }}
+                    </div>
+                    <span 
+                      :class="{
+                        'px-2 py-0.5 rounded-md text-xs font-medium inline-flex items-center gap-1': true,
+                        'bg-green-100 text-green-600': dosen.dosen_prioritas === 'PRIORITAS',
+                        'bg-red-100 text-red-600': dosen.dosen_prioritas !== 'PRIORITAS'
+                      }"
+                    >
+                      <i :class="{
+                        'fas fa-xs': true,
+                        'fa-star': dosen.dosen_prioritas === 'PRIORITAS',
+                        'fa-exclamation-circle': dosen.dosen_prioritas !== 'PRIORITAS'
+                      }"></i>
+                      {{ dosen.dosen_prioritas === 'PRIORITAS' ? 'Prioritas' : 'Non Prioritas' }}
+                    </span>
+                  </div>
+                  
+                  <!-- Ketersediaan Dosen -->
+                  <div class="border-t pt-2">
+                    <div v-if="dosen.jadwal_dosen && dosen.jadwal_dosen.length > 0" class="text-xs text-gray-600">
+                      <div v-for="(sesi, sesiName) in groupDosenAvailability(dosen.jadwal_dosen)" :key="sesiName" class="mb-2">
+                        <div class="flex">
+                          <div class="min-w-[80px] w-[80px]">
+                            <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                              <i class="fas fa-clock"></i>
+                              Sesi {{ sesiName === 'SATU' ? '1' : sesiName === 'DUA' ? '2' : '3' }}
+                            </span>
+                          </div>
+                          <div class="w-[20px] text-center flex items-center justify-center">
+                            <span class="text-gray-400">:</span>
+                          </div>
+                          <div class="flex-1">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
+                              <span 
+                                v-for="hari in sesi" 
+                                :key="hari"
+                                class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md w-full text-center mb-1 font-medium"
+                              >
+                                <i class="fas fa-calendar-day"></i>
+                                {{ hari }}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-else class="text-xs text-gray-400 italic">
+                      <i class="fas fa-calendar-times mr-1"></i> Tidak tersedia
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Ruang Kelas Fullscreen Popup -->
+    <div v-if="isRuangKelasFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+        <div class="flex items-center justify-between mb-4 border-b pb-3">
+          <div class="flex items-center">
+            <i class="fas fa-chalkboard-teacher text-blue-600 text-2xl mr-3"></i>
+            <h2 class="text-2xl font-bold text-blue-600">Daftar Ruang Kelas</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+              <i class="fas fa-chalkboard-teacher mr-2"></i>
+              {{ ruangKelasList.length }} Ruang Kelas
+            </div>
+            <button
+              @click="toggleRuangKelasFullscreen"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Bar for Fullscreen -->
+        <div class="w-full mb-4">
+          <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input
+              type="text"
+              v-model="ruangKelasSearchQuery"
+              placeholder="Cari ruang kelas..."
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+        
+        <!-- Multi-column List -->
+        <div class="flex-1 overflow-y-auto pr-2">
+          <div v-if="filteredRuangKelasList.length === 0" class="flex flex-col items-center justify-center h-full text-gray-500">
+            <i class="fas fa-filter text-6xl mb-4 text-blue-300"></i>
+            <p class="text-center font-medium text-xl mb-4">
+              {{ ruangKelasSearchQuery ? "Tidak ada ruang kelas yang sesuai dengan pencarian." : "Belum ada ruang kelas yang diinputkan." }}
+            </p>
+            <button 
+              v-if="ruangKelasSearchQuery"
+              @click="resetRuangKelasFilters" 
+              class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+            >
+              <i class="fas fa-undo mr-2"></i> Reset filter
+            </button>
+          </div>
+          <ul v-else class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-4">
+            <li
+              v-for="ruang in filteredRuangKelasList"
+              :key="ruang.ruangan_kode"
+              class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+            >
+              <div class="flex flex-col h-full justify-between">
+                <!-- Top section with title -->
+                <div>
+                  <h3 class="font-bold text-gray-800 text-lg">
+                    {{ ruang.ruangan_kode }}
+                  </h3>
+                </div>
+                
+                <!-- Bottom section with capacity -->
+                <div class="mt-auto pt-2 border-t border-blue-100">
+                  <span class="inline-flex items-center px-3 py-1 bg-indigo-100 text-indigo-600 rounded-md text-sm font-medium">
+                    <i class="fas fa-users mr-1.5"></i>
+                    Kapasitas: {{ ruang.ruangan_kapasitas }}
+                  </span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Jadwal Hindari Fullscreen Popup -->
+    <div v-if="isJadwalHindariFullscreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+        <div class="flex items-center justify-between mb-4 border-b pb-3">
+          <div class="flex items-center">
+            <i class="fas fa-calendar-times text-red-600 text-2xl mr-3"></i>
+            <h2 class="text-2xl font-bold text-red-600">Daftar Jadwal Hindari</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="bg-red-100 text-red-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+              <i class="fas fa-calendar-times mr-2"></i>
+              {{ jadwalHindari.length }} Jadwal
+            </div>
+            <button
+              @click="toggleJadwalHindariFullscreen"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 transition-colors"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Bar for Fullscreen -->
+        <div class="w-full mb-4">
+          <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input
+              type="text"
+              v-model="jadwalHindariSearchQuery"
+              placeholder="Cari jadwal hindari..."
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+        
+        <!-- Filters for Jadwal Hindari -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex flex-wrap gap-2">
+            <!-- Hari Filter -->
+            <select 
+              v-model="hindariHariFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Hari</option>
+              <option v-for="hari in ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT']" :key="hari" :value="hari">{{ hari }}</option>
+            </select>
+            
+            <!-- Sesi Filter -->
+            <select 
+              v-model="hindariSesiFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Sesi</option>
+              <option value="SATU">Sesi 1</option>
+              <option value="DUA">Sesi 2</option>
+              <option value="TIGA">Sesi 3</option>
+            </select>
+            
+            <!-- Semester Filter -->
+            <select 
+              v-model="hindariSemesterFilter" 
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">Semua Semester</option>
+              <option v-for="n in 8" :key="n" :value="n">Semester {{ n }}</option>
+            </select>
+          </div>
+          
+          <!-- Reset Filter Button -->
+          <button 
+            v-if="jadwalHindariSearchQuery || hindariHariFilter !== 'all' || hindariSesiFilter !== 'all' || hindariSemesterFilter !== 'all'"
+            @click="resetJadwalHindariFilters" 
+            class="px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
+          >
+            <i class="fas fa-undo mr-2"></i> Reset filter
+          </button>
+        </div>
+        
+        <!-- Multi-column List -->
+        <div class="flex-1 overflow-y-auto pr-2">
+          <div v-if="filteredJadwalHindariList.length === 0" class="flex flex-col items-center justify-center h-full text-gray-500">
+            <i class="fas fa-filter text-6xl mb-4 text-blue-300"></i>
+            <p class="text-center font-medium text-xl">
+              {{ jadwalHindariSearchQuery ? "Tidak ada jadwal hindari yang sesuai dengan pencarian." : "Belum ada jadwal hindari yang diinputkan." }}
+            </p>
+          </div>
+          <ul v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+            <li
+              v-for="hindari in filteredJadwalHindariList"
+              :key="hindari.id"
+              class="bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
+            >
+              <div class="flex flex-col h-full">
+                <!-- Top section with title -->
+                <div>
+                  <h3 class="font-bold text-gray-800 text-lg">
+                    {{ hindari.hindari_agenda }}
+                  </h3>
+                </div>
+                
+                <!-- Bottom section with details -->
+                <div class="mt-auto pt-2">
+                  <!-- Semester info above the line -->
+                  <div class="mb-2">
+                    <div class="flex flex-wrap gap-1">
+                      <span 
+                        v-for="sem in hindari.hindari_smt" 
+                        :key="sem" 
+                        class="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-xs font-medium"
+                      >
+                        <i class="fas fa-graduation-cap mr-1"></i> Semester {{ sem }}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <!-- Hari and Sesi info below the line -->
+                  <div class="border-t pt-2">
+                    <div class="text-xs text-gray-600">
+                      <div class="mb-2">
+                        <div class="flex">
+                          <div class="min-w-[80px] w-[80px]">
+                            <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md font-medium w-full text-center">
+                              <i class="fas fa-clock"></i>
+                              Sesi {{ hindari.hindari_sesi === 'SATU' ? '1' : hindari.hindari_sesi === 'DUA' ? '2' : '3' }}
+                            </span>
+                          </div>
+                          <div class="w-[20px] text-center flex items-center justify-center">
+                            <span class="text-gray-400">:</span>
+                          </div>
+                          <div class="flex-1">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
+                              <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-center mb-1 font-medium min-w-[100px]">
+                                <i class="fas fa-calendar-day mr-1"></i>
+                                {{ hindari.hindari_hari }}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -301,12 +1095,13 @@
           <table class="min-w-[700px] w-full">
             <thead>
               <tr class="bg-gray-50 border-b border-gray-100">
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 sticky left-0 bg-gray-50">Hari</th>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 sticky left-[140px] bg-gray-50">Sesi</th>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Kelas</th>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Semester</th>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Dosen</th>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Ruangan</th>
+                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700 sticky left-0 bg-gray-50">Hari</th>
+                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700 sticky left-[140px] bg-gray-50">Sesi</th>
+                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Mata Kuliah & Kelas</th>
+                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">SKS</th>
+                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Semester</th>
+                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Dosen</th>
+                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Ruangan</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
@@ -315,16 +1110,19 @@
                 :key="index"
                 class="group hover:bg-blue-50 transition-colors duration-200"
               >
-                <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50">{{ row.hari }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50">{{ row.sesi }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">{{ row.kelas }} ({{ getSKS(row) }} SKS)</td>
+                <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50 text-center">{{ row.hari }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50 text-center">{{ row.sesi }}</td>
                 <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">
+                  <div class="font-medium">{{ row.mata_kuliah_kelas?.nama_kelas || '-' }}</div>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50 text-center">{{ getSKS(row) }} SKS</td>
+                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50 text-center">
                   <span v-for="(sem, idx) in row.semester || row.mk_kelas_sem || []" :key="idx" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
                     Semester {{ sem }}
                   </span>
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">{{ getTeamTeachingLecturers(row) }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">{{ row.ruangan }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50 text-center">{{ getTeamTeachingLecturers(row) }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50 text-center">{{ row.ruangan }}</td>
               </tr>
             </tbody>
           </table>
@@ -341,25 +1139,26 @@
             <table class="min-w-[600px] w-full">
               <thead>
                 <tr class="bg-gray-50 border-b border-gray-100">
-                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Kelas</th>
-                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Mata Kuliah</th>
-                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Semester</th>
-                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Dosen</th>
-                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Alasan</th>
+                  <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Mata Kuliah & Kelas</th>
+                  <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">SKS</th>
+                  <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Semester</th>
+                  <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Dosen</th>
+                  <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Alasan</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100">
                 <tr v-for="(item, idx) in jadwalGenerated.filter(j => j.status === 'unplaced')" :key="idx">
-                  <td class="px-6 py-4 text-sm text-gray-700">{{ item.kelas || '-' }}</td>
-                  <td class="px-6 py-4 text-sm text-gray-700">{{ item.mata_kuliah_kelas?.nama_kelas || '-' }}</td>
-                  <td class="px-6 py-4 text-sm text-gray-700">{{ getSKS(item) }} SKS</td>
                   <td class="px-6 py-4 text-sm text-gray-700">
+                    <div class="font-medium">{{ item.mata_kuliah_kelas?.nama_kelas || '-' }}</div>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-700 text-center">{{ getSKS(item) }} SKS</td>
+                  <td class="px-6 py-4 text-sm text-gray-700 text-center">
                     <span v-for="(sem, sidx) in item.semester || item.mk_kelas_sem || []" :key="sidx" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
                       Semester {{ sem }}
                     </span>
                   </td>
-                  <td class="px-6 py-4 text-sm text-gray-700">{{ getTeamTeachingLecturers(item) }}</td>
-                  <td class="px-6 py-4 text-sm text-red-600">Tidak ada slot tersedia</td>
+                  <td class="px-6 py-4 text-sm text-gray-700 text-center">{{ getTeamTeachingLecturers(item) }}</td>
+                  <td class="px-6 py-4 text-sm text-red-600 text-center">Tidak ada slot tersedia</td>
                 </tr>
               </tbody>
             </table>
@@ -871,6 +1670,58 @@ const groupedMatches = computed(() => {
   return groups;
 });
 
+// Add computed property for filtered matching list
+const filteredMatchingList = computed(() => {
+  let filtered = matchingList.value;
+  
+  if (matchingSearchQuery.value) {
+    const query = matchingSearchQuery.value.toLowerCase();
+    filtered = filtered.filter(match => {
+      const kelasName = match.kelas && match.kelas.nama_kelas 
+        ? match.kelas.nama_kelas 
+        : (match.mata_kuliah_kelas?.nama_kelas || '');
+      
+      const dosenName = match.dosen?.dosen_nama || match.dosen_nama || '';
+      const matkulType = match.matkul_tipe || '';
+      const semesters = getSemesterArray(match).join(' ');
+      
+      return kelasName.toLowerCase().includes(query) ||
+             dosenName.toLowerCase().includes(query) ||
+             matkulType.toLowerCase().includes(query) ||
+             semesters.toLowerCase().includes(query);
+    });
+  }
+  
+  // Apply type filter
+  if (matchingTypeFilter.value !== 'all') {
+    filtered = filtered.filter(match => match.matkul_tipe === matchingTypeFilter.value);
+  }
+  
+  // Apply semester filter
+  if (matchingSemesterFilter.value !== 'all') {
+    filtered = filtered.filter(match => {
+      const semesters = getSemesterArray(match);
+      return semesters.includes(parseInt(matchingSemesterFilter.value)) || 
+             semesters.includes(matchingSemesterFilter.value);
+    });
+  }
+  
+  return filtered;
+});
+
+// Updated grouped matches to use filteredMatchingList
+const filteredGroupedMatches = computed(() => {
+  const groups = {};
+  filteredMatchingList.value.forEach(match => {
+    const dosenName = match.dosen?.dosen_nama || match.dosen_nama || 'Unknown';
+    if (!groups[dosenName]) {
+      groups[dosenName] = [];
+    }
+    groups[dosenName].push(match);
+  });
+  return groups;
+});
+
 // Ganti generateJadwal agar menggunakan iterative improvement
 const generateJadwal = async () => {
   // Cek data yang kosong sebelum generate
@@ -1176,7 +2027,7 @@ function tryPlaceWithSwap(
     const dosenObj = dosenList.value.find((d) => d.dosen_kode === lect);
     if (!dosenObj?.jadwal_dosen) return false;
     return dosenObj.jadwal_dosen.some(
-      (j) => j.dosen_sedia_hari === hari && j.dosen_sedia_sesi === sesi
+      (jd) => jd.dosen_sedia_hari === hari && jd.dosen_sedia_sesi === sesi
     );
   });
   if (availableLecturers.length === 0) return false;
@@ -1387,5 +2238,246 @@ const getSKS = (row) => {
     return mk.matkul_sks;
   }
   return '-';
+};
+
+// Function to get color class based on kelas name
+const getKelasColor = (kelas) => {
+  switch(kelas) {
+    case 'A':
+      return 'bg-green-100 text-green-700';
+    case 'B':
+      return 'bg-blue-100 text-blue-700';
+    case 'C':
+      return 'bg-purple-100 text-purple-700';
+    case 'D':
+      return 'bg-orange-100 text-orange-700';
+    default:
+      return 'bg-gray-100 text-gray-700';
+  }
+};
+
+// Function to group dosen availability by session
+const groupDosenAvailability = (jadwalDosen) => {
+  if (!Array.isArray(jadwalDosen)) {
+    return {};
+  }
+  
+  // Group by session
+  const result = {};
+  
+  jadwalDosen.forEach(item => {
+    const sesi = item.dosen_sedia_sesi;
+    const hari = item.dosen_sedia_hari;
+    
+    if (!result[sesi]) {
+      result[sesi] = [];
+    }
+    
+    if (!result[sesi].includes(hari)) {
+      result[sesi].push(hari);
+    }
+  });
+  
+  return result;
+};
+
+const isMatchingFullscreen = ref(false);
+const matchingSearchQuery = ref('');
+const matchingSemesterFilter = ref('all');
+
+const toggleMatchingFullscreen = () => {
+  isMatchingFullscreen.value = !isMatchingFullscreen.value;
+};
+
+const isMataKuliahFullscreen = ref(false);
+const isDosenFullscreen = ref(false);
+const isRuangKelasFullscreen = ref(false);
+const isJadwalHindariFullscreen = ref(false);
+
+const toggleMataKuliahFullscreen = () => {
+  isMataKuliahFullscreen.value = !isMataKuliahFullscreen.value;
+};
+
+const toggleDosenFullscreen = () => {
+  isDosenFullscreen.value = !isDosenFullscreen.value;
+};
+
+const toggleRuangKelasFullscreen = () => {
+  isRuangKelasFullscreen.value = !isRuangKelasFullscreen.value;
+};
+
+const toggleJadwalHindariFullscreen = () => {
+  isJadwalHindariFullscreen.value = !isJadwalHindariFullscreen.value;
+};
+
+// Search query variables for each section
+const mataKuliahSearchQuery = ref('');
+const dosenSearchQuery = ref('');
+const ruangKelasSearchQuery = ref('');
+const jadwalHindariSearchQuery = ref('');
+
+// Filter variables
+const mkSksFilter = ref('all');
+const mkSemesterFilter = ref('all');
+const dosenPrioritasFilter = ref('all');
+const dosenHariFilter = ref('all');
+const dosenSesiFilter = ref('all');
+const hindariHariFilter = ref('all');
+const hindariSesiFilter = ref('all');
+const hindariSemesterFilter = ref('all');
+const matchingTypeFilter = ref('all');
+
+// Computed property for filtered mata kuliah list
+const filteredMataKuliahList = computed(() => {
+  let filtered = mataKuliahList.value;
+  
+  // Apply search filter
+  if (mataKuliahSearchQuery.value) {
+    const query = mataKuliahSearchQuery.value.toLowerCase();
+    filtered = filtered.filter(mk => 
+      mk.matkul_nama.toLowerCase().includes(query) || 
+      mk.matkul_kode.toLowerCase().includes(query)
+    );
+  }
+  
+  // Apply SKS filter
+  if (mkSksFilter.value !== 'all') {
+    filtered = filtered.filter(mk => mk.matkul_sks === parseInt(mkSksFilter.value));
+  }
+  
+  // Apply semester filter
+  if (mkSemesterFilter.value !== 'all') {
+    filtered = filtered.filter(mk => {
+      if (mk.mata_kuliah_kelas && Array.isArray(mk.mata_kuliah_kelas)) {
+        return mk.mata_kuliah_kelas.some(kelas => 
+          kelas.kelas_semester === parseInt(mkSemesterFilter.value) ||
+          (kelas.mk_kelas_sem && 
+           (Array.isArray(kelas.mk_kelas_sem) 
+            ? kelas.mk_kelas_sem.includes(parseInt(mkSemesterFilter.value))
+            : kelas.mk_kelas_sem === parseInt(mkSemesterFilter.value)))
+        );
+      }
+      return true; // Include if can't determine semester
+    });
+  }
+  
+  return filtered;
+});
+
+// Computed property for filtered dosen list
+const filteredDosenList = computed(() => {
+  let filtered = dosenList.value;
+  
+  // Apply search filter
+  if (dosenSearchQuery.value) {
+    const query = dosenSearchQuery.value.toLowerCase();
+    filtered = filtered.filter(dosen => 
+      dosen.dosen_nama.toLowerCase().includes(query) ||
+      dosen.dosen_kode.toLowerCase().includes(query)
+    );
+  }
+  
+  // Apply prioritas filter
+  if (dosenPrioritasFilter.value !== 'all') {
+    filtered = filtered.filter(dosen => dosen.dosen_prioritas === dosenPrioritasFilter.value);
+  }
+  
+  // Apply hari filter
+  if (dosenHariFilter.value !== 'all') {
+    filtered = filtered.filter(dosen => {
+      if (!dosen.jadwal_dosen || !Array.isArray(dosen.jadwal_dosen)) return false;
+      return dosen.jadwal_dosen.some(jadwal => jadwal.dosen_sedia_hari === dosenHariFilter.value);
+    });
+  }
+  
+  // Apply sesi filter
+  if (dosenSesiFilter.value !== 'all') {
+    filtered = filtered.filter(dosen => {
+      if (!dosen.jadwal_dosen || !Array.isArray(dosen.jadwal_dosen)) return false;
+      return dosen.jadwal_dosen.some(jadwal => jadwal.dosen_sedia_sesi === dosenSesiFilter.value);
+    });
+  }
+  
+  return filtered;
+});
+
+// Computed property for filtered ruang kelas list
+const filteredRuangKelasList = computed(() => {
+  let filtered = ruangKelasList.value;
+  
+  // Apply search filter
+  if (ruangKelasSearchQuery.value) {
+    const query = ruangKelasSearchQuery.value.toLowerCase();
+    filtered = filtered.filter(ruang => 
+      ruang.ruangan_kode.toLowerCase().includes(query)
+    );
+  }
+  
+  return filtered;
+});
+
+// Computed property for filtered jadwal hindari list
+const filteredJadwalHindariList = computed(() => {
+  let filtered = jadwalHindari.value;
+  
+  // Apply search filter
+  if (jadwalHindariSearchQuery.value) {
+    const query = jadwalHindariSearchQuery.value.toLowerCase();
+    filtered = filtered.filter(hindari => 
+      hindari.hindari_agenda.toLowerCase().includes(query) ||
+      hindari.hindari_hari.toLowerCase().includes(query)
+    );
+  }
+  
+  // Apply hari filter
+  if (hindariHariFilter.value !== 'all') {
+    filtered = filtered.filter(hindari => hindari.hindari_hari === hindariHariFilter.value);
+  }
+  
+  // Apply sesi filter
+  if (hindariSesiFilter.value !== 'all') {
+    filtered = filtered.filter(hindari => hindari.hindari_sesi === hindariSesiFilter.value);
+  }
+  
+  // Apply semester filter
+  if (hindariSemesterFilter.value !== 'all') {
+    filtered = filtered.filter(hindari => 
+      hindari.hindari_smt && 
+      Array.isArray(hindari.hindari_smt) && 
+      hindari.hindari_smt.includes(parseInt(hindariSemesterFilter.value))
+    );
+  }
+  
+  return filtered;
+});
+
+// Reset filter functions
+const resetMkFilters = () => {
+  mataKuliahSearchQuery.value = "";
+  mkSksFilter.value = "all";
+};
+
+const resetDosenFilters = () => {
+  dosenSearchQuery.value = "";
+  dosenPrioritasFilter.value = "all";
+  dosenHariFilter.value = "all";
+  dosenSesiFilter.value = "all";
+};
+
+const resetJadwalHindariFilters = () => {
+  jadwalHindariSearchQuery.value = "";
+  hindariHariFilter.value = "all";
+  hindariSesiFilter.value = "all";
+  hindariSemesterFilter.value = "all";
+};
+
+const resetMatchingFilters = () => {
+  matchingSearchQuery.value = "";
+  matchingTypeFilter.value = "all";
+  matchingSemesterFilter.value = "all";
+};
+
+const resetRuangKelasFilters = () => {
+  ruangKelasSearchQuery.value = "";
 };
 </script>

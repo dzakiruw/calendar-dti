@@ -41,31 +41,31 @@
       <div class="bg-white/90 backdrop-blur-sm p-5 rounded-2xl shadow-lg border border-gray-100 flex flex-col max-h-[450px]">
         <form @submit.prevent="submitForm" class="flex-1 flex flex-col">
           <div class="space-y-4 flex-1">
-            <div>
-              <label class="block text-gray-700 font-semibold mb-2">Kode Ruangan</label>
-              <div v-if="editIndex !== null">
-                <p class="text-lg font-bold text-blue-600">{{ form.kodeRuangan }}</p>
-              </div>
-              <div v-else>
-                <input
-                  v-model="form.kodeRuangan"
-                  type="text"
-                  class="w-full p-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                  placeholder="Masukkan kode ruangan"
-                  required
-                />
-              </div>
+          <div>
+            <label class="block text-gray-700 font-semibold mb-2">Kode Ruangan</label>
+            <div v-if="editIndex !== null">
+              <p class="text-lg font-bold text-blue-600">{{ form.kodeRuangan }}</p>
             </div>
-
-            <div>
-              <label class="block text-gray-700 font-semibold mb-2">Kapasitas Ruangan</label>
+            <div v-else>
               <input
-                v-model="form.kapasitasRuangan"
-                type="number"
-                class="w-full p-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                placeholder="Masukkan kapasitas ruangan"
+                v-model="form.kodeRuangan"
+                type="text"
+                  class="w-full p-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                placeholder="Masukkan kode ruangan"
                 required
               />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-gray-700 font-semibold mb-2">Kapasitas Ruangan</label>
+            <input
+              v-model="form.kapasitasRuangan"
+              type="number"
+                class="w-full p-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              placeholder="Masukkan kapasitas ruangan"
+              required
+            />
             </div>
           </div>
 
@@ -103,8 +103,8 @@
             <h2 class="text-xl font-bold text-blue-600">Daftar Ruang Kelas</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-3 py-1 rounded-md text-sm font-medium flex items-center">
-              <i class="fas fa-door-open mr-1.5"></i>
+            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+              <i class="fas fa-door-open mr-2"></i>
               {{ sortedRuangKelasList.length }} Ruangan
             </div>
             <button 
@@ -117,13 +117,10 @@
           </div>
         </div>
         
-        <!-- Search and Filter -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-3">
-          <!-- Search Input -->
-          <div class="relative flex-1 w-full">
-            <i
-              class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-            ></i>
+        <!-- Search Bar -->
+        <div class="w-full mb-3">
+          <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             <input
               type="text"
               v-model="searchQuery"
@@ -131,53 +128,40 @@
               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          
-          <!-- Kapasitas Filter -->
-          <select 
-            v-model="kapasitasFilter" 
-            class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="all">Semua Kapasitas</option>
-            <option value="small">&lt; 30 orang</option>
-            <option value="medium">30-60 orang</option>
-            <option value="large">&gt; 60 orang</option>
-          </select>
         </div>
 
         <!-- Content Area -->
-        <div class="flex-1 overflow-hidden">
-        <!-- Empty State -->
-        <div 
+        <div class="flex-1 overflow-hidden h-[300px]">
+          <!-- Empty State -->
+          <div 
           v-if="sortedRuangKelasList.length === 0" 
             class="flex flex-col items-center justify-center py-12 text-gray-500 h-full"
-        >
+          >
             <i class="fas fa-filter text-4xl mb-4 text-blue-300"></i>
-            <p class="text-center font-medium">
+            <p class="text-center font-medium mb-4">
               {{
                 searchQuery
                   ? "Tidak ada ruangan yang sesuai dengan pencarian."
-                  : kapasitasFilter !== 'all'
-                    ? `Tidak ada ruangan dengan kapasitas yang dipilih.`
-                    : "Belum ada ruangan yang diinputkan."
+                  : "Belum ada ruangan yang diinputkan."
               }}
-          </p>
+            </p>
             <button 
-              v-if="searchQuery || kapasitasFilter !== 'all'"
+              v-if="searchQuery"
               @click="resetFilters" 
               class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
             >
               <i class="fas fa-undo mr-2"></i> Reset filter
             </button>
-        </div>
+          </div>
 
-        <!-- Ruang Kelas List -->
-          <div v-else class="overflow-y-auto h-full pr-2">
+          <!-- Ruang Kelas List -->
+          <div v-else class="overflow-y-auto h-[300px] pr-2">
             <ul class="grid grid-cols-1 gap-4 pb-3">
-            <li 
+              <li 
               v-for="(ruang, index) in sortedRuangKelasList" 
-              :key="index" 
+                :key="index" 
                 class="bg-blue-50 p-3 rounded-xl border border-blue-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300"
-            >
+              >
                 <div class="flex flex-col h-full">
                   <!-- Top section with title and buttons -->
                   <div>
@@ -190,20 +174,20 @@
                       
                       <!-- Action Buttons -->
                       <div class="flex space-x-1">
-                  <button 
+                    <button 
                     @click="editRuangKelas(sortedRuangKelasList.indexOf(ruang))" 
                           class="p-1.5 text-blue-600 hover:text-white hover:bg-blue-500 rounded-md transition-colors duration-300"
                           title="Edit ruangan"
-                  >
+                    >
                           <i class="fas fa-edit"></i>
-                  </button>
-                  <button 
+                    </button>
+                    <button 
                     @click="deleteRuangKelas(sortedRuangKelasList.indexOf(ruang))" 
                           class="p-1.5 text-red-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-300"
                           title="Hapus ruangan"
-                  >
-                    <i class="fas fa-trash-alt"></i>
-                  </button>
+                    >
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
                       </div>
                     </div>
                   </div>
@@ -219,17 +203,17 @@
                         Kapasitas: {{ ruang.ruangan_kapasitas }}
                       </span>
                     </div>
+                  </div>
                 </div>
-              </div>
-            </li>
-          </ul>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Popup Konfirmasi Delete -->
-    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
       <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
         <div class="text-center">
           <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -258,7 +242,7 @@
     </div>
 
     <!-- Popup Konfirmasi Edit -->
-    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div v-if="showEditConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
       <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300">
         <div class="text-center">
           <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -295,7 +279,7 @@
             <h2 class="text-2xl font-bold text-blue-600">Daftar Ruang Kelas</h2>
           </div>
           <div class="flex items-center gap-2">
-            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center">
+            <div class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
               <i class="fas fa-door-open mr-2"></i>
               {{ sortedRuangKelasList.length }} Ruangan
             </div>
@@ -308,9 +292,9 @@
           </div>
         </div>
 
-        <!-- Search and Filter for Fullscreen -->
-        <div class="flex flex-row items-center gap-4 mb-6">
-          <div class="relative flex-1">
+        <!-- Search Bar for Fullscreen -->
+        <div class="w-full mb-4">
+          <div class="relative">
             <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             <input
               type="text"
@@ -319,32 +303,21 @@
               class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <select 
-            v-model="kapasitasFilter" 
-            class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[160px]"
-          >
-            <option value="all">Semua Kapasitas</option>
-            <option value="small">&lt; 30 orang</option>
-            <option value="medium">30-60 orang</option>
-            <option value="large">&gt; 60 orang</option>
-          </select>
         </div>
 
-        <!-- Multi-column List -->
-        <div class="flex-1 overflow-y-auto pr-2">
+                  <!-- Multi-column List -->
+          <div class="flex-1 overflow-y-auto h-[500px] pr-2">
           <div v-if="sortedRuangKelasList.length === 0" class="flex flex-col items-center justify-center h-full text-gray-500">
             <i class="fas fa-filter text-6xl mb-4 text-blue-300"></i>
-            <p class="text-center text-xl font-medium">
+            <p class="text-center text-xl font-medium mb-4">
               {{
                 searchQuery
                   ? "Tidak ada ruangan yang sesuai dengan pencarian."
-                  : kapasitasFilter !== 'all'
-                    ? `Tidak ada ruangan dengan kapasitas yang dipilih.`
-                    : "Belum ada ruangan yang diinputkan."
+                  : "Belum ada ruangan yang diinputkan."
               }}
             </p>
             <button 
-              v-if="searchQuery || kapasitasFilter !== 'all'"
+              v-if="searchQuery"
               @click="resetFilters" 
               class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center whitespace-nowrap"
             >

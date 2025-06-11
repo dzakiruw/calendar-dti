@@ -77,14 +77,14 @@
           </div>
           <div class="max-w-4xl">
             <p class="text-xl text-gray-600 leading-relaxed">
-              JADI adalah sistem penjadwalan yang revolusioner, menggabungkan kecerdasan buatan dengan fleksibilitas untuk menciptakan jadwal kuliah yang optimal. Dengan JADI, proses penjadwalan yang sebelumnya memakan waktu berjam-jam kini dapat diselesaikan dalam hitungan menit, sambil tetap mempertimbangkan preferensi dosen dan ketersediaan ruangan.
+              JADI adalah sistem penjadwalan dengan fleksibilitas untuk menciptakan jadwal kuliah yang optimal. Dengan JADI, proses penjadwalan yang sebelumnya memakan waktu berjam-jam kini dapat diselesaikan dalam hitungan menit, sambil tetap mempertimbangkan preferensi dosen dan ketersediaan ruangan.
             </p>
           </div>
         </div>
 
         <!-- Features Section -->
         <section class="mb-16">
-          <h2 class="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h2 class="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent pb-1">
             Fitur Unggulan
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -93,7 +93,7 @@
                 <i class="fas fa-calendar-check text-blue-600 text-3xl"></i>
               </div>
               <h3 class="text-2xl font-semibold text-gray-800 mb-4">Penjadwalan Otomatis</h3>
-              <p class="text-gray-600 text-lg">Sistem cerdas yang menghasilkan jadwal kuliah secara otomatis dengan mempertimbangkan berbagai constraint dan preferensi dosen, menghemat waktu dan mengurangi konflik jadwal.</p>
+              <p class="text-gray-600 text-lg text-justify">Sistem cerdas yang menghasilkan jadwal kuliah secara otomatis dengan mempertimbangkan berbagai constraint dan preferensi dosen, menghemat waktu dan mengurangi konflik jadwal.</p>
             </div>
 
             <div class="bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-lg transform transition-all duration-300 hover:scale-105">
@@ -101,7 +101,7 @@
                 <i class="fas fa-users-cog text-indigo-600 text-3xl"></i>
               </div>
               <h3 class="text-2xl font-semibold text-gray-800 mb-4">Manajemen Data Terpadu</h3>
-              <p class="text-gray-600 text-lg">Platform terpusat untuk mengelola semua data akademik, dari mata kuliah hingga ruang kelas, dengan antarmuka yang intuitif dan mudah digunakan.</p>
+              <p class="text-gray-600 text-lg text-justify">Platform terpusat untuk mengelola semua data akademik, dari mata kuliah hingga ruang kelas, dengan antarmuka yang intuitif dan mudah digunakan.</p>
             </div>
 
             <div class="bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-lg transform transition-all duration-300 hover:scale-105">
@@ -109,7 +109,7 @@
                 <i class="fas fa-clock text-blue-600 text-3xl"></i>
               </div>
               <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fleksibilitas Maksimal</h3>
-              <p class="text-gray-600 text-lg">Sistem yang adaptif dengan kebutuhan pengguna, memungkinkan penyesuaian jadwal yang cepat dan efisien sesuai dengan perubahan yang diperlukan.</p>
+              <p class="text-gray-600 text-lg text-justify">Sistem yang adaptif dengan kebutuhan pengguna, memungkinkan penyesuaian jadwal yang cepat dan efisien sesuai dengan perubahan yang diperlukan.</p>
             </div>
           </div>
         </section>
