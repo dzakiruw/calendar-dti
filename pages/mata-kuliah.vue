@@ -6,9 +6,11 @@
     <div
       v-if="showAlert"
       class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-md"
+      @click="showAlert = false"
     >
       <div
         class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center transform transition-all duration-300 border border-white/70"
+        @click.stop
       >
         <div :class="['mb-4 text-2xl', isUpdateConfirmation ? 'text-blue-600' : 'text-red-600']">
           <i :class="isUpdateConfirmation ? 'fas fa-question-circle' : 'fas fa-exclamation-circle'"></i>
@@ -344,27 +346,27 @@
         </div>
       </div>
 
-      <!-- Fullscreen Popup -->
-      <div v-if="isFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
-        <div class="bg-white rounded-2xl shadow-2xl border border-white/70 w-full max-w-6xl h-[80vh] flex flex-col p-6 relative">
-          <div class="flex items-center justify-between mb-4 border-b pb-3">
-            <div class="flex items-center">
-              <i class="fas fa-th-list text-blue-600 text-2xl mr-3"></i>
-              <h2 class="text-2xl font-bold text-blue-600">Daftar Mata Kuliah</h2>
-            </div>
-            <div class="flex items-center gap-2">
-              <div class="bg-blue-100/50 backdrop-blur-xl text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
-                <i class="fas fa-book mr-2"></i>
-                {{ filteredMataKuliahList.length }} Mata Kuliah
-              </div>
-              <button
-                @click="toggleFullscreen"
-                class="w-8 h-8 flex items-center justify-center bg-gray-200/50 hover:bg-gray-300/70 backdrop-blur-xl rounded-full text-gray-700 transition-colors shadow-md hover:shadow-lg"
-              >
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
+          <!-- Fullscreen Popup -->
+    <div v-if="isFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8" @click="toggleFullscreen">
+      <div class="bg-white rounded-2xl shadow-2xl border border-white/70 w-full max-w-6xl h-[80vh] flex flex-col p-6 relative" @click.stop>
+        <div class="flex items-center justify-between mb-4 border-b pb-3">
+          <div class="flex items-center">
+            <i class="fas fa-th-list text-blue-600 text-2xl mr-3"></i>
+            <h2 class="text-2xl font-bold text-blue-600">Daftar Mata Kuliah</h2>
           </div>
+          <div class="flex items-center gap-2">
+            <div class="bg-blue-100/50 backdrop-blur-xl text-blue-700 px-4 py-1.5 rounded-md text-base font-medium flex items-center h-8">
+              <i class="fas fa-book mr-2"></i>
+              {{ filteredMataKuliahList.length }} Mata Kuliah
+            </div>
+            <button
+              @click="toggleFullscreen"
+              class="w-8 h-8 flex items-center justify-center bg-gray-200/50 hover:bg-gray-300/70 backdrop-blur-xl rounded-full text-gray-700 transition-colors shadow-md hover:shadow-lg"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
 
           <!-- Search and Filter for Fullscreen -->
           <div class="w-full mb-4">
@@ -493,9 +495,11 @@
     <div
       v-if="showDeleteConfirm"
       class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-[60]"
+      @click="showDeleteConfirm = false"
     >
       <div
         class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300 border border-white/70"
+        @click.stop
       >
         <div class="text-center">
           <div

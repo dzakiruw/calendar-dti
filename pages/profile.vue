@@ -29,8 +29,8 @@
       </div>
     </div>
     <!-- Alert Confirmation Popup -->
-    <div v-if="showConfirmPopup" class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-md">
-      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center transform transition-all duration-300 border border-white/70 hover:shadow-blue-100/30">
+    <div v-if="showConfirmPopup" class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-md" @click="showConfirmPopup = false">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center transform transition-all duration-300 border border-white/70 hover:shadow-blue-100/30" @click.stop>
         <div class="mb-4 text-blue-600 text-2xl"><i class="fas fa-question-circle"></i></div>
         <div class="mb-4 text-gray-800 font-semibold">Apakah Anda yakin ingin mengganti password?</div>
         <div class="flex justify-center gap-4">

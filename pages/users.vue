@@ -1,18 +1,18 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8">
     <!-- Alert Popup -->
-    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-md">
-      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center transform transition-all duration-300 border border-white/70 hover:shadow-blue-100/30">
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-md" @click="showAlert = false">
+      <div class="bg-white/90 backdrop-blur-xl rounded-xl shadow-2xl p-6 max-w-sm w-full text-center transform transition-all duration-300 border border-white/70 hover:shadow-blue-100/30" @click.stop>
         <div class="mb-4 text-red-600 text-2xl"><i class="fas fa-exclamation-circle"></i></div>
         <div class="mb-4 text-gray-800 font-semibold">{{ alertMessage }}</div>
-        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600/70 hover:bg-blue-700/90 text-white rounded-lg transition-colors duration-300 backdrop-blur-xl shadow-md hover:shadow-lg">
+        <button @click="showAlert = false" class="px-6 py-2 bg-blue-600/80 hover:bg-blue-700/90 text-white rounded-lg transition-colors duration-300 backdrop-blur-xl shadow-md hover:shadow-lg">
           Tutup
         </button>
       </div>
     </div>
 
     <!-- Success Alert -->
-    <div v-if="showSuccess" class="fixed top-4 right-4 bg-white/60 backdrop-blur-xl border border-green-200/70 text-green-700 p-4 rounded-lg shadow-xl transform transition-all duration-300 z-50">
+    <div v-if="showSuccess" class="fixed top-4 right-4 bg-white/70 backdrop-blur-xl border border-green-200/70 text-green-700 p-4 rounded-lg shadow-xl transform transition-all duration-300 z-50">
       <div class="flex items-center">
         <div class="py-1">
           <i class="fas fa-check-circle text-xl mr-3"></i>
@@ -182,7 +182,7 @@
           <button 
             v-if="searchQuery || roleFilter !== 'all'"
             @click="resetFilters" 
-            class="px-4 py-3 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-md hover:shadow-lg transition-all duration-300"
+            class="px-4 py-3 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-sm"
           >
             <i class="fas fa-undo mr-2"></i> Reset filter
           </button>
@@ -270,10 +270,10 @@
     </div>
 
     <!-- Delete Confirmation Popup -->
-    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-[70]">
-      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300 border border-white/70">
+    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-[70]" @click="showDeleteConfirm = false">
+      <div class="bg-white/90 backdrop-blur-xl rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300 border border-white/70 hover:shadow-blue-100/30" @click.stop>
         <div class="text-center">
-          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div class="w-16 h-16 bg-red-100/70 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
             <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
           </div>
           <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Hapus</h3>
@@ -283,13 +283,13 @@
           <div class="flex justify-center space-x-4">
             <button 
               @click="confirmDelete" 
-              class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-300"
+              class="px-4 py-2 bg-red-600/80 backdrop-blur-xl text-white rounded-xl hover:bg-red-700/90 transition-colors duration-300 shadow-md hover:shadow-lg"
             >
               Ya, Hapus
             </button>
             <button 
               @click="showDeleteConfirm = false" 
-              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+              class="px-4 py-2 bg-gray-200/80 backdrop-blur-xl text-gray-700 rounded-xl hover:bg-gray-300/90 transition-colors duration-300 shadow-md hover:shadow-lg"
             >
               Batal
             </button>
@@ -299,8 +299,8 @@
     </div>
 
     <!-- Fullscreen Popup -->
-    <div v-if="isFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-2xl border border-white/70 w-full max-w-6xl h-[85vh] flex flex-col p-6 relative">
+    <div v-if="isFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8" @click="toggleFullscreen">
+      <div class="bg-white rounded-2xl shadow-2xl border border-white/70 w-full max-w-6xl h-[80vh] flex flex-col p-6 relative" @click.stop>
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-th-list text-blue-600 text-2xl mr-3"></i>
@@ -351,25 +351,25 @@
           <button 
             v-if="searchQuery || roleFilter !== 'all'"
             @click="resetFilters" 
-            class="px-4 py-3 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-md hover:shadow-lg transition-all duration-300"
+            class="px-4 py-3 bg-blue-100/50 backdrop-blur-xl text-blue-700 rounded-lg hover:bg-blue-200/50 flex items-center whitespace-nowrap shadow-sm"
           >
             <i class="fas fa-undo mr-2"></i> Reset filter
           </button>
         </div>
 
         <!-- Multi-column List -->
-        <div class="flex-1 overflow-y-auto pr-2">
+        <div class="flex-1 overflow-y-auto pr-2 pb-8">
           <div v-if="filteredUsers.length === 0" class="flex flex-col items-center justify-center h-full text-gray-500">
             <i class="fas fa-filter text-6xl mb-4 text-blue-300"></i>
-            <p class="text-center font-medium text-xl mb-4">
+            <p class="text-center text-xl font-medium">
               {{ searchQuery ? 'Tidak ditemukan pengguna yang sesuai.' : 'Belum ada pengguna yang ditambahkan.' }}
             </p>
           </div>
-          <ul v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+          <ul v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
             <li 
               v-for="user in filteredUsers" 
               :key="user.id" 
-              class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-md hover:shadow-lg"
+              class="bg-blue-50/40 backdrop-blur-xl p-4 rounded-xl border border-blue-100/50 hover:bg-indigo-50/40 hover:border-indigo-200/50 transition-all duration-300 shadow-sm hover:shadow-md"
             >
               <div class="flex flex-col h-full">
                 <!-- Top section with title and buttons -->
@@ -434,10 +434,10 @@
     </div>
 
     <!-- Edit Confirmation Popup -->
-    <div v-if="showEditConfirm" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-[70]">
-      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300 border border-white/70">
+    <div v-if="showEditConfirm" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-[70]" @click="showEditConfirm = false">
+      <div class="bg-white/90 backdrop-blur-xl rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300 border border-white/70 hover:shadow-blue-100/30" @click.stop>
         <div class="text-center">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div class="w-16 h-16 bg-blue-100/70 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
             <i class="fas fa-pencil-alt text-2xl text-blue-600"></i>
           </div>
           <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Update</h3>
@@ -447,13 +447,13 @@
           <div class="flex justify-center space-x-4">
             <button 
               @click="confirmEdit" 
-              class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-300"
+              class="px-4 py-2 bg-blue-600/80 backdrop-blur-xl text-white rounded-xl hover:bg-blue-700/90 transition-colors duration-300 shadow-md hover:shadow-lg"
             >
               Ya, Update
             </button>
             <button 
               @click="showEditConfirm = false" 
-              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors duration-300"
+              class="px-4 py-2 bg-gray-200/80 backdrop-blur-xl text-gray-700 rounded-xl hover:bg-gray-300/90 transition-colors duration-300 shadow-md hover:shadow-lg"
             >
               Batal
             </button>

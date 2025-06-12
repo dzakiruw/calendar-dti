@@ -3,8 +3,8 @@
     class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8"
   >
     <!-- Alert Popup -->
-    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-md">
-      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center transform transition-all duration-300 border border-white/70">
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-md" @click="showAlert = false">
+      <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center transform transition-all duration-300 border border-white/70 hover:shadow-blue-100/30" @click.stop>
         <div class="mb-4 text-red-600 text-2xl"><i class="fas fa-exclamation-circle"></i></div>
         <div class="mb-4 text-gray-800 font-semibold">{{ alertMessage }}</div>
         <button @click="showAlert = false" class="px-6 py-2 bg-blue-600/70 hover:bg-blue-700/90 backdrop-blur-xl text-white rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg">
@@ -329,7 +329,7 @@
                             </div>
                             <div class="flex-1">
                               <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
-                                <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100/50 backdrop-blur-sm text-blue-700 rounded-md text-center mb-1 font-medium min-w-[100px] shadow-sm">
+                                <span class="inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-100/50 backdrop-blur-sm text-blue-700 rounded-md text-center mb-1 font-medium shadow-sm">
                                   <i class="fas fa-calendar-day mr-1"></i>
                                   {{ hindari.hindari_hari }}
                                 </span>
@@ -439,8 +439,8 @@
     </div>
 
     <!-- Matching Fullscreen Popup -->
-    <div v-if="isMatchingFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70">
+    <div v-if="isMatchingFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8" @click="toggleMatchingFullscreen">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70" @click.stop>
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-th-list text-blue-600 text-2xl mr-3"></i>
@@ -565,8 +565,8 @@
     </div>
 
     <!-- Mata Kuliah Fullscreen Popup -->
-    <div v-if="isMataKuliahFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70">
+    <div v-if="isMataKuliahFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8" @click="toggleMataKuliahFullscreen">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70" @click.stop>
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-book text-blue-600 text-2xl mr-3"></i>
@@ -676,8 +676,8 @@
     </div>
     
     <!-- Dosen Fullscreen Popup -->
-    <div v-if="isDosenFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70">
+    <div v-if="isDosenFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8" @click="toggleDosenFullscreen">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70" @click.stop>
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-user-tie text-blue-600 text-2xl mr-3"></i>
@@ -844,8 +844,8 @@
     </div>
     
     <!-- Ruang Kelas Fullscreen Popup -->
-    <div v-if="isRuangKelasFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70">
+    <div v-if="isRuangKelasFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8" @click="toggleRuangKelasFullscreen">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70" @click.stop>
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-chalkboard-teacher text-blue-600 text-2xl mr-3"></i>
@@ -922,8 +922,8 @@
     </div>
     
     <!-- Jadwal Hindari Fullscreen Popup -->
-    <div v-if="isJadwalHindariFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8">
-      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70">
+    <div v-if="isJadwalHindariFullscreen" class="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-8" @click="toggleJadwalHindariFullscreen">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-6xl w-full h-[85vh] flex flex-col relative border border-white/70" @click.stop>
         <div class="flex items-center justify-between mb-4 border-b pb-3">
           <div class="flex items-center">
             <i class="fas fa-calendar-times text-red-600 text-2xl mr-3"></i>
@@ -1099,10 +1099,10 @@
         <div class="overflow-x-auto">
           <table class="min-w-[700px] w-full">
             <thead>
-              <tr class="bg-gray-50 border-b border-gray-100">
-                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700 sticky left-0 bg-gray-50">Hari</th>
-                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700 sticky left-[140px] bg-gray-50">Sesi</th>
-                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Mata Kuliah & Kelas</th>
+                              <tr class="bg-gray-50 border-b border-gray-100">
+                  <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700 sticky left-0 bg-gray-50">Hari</th>
+                  <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700 sticky left-[140px] bg-gray-50">Waktu</th>
+                  <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Mata Kuliah & Kelas</th>
                 <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">SKS</th>
                 <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Semester</th>
                 <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Dosen</th>
@@ -1116,18 +1116,18 @@
                 class="group hover:bg-blue-50 transition-colors duration-200"
               >
                 <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50 text-center">{{ row.hari }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50 text-center">{{ row.sesi }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50">
+                <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50 text-center">{{ getSesiTimeRange(row.sesi) }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50 text-center">
                   <div class="font-medium">{{ row.mata_kuliah_kelas?.nama_kelas || '-' }}</div>
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50 text-center">{{ getSKS(row) }} SKS</td>
-                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50 text-center">
+                <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50 text-center">{{ getSKS(row) }} SKS</td>
+                <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50 text-center">
                   <span v-for="(sem, idx) in row.semester || row.mk_kelas_sem || []" :key="idx" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
                     Semester {{ sem }}
                   </span>
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50 text-center">{{ getTeamTeachingLecturers(row) }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700 group-hover:bg-blue-50 text-center">{{ row.ruangan }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50 text-center">{{ getTeamTeachingLecturers(row) }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 bg-white group-hover:bg-blue-50 text-center">{{ row.ruangan }}</td>
               </tr>
             </tbody>
           </table>
@@ -1153,17 +1153,17 @@
               </thead>
               <tbody class="divide-y divide-gray-100">
                 <tr v-for="(item, idx) in jadwalGenerated.filter(j => j.status === 'unplaced')" :key="idx">
-                  <td class="px-6 py-4 text-sm text-gray-700">
+                  <td class="px-6 py-4 text-sm text-gray-700 bg-white text-center">
                     <div class="font-medium">{{ item.mata_kuliah_kelas?.nama_kelas || '-' }}</div>
                   </td>
-                  <td class="px-6 py-4 text-sm text-gray-700 text-center">{{ getSKS(item) }} SKS</td>
-                  <td class="px-6 py-4 text-sm text-gray-700 text-center">
+                  <td class="px-6 py-4 text-sm text-gray-700 bg-white text-center">{{ getSKS(item) }} SKS</td>
+                  <td class="px-6 py-4 text-sm text-gray-700 bg-white text-center">
                     <span v-for="(sem, sidx) in item.semester || item.mk_kelas_sem || []" :key="sidx" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-medium mr-1">
                       Semester {{ sem }}
                     </span>
                   </td>
-                  <td class="px-6 py-4 text-sm text-gray-700 text-center">{{ getTeamTeachingLecturers(item) }}</td>
-                  <td class="px-6 py-4 text-sm text-red-600 text-center">Tidak ada slot tersedia</td>
+                  <td class="px-6 py-4 text-sm text-gray-700 bg-white text-center">{{ getTeamTeachingLecturers(item) }}</td>
+                  <td class="px-6 py-4 text-sm text-red-600 bg-white text-center">Tidak ada slot tersedia</td>
                 </tr>
               </tbody>
             </table>
@@ -1861,7 +1861,7 @@ const exportExcel = () => {
   });
 
   const matrixData = [];
-  const headerRow = ["Hari", "Sesi", ...allRooms];
+  const headerRow = ["Hari", "Waktu", ...allRooms];
   matrixData.push(headerRow);
 
   // Group data by hari, sesi, ruangan
@@ -1875,7 +1875,7 @@ const exportExcel = () => {
   // Tambahkan semua kombinasi hari, sesi, ruangan ke matrixData
   allTimeSlots.forEach((timeSlot) => {
     const [hari, sesi] = timeSlot.split("|");
-    const row = [hari, sesi];
+    const row = [hari, getSesiTimeRange(sesi)];
     allRooms.forEach((room) => {
       const item = groupedData[timeSlot]?.[room];
       if (item) {
@@ -2484,5 +2484,13 @@ const resetMatchingFilters = () => {
 
 const resetRuangKelasFilters = () => {
   ruangKelasSearchQuery.value = "";
+};
+
+// First, let's add a helper function to get the time range from session code
+const getSesiTimeRange = (sesi) => {
+  if (sesi === 'SATU') return '07.00 - 09.55';
+  if (sesi === 'DUA') return '10.00 - 12.55';
+  if (sesi === 'TIGA') return '13.30 - 16.20';
+  return '';
 };
 </script>
