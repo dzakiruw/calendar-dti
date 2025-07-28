@@ -614,6 +614,10 @@
 import { ref, onMounted, computed, onUnmounted } from 'vue';
 import axios from 'axios';
 
+// Get runtime config for API base URL
+const config = useRuntimeConfig();
+const apiBaseUrl = config.public.apiBaseUrl;
+
 const hariList = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT'];
 const sesiList = ['SATU', 'DUA', 'TIGA'];
 
@@ -734,7 +738,7 @@ const fetchDosen = async () => {
       throw new Error('User is not authenticated');
     }
 
-    const response = await axios.get('http://10.4.90.25:3000/dosen', {
+    const response = await axios.get(`${apiBaseUrl}/dosen`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -818,7 +822,7 @@ const submitData = async () => {
       };
 
       const dosenKode = dosenList.value[editIndex.value].dosen_kode;
-      await axios.patch(`http://10.4.90.25:3000/dosen/${dosenKode}`, updateData, {
+      await axios.patch(`${apiBaseUrl}/dosen/${dosenKode}`, updateData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -840,7 +844,7 @@ const submitData = async () => {
         kesediaan: kesediaan
       };
 
-      await axios.post('http://10.4.90.25:3000/dosen', newDosen, {
+      await axios.post(`${apiBaseUrl}/dosen`, newDosen, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -912,7 +916,7 @@ const confirmDelete = async () => {
     }
 
     const dosen = dosenList.value[selectedIndex.value];
-    await axios.delete(`http://10.4.90.25:3000/dosen/${dosen.dosen_kode}`, {
+    await axios.delete(`${apiBaseUrl}/dosen/${dosen.dosen_kode}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

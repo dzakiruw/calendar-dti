@@ -469,6 +469,10 @@ import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
+// Get runtime config for API base URL
+const config = useRuntimeConfig();
+const apiBaseUrl = config.public.apiBaseUrl;
+
 const router = useRouter()
 const users = ref([])
 const isEditing = ref(false)
@@ -550,7 +554,7 @@ const fetchUsers = async () => {
       throw new Error('User is not authenticated');
     }
 
-    const response = await axios.get('http://10.4.90.25:3000/user', {
+    const response = await axios.get(`${apiBaseUrl}/user`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -604,10 +608,10 @@ const submitData = async () => {
     }
 
     if (isEditing.value) {
-      await axios.patch(`http://10.4.90.25:3000/user/${editingId.value}`, submitData, { headers });
+      await axios.patch(`${apiBaseUrl}/user/${editingId.value}`, submitData, { headers });
       showSuccessMessage('Pengguna berhasil diperbarui');
     } else {
-      await axios.post('http://10.4.90.25:3000/user', submitData, { headers });
+      await axios.post(`${apiBaseUrl}/user`, submitData, { headers });
       showSuccessMessage('Pengguna berhasil ditambahkan');
     }
     
@@ -647,7 +651,7 @@ const confirmDelete = async () => {
       throw new Error('User is not authenticated');
     }
 
-    await axios.delete(`http://10.4.90.25:3000/user/${selectedUserId.value}`, {
+    await axios.delete(`${apiBaseUrl}/user/${selectedUserId.value}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

@@ -325,6 +325,10 @@ import { ref, onMounted, inject, computed, watch, onUnmounted } from "vue";
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 
+// Get runtime config for API base URL
+const config = useRuntimeConfig();
+const apiBaseUrl = config.public.apiBaseUrl;
+
 const dropdowns = ref({
   kalender: false,
   jadwal: false,
@@ -387,7 +391,7 @@ onMounted(async () => {
   try {
     const token = JSON.parse(localStorage.getItem('user'))?.accessToken;
     if (token) {
-      const res = await axios.get('http://10.4.90.25:3000/user/me', {
+      const res = await axios.get(`${apiBaseUrl}/user/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       userName.value = res.data?.name || res.data?.username || '';

@@ -382,6 +382,10 @@
 import { ref, onMounted, nextTick, computed, onUnmounted } from 'vue';
 import axios from 'axios';
 
+// Get runtime config for API base URL
+const config = useRuntimeConfig();
+const apiBaseUrl = config.public.apiBaseUrl;
+
 // Reactive Variables
 const form = ref({
   kodeRuangan: '',
@@ -465,7 +469,7 @@ const fetchRuangKelas = async () => {
       throw new Error('User is not authenticated');
     }
 
-    const response = await axios.get('http://10.4.90.25:3000/ruangan', {
+    const response = await axios.get(`${apiBaseUrl}/ruangan`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -510,7 +514,7 @@ const submitData = async () => {
     if (editIndex.value !== null) {
       // Update Ruang Kelas
       const ruangKelasKode = ruangKelasList.value[editIndex.value].ruangan_kode;
-      const response = await axios.put(`http://10.4.90.25:3000/ruangan/${ruangKelasKode}`, newRuangKelas, {
+      const response = await axios.put(`${apiBaseUrl}/ruangan/${ruangKelasKode}`, newRuangKelas, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -524,7 +528,7 @@ const submitData = async () => {
       showSuccessAlert('Data ruang kelas berhasil diperbarui!');
     } else {
       // Add New Ruang Kelas
-      const response = await axios.post('http://10.4.90.25:3000/ruangan', newRuangKelas, {
+      const response = await axios.post(`${apiBaseUrl}/ruangan`, newRuangKelas, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -592,7 +596,7 @@ const confirmDelete = async () => {
     }
 
     const ruangKelas = ruangKelasList.value[selectedIndex.value];
-    await axios.delete(`http://10.4.90.25:3000/ruangan/${ruangKelas.ruangan_kode}`, {
+    await axios.delete(`${apiBaseUrl}/ruangan/${ruangKelas.ruangan_kode}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

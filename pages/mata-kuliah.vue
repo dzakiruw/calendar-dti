@@ -535,6 +535,10 @@
 import { ref, onMounted, computed, onUnmounted } from "vue";
 import axios from "axios";
 
+// Get runtime config for API base URL
+const config = useRuntimeConfig();
+const apiBaseUrl = config.public.apiBaseUrl;
+
 const kode = ref("");
 const nama = ref("");
 const kelasDipilih = ref([]);
@@ -595,7 +599,7 @@ const fetchMataKuliah = async () => {
       throw new Error("User is not authenticated");
     }
 
-    const response = await axios.get("http://10.4.90.25:3000/mata_kuliah", {
+    const response = await axios.get(`${apiBaseUrl}/mata_kuliah`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -663,7 +667,7 @@ const submitData = async () => {
       // Update Mata Kuliah
       const mataKuliahKode = mataKuliahList.value[editIndex.value].matkul_kode;
       await axios.patch(
-        `http://10.4.90.25:3000/mata_kuliah/${mataKuliahKode}`,
+        `${apiBaseUrl}/mata_kuliah/${mataKuliahKode}`,
         newMataKuliah,
         {
           headers: {
@@ -679,7 +683,7 @@ const submitData = async () => {
       showSuccessAlert("Data mata kuliah berhasil diperbarui!");
     } else {
       // Add New Mata Kuliah
-      await axios.post("http://10.4.90.25:3000/mata_kuliah", newMataKuliah, {
+      await axios.post(`${apiBaseUrl}/mata_kuliah`, newMataKuliah, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -746,7 +750,7 @@ const confirmDelete = async () => {
 
     const mk = mataKuliahList.value[selectedIndex.value];
     await axios.delete(
-      `http://10.4.90.25:3000/mata_kuliah/${mk.matkul_kode}`,
+      `${apiBaseUrl}/mata_kuliah/${mk.matkul_kode}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

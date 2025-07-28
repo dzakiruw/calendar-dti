@@ -124,6 +124,10 @@ import { useRouter } from 'vue-router'
 import { WrenchScrewdriverIcon } from "@heroicons/vue/24/solid";
 import axios from 'axios';
 
+// Get runtime config for API base URL
+const config = useRuntimeConfig();
+const apiBaseUrl = config.public.apiBaseUrl;
+
 // Get auth state from layout
 const { user: layoutUser, isAuthenticated, updateAuthState, isAuthChecked } = inject('authState');
 
@@ -194,7 +198,7 @@ onMounted(() => {
 const login = async () => {
   try {
     errorMessage.value = '';
-    const response = await axios.post('http://10.4.90.25:3000/auth/login', {
+    const response = await axios.post(`${apiBaseUrl}/auth/login`, {
       username: username.value,
       password: password.value
     });

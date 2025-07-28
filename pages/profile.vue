@@ -128,6 +128,10 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
+// Get runtime config for API base URL
+const config = useRuntimeConfig();
+const apiBaseUrl = config.public.apiBaseUrl;
+
 const router = useRouter();
 const userData = ref(null);
 const profilePicture = ref(null);
@@ -267,7 +271,7 @@ const handleChangePassword = async () => {
     const user = JSON.parse(localStorage.getItem('user'));
     const token = user?.accessToken;
     if (!token) throw new Error('User not authenticated');
-    await axios.patch('http://10.4.90.25:3000/user/me', {
+    await axios.patch(`${apiBaseUrl}/user/me`, {
       oldPassword: oldPassword.value,
       newPassword: newPassword.value
     }, {

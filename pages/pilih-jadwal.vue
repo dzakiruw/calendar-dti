@@ -1180,6 +1180,10 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import axios from "axios";
 
+// Get runtime config for API base URL
+const config = useRuntimeConfig();
+const apiBaseUrl = config.public.apiBaseUrl;
+
 // Define constants for days and sessions
 const hariList = ["SENIN", "SELASA", "RABU", "KAMIS", "JUMAT"];
 const sesiList = ["SATU", "DUA", "TIGA"];
@@ -1232,7 +1236,7 @@ const fetchData = async () => {
 
     // Fetch Mata Kuliah
     const mataKuliahResponse = await axios.get(
-      "http://10.4.90.25:3000/mata_kuliah",
+      `${apiBaseUrl}/mata_kuliah`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -1241,7 +1245,7 @@ const fetchData = async () => {
 
     // Fetch Ruang Kelas
     const ruangKelasResponse = await axios.get(
-      "http://10.4.90.25:3000/ruangan",
+      `${apiBaseUrl}/ruangan`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -1249,14 +1253,14 @@ const fetchData = async () => {
     ruangKelasList.value = ruangKelasResponse.data;
 
     // Fetch Dosen
-    const dosenResponse = await axios.get("http://10.4.90.25:3000/dosen", {
+    const dosenResponse = await axios.get(`${apiBaseUrl}/dosen`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     dosenList.value = dosenResponse.data;
 
     // Fetch Jadwal Hindari
     const jadwalHindariResponse = await axios.get(
-      "http://10.4.90.25:3000/jadwal_hindari",
+      `${apiBaseUrl}/jadwal_hindari`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -1274,7 +1278,7 @@ const fetchMatchingData = async () => {
       throw new Error('User is not authenticated');
     }
 
-    const response = await axios.get('http://10.4.90.25:3000/mk_dosen', {
+    const response = await axios.get(`${apiBaseUrl}/mk_dosen`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -1754,16 +1758,16 @@ const generateJadwal = async () => {
       jadwalHindariResponse,
       dosenResponse,
     ] = await Promise.all([
-      axios.get("http://10.4.90.25:3000/mk_dosen", {
+      axios.get(`${apiBaseUrl}/mk_dosen`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
-      axios.get("http://10.4.90.25:3000/ruangan", {
+      axios.get(`${apiBaseUrl}/ruangan`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
-      axios.get("http://10.4.90.25:3000/jadwal_hindari", {
+      axios.get(`${apiBaseUrl}/jadwal_hindari`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
-      axios.get("http://10.4.90.25:3000/dosen", {
+      axios.get(`${apiBaseUrl}/dosen`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
     ]);
